@@ -95,7 +95,7 @@ export function PageShell({ title, description, children }) {
   )
 }
 
-export function Modal({ open, onClose, title, children }) {
+export function Modal({ open, onClose, title, children, wide = false }) {
   useEffect(() => {
     if (!open) return undefined
 
@@ -117,7 +117,7 @@ export function Modal({ open, onClose, title, children }) {
   return (
     <div className="modal-overlay" onClick={onClose} role="presentation">
       <div
-        className="modal"
+        className={`modal${wide ? ' modal-wide' : ''}`}
         role="dialog"
         aria-modal="true"
         aria-labelledby="modal-title"

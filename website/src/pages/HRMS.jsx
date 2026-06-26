@@ -2,13 +2,17 @@ import { useState } from 'react'
 import { useStore } from '../context/StoreContext'
 import { PageShell, SectionHeader, FeatureGrid, Badge } from '../components/UI'
 import { CrudTable } from '../components/CrudTable'
-import AddEmployeeModal from '../components/AddEmployeeModal'
+import EmployeeModal from '../components/EmployeeModal'
 import InfoModal from '../components/InfoModal'
 import DeleteConfirmModal, { ViewDetailModal } from '../components/DeleteConfirmModal'
 import { useCrudModal } from '../hooks/useCrudModal'
 import { nextId } from '../utils/helpers'
 
-const features = ['Employees', 'Attendance', 'Leave', 'Payroll', 'Recruitment', 'Performance Review']
+const features = [
+  'Employee Management', 'Attendance Management', 'Leave Management', 'Payroll Management',
+  'Recruitment Management', 'Performance Management', 'Employee Document Management',
+  'Reports & Analytics', 'Role & Permission Management', 'Notification Management',
+]
 
 export default function HRMS() {
   const store = useStore()
@@ -20,8 +24,17 @@ export default function HRMS() {
     { key: 'id', label: 'ID' },
     { key: 'name', label: 'Name' },
     { key: 'dept', label: 'Department' },
+    { key: 'shift', label: 'Shift', render: (r) => r.shift || '—' },
     { key: 'attendance', label: 'Today', render: (r) => <Badge variant={r.attendance === 'Present' ? 'success' : 'warning'}>{r.attendance}</Badge> },
     { key: 'leave', label: 'Leave' },
+  ]
+
+  const viewFields = [
+    ...cols,
+    { key: 'email', label: 'Email' },
+    { key: 'salary', label: 'Salary', render: (r) => (r.salary ? `₹${r.salary}` : '—') },
+    { key: 'performanceRating', label: 'Rating' },
+    { key: 'systemRole', label: 'Role' },
   ]
 
   const handleLeave = (id, decision) => {
@@ -59,7 +72,7 @@ export default function HRMS() {
           <button type="button" className="btn btn-secondary" onClick={() => setMobileOpen(true)}>Open Mobile Portal</button>
         </section>
       </div>
-      <AddEmployeeModal
+      <EmployeeModal
         open={empModal.open}
         editItem={empModal.item}
         onClose={() => setEmpModal({ open: false, item: null })}
@@ -69,7 +82,7 @@ export default function HRMS() {
           setEmpModal({ open: false, item: null })
         }}
       />
-      <ViewDetailModal open={crud.isView} onClose={crud.closeModal} title="Employee" data={crud.item} fields={cols} />
+      <ViewDetailModal open={crud.isView} onClose={crud.closeModal} title="Employee" data={crud.item} fields={viewFields} />
       <DeleteConfirmModal open={!!crud.deleteTarget} onClose={crud.closeDelete} onConfirm={() => store.remove('employees', 'HRMS', crud.deleteTarget.id)} itemName={crud.deleteTarget?.name} />
       <InfoModal open={mobileOpen} onClose={() => setMobileOpen(false)} title="Mobile Portal"><p>Attendance, leave & payslip access.</p></InfoModal>
     </PageShell>

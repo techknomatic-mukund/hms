@@ -3,7 +3,7 @@ export const erpModuleGroups = [
     label: 'Overview',
     modules: [
       { id: 'dashboard', path: '/erp', label: 'Dashboard', icon: '📊', end: true },
-      { id: 'integration', path: '/erp/integration', label: 'Integration Flow', icon: '🔗' },
+      // { id: 'integration', path: '/erp/integration', label: 'Integration Flow', icon: '🔗' },
     ],
   },
   {
@@ -43,8 +43,8 @@ export const erpModuleGroups = [
     modules: [
       { id: 'finance', path: '/erp/finance', label: 'Finance', icon: '💰' },
       { id: 'hrms', path: '/erp/hrms', label: 'HRMS', icon: '👥' },
-      { id: 'feedback', path: '/erp/feedback', label: 'Feedback', icon: '⭐' },
-      { id: 'reports', path: '/erp/reports', label: 'Reports', icon: '📈' },
+      // { id: 'feedback', path: '/erp/feedback', label: 'Feedback', icon: '⭐' },
+      // { id: 'reports', path: '/erp/reports', label: 'Reports', icon: '📈' },
       { id: 'admin', path: '/erp/admin', label: 'Administration', icon: '⚙️' },
     ],
   },

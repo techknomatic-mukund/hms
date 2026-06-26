@@ -10,7 +10,8 @@ import { useCrudModal } from '../hooks/useCrudModal'
 
 const features = [
   'Guest Registration', 'Check-in', 'Check-out', 'Room Allocation', 'Room Upgrade',
-  'Key Card', 'Billing', 'Registration Cards',
+  'Guest Folio', 'Room Status Board', 'Guest History & Preferences',
+  'Deposit Management', 'Guest Requests',
 ]
 
 const statusVariant = (s) => {
@@ -100,6 +101,9 @@ export default function FrontOffice() {
 
       <NewReservationModal
         open={reservationModalOpen}
+        reservations={store.reservations}
+        rooms={store.rooms}
+        crmCustomers={store.crmCustomers}
         onClose={() => { setReservationModalOpen(false); setEditItem(null) }}
         onSubmit={handleSave}
         defaultSource={walkInMode ? 'Walk-in' : 'OTA'}
@@ -113,7 +117,14 @@ export default function FrontOffice() {
         reservations={store.reservations}
         onCheckIn={store.checkIn}
         onCheckOut={store.checkOut}
-        onSaveRegistration={() => {}}
+        onSaveRegistration={(id, reg) => {
+          const res = store.reservations.find((r) => r.id === id)
+          if (!res) return
+          store.updateReservation(id, {
+            notes: [res.notes, reg.phone && `Phone: ${reg.phone}`, reg.email && `Email: ${reg.email}`, reg.idProof && `ID: ${reg.idProof}`].filter(Boolean).join(' | '),
+            historyNote: 'Registration card saved',
+          })
+        }}
       />
 
       <ViewDetailModal open={crud.isView} onClose={crud.closeModal} title="Reservation Details" data={crud.item} fields={resColumns} />

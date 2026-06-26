@@ -6,6 +6,7 @@ import {
   feedbackEntries, maintenanceTickets, transactions, systemUsers, activityLog,
 } from '../data/initialState'
 import { nextId } from '../utils/helpers'
+import { historyEntry } from '../utils/reservationHelpers'
 
 const StoreContext = createContext(null)
 
@@ -22,19 +23,62 @@ function logActivity(log, action, module, detail) {
 function reducer(state, action) {
   switch (action.type) {
     case 'RESERVATION_CREATE': {
-      const item = { ...action.payload, id: nextId('RES-', state.reservations) }
+      const rooms = action.payload.rooms?.length ? action.payload.rooms : [action.payload.room]
+      const item = {
+        ...action.payload,
+        id: nextId('RES-', state.reservations),
+        rooms,
+        room: rooms[0],
+        notes: action.payload.notes || '',
+        history: action.payload.history || [
+          historyEntry('Created', `Booking confirmed — ${rooms.length} room(s)`),
+        ],
+      }
       return {
         ...state,
         reservations: [item, ...state.reservations],
-        activityLog: logActivity(state.activityLog, 'Create', 'Reservation', `${item.guest} — ${item.room}`),
+        activityLog: logActivity(state.activityLog, 'Create', 'Reservation', `${item.guest} — ${rooms.join(', ')}`),
       }
     }
-    case 'RESERVATION_UPDATE':
+    case 'RESERVATION_UPDATE': {
+      const prev = state.reservations.find((r) => r.id === action.id)
+      const rooms = action.payload.rooms?.length ? action.payload.rooms : action.payload.room ? [action.payload.room] : prev?.rooms
+      const { historyNote, ...rest } = action.payload
+      const updated = {
+        ...rest,
+        rooms,
+        room: rooms?.[0] || action.payload.room || prev?.room,
+        history: [
+          historyEntry('Modified', historyNote || 'Reservation details updated'),
+          ...(prev?.history || []),
+        ],
+      }
       return {
         ...state,
-        reservations: state.reservations.map((r) => (r.id === action.id ? { ...r, ...action.payload } : r)),
+        reservations: state.reservations.map((r) => (r.id === action.id ? { ...r, ...updated } : r)),
         activityLog: logActivity(state.activityLog, 'Update', 'Reservation', action.id),
       }
+    }
+    case 'ROOM_TRANSFER': {
+      const res = state.reservations.find((r) => r.id === action.id)
+      if (!res) return state
+      const oldRoom = res.room
+      const entry = historyEntry(
+        action.transferType || 'Room Transfer',
+        `${oldRoom} → ${action.newRoom}${action.reason ? ` — ${action.reason}` : ''}`,
+      )
+      const newRooms = (res.rooms || [oldRoom]).map((rm) => (rm === oldRoom ? action.newRoom : rm))
+      return {
+        ...state,
+        reservations: state.reservations.map((r) => (r.id === action.id ? {
+          ...r,
+          room: action.newRoom,
+          rooms: newRooms,
+          history: [entry, ...(r.history || [])],
+        } : r)),
+        activityLog: logActivity(state.activityLog, 'Room Transfer', 'Reservation', `${res.guest}: ${oldRoom} → ${action.newRoom}`),
+      }
+    }
     case 'RESERVATION_DELETE':
       return {
         ...state,
@@ -122,9 +166,14 @@ function reducer(state, action) {
         guest: action.payload.guest,
         source: 'Customer Portal',
         room: action.payload.room,
+        rooms: [action.payload.room],
         checkIn: action.payload.checkIn,
         checkOut: action.payload.checkOut,
+        checkInIso: action.payload.checkInIso,
+        checkOutIso: action.payload.checkOutIso,
         status: 'Confirmed',
+        notes: '',
+        history: [historyEntry('Created', 'Customer portal booking')],
       }
       return {
         ...state,
@@ -175,6 +224,7 @@ export function StoreProvider({ children }) {
     createReservation: (payload) => dispatch({ type: 'RESERVATION_CREATE', payload }),
     updateReservation: (id, payload) => dispatch({ type: 'RESERVATION_UPDATE', id, payload }),
     deleteReservation: (id) => dispatch({ type: 'RESERVATION_DELETE', id }),
+    transferRoom: (id, payload) => dispatch({ type: 'ROOM_TRANSFER', id, ...payload }),
     checkIn: (id) => dispatch({ type: 'CHECK_IN', id }),
     checkOut: (id) => dispatch({ type: 'CHECK_OUT', id }),
     customerBookRoom: (payload) => dispatch({ type: 'CUSTOMER_BOOKING', payload }),

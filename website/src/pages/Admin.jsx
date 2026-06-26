@@ -1,9 +1,28 @@
 import { useStore } from '../context/StoreContext'
 import CrudModule from '../components/CrudModule'
+import SystemUserModal from '../components/SystemUserModal'
 import { Badge, SectionHeader } from '../components/UI'
 import { PERMISSIONS } from '../data/roles'
 
-const features = ['Users', 'Roles', 'Permissions', 'Audit Logs', 'Settings', 'Backup']
+const features = [
+  'User Management', 'Role Management', 'Permission Management', 'RBAC (Role-Based Access Control)',
+  'Audit Log Management', 'System Settings', 'User Authentication', 'User Status Management',
+  'Backup & Restore', 'Access Monitoring', 'Notification Management', 'Master Data Management',
+  'Security Management', 'Reports & Analytics',
+]
+
+const viewFields = [
+  { key: 'id', label: 'ID' },
+  { key: 'name', label: 'Name' },
+  { key: 'email', label: 'Email' },
+  { key: 'role', label: 'Role' },
+  { key: 'status', label: 'Status' },
+  { key: 'accessLevel', label: 'Access Level' },
+  { key: 'moduleAccess', label: 'Modules' },
+  { key: 'assignedPermissions', label: 'Permissions' },
+  { key: 'authMethod', label: 'Auth' },
+  { key: 'mfaEnabled', label: 'MFA', render: (r) => (r.mfaEnabled ? 'Enabled' : 'Disabled') },
+]
 
 export default function Admin() {
   const store = useStore()
@@ -22,17 +41,14 @@ export default function Admin() {
         { key: 'name', label: 'Name' },
         { key: 'email', label: 'Email' },
         { key: 'role', label: 'Role' },
-        { key: 'status', label: 'Status', render: (r) => <Badge variant="success">{r.status}</Badge> },
+        { key: 'accessLevel', label: 'Access', render: (r) => r.accessLevel || '—' },
+        { key: 'status', label: 'Status', render: (r) => <Badge variant={r.status === 'Active' ? 'success' : 'warning'}>{r.status}</Badge> },
       ]}
-      formFields={[
-        { name: 'name', label: 'Name', required: true },
-        { name: 'email', label: 'Email', required: true },
-        { name: 'role', label: 'Role', type: 'select', options: ['Receptionist', 'Housekeeping', 'Restaurant', 'Finance', 'HR', 'Manager', 'Administrator'], default: 'Receptionist' },
-        { name: 'status', label: 'Status', type: 'select', options: ['Active', 'Inactive'], default: 'Active' },
-      ]}
+      viewFields={viewFields}
       onCreate={(f) => store.create(key, 'USR-', 'Admin', f)}
       onUpdate={(id, f) => store.update(key, 'Admin', id, f)}
       onDelete={(id) => store.remove(key, 'Admin', id)}
+      customModal={(props) => <SystemUserModal {...props} />}
       extra={(
         <>
           <section className="panel">

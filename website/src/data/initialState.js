@@ -92,9 +92,30 @@ export const leaveRequests = [
 ]
 
 export const crmCustomers = [
-  { id: 'CRM-01', name: 'Sarah Mitchell', email: 'sarah@corp.com', loyalty: 'Gold', visits: 12, lastStay: '25 Jun' },
-  { id: 'CRM-02', name: 'Rajesh Kumar', email: 'rajesh@email.com', loyalty: 'Silver', visits: 5, lastStay: '10 May' },
-  { id: 'CRM-03', name: 'John Williams', email: 'john@travel.com', loyalty: 'Platinum', visits: 28, lastStay: '1 Jun' },
+  {
+    id: 'CRM-01', name: 'Sarah Mitchell', email: 'sarah@corp.com', loyalty: 'Gold', visits: 12, lastStay: '25 Jun',
+    interactionHistory: '24 Jun — Email: Confirmed suite upgrade\n10 Jun — Call: Corporate billing setup',
+    lastInteractionType: 'Email', offerType: '10% Off Stay', couponCode: 'GOLD10', offerExpiry: '2026-12-31',
+    referralCode: 'SARAH-REF', referredBy: '', referralStatus: 'Active',
+    supportSubject: '', supportPriority: 'Medium', supportStatus: 'Closed',
+    birthday: '1988-03-15', anniversary: '2012-06-20', campaignOptIn: true, campaignType: 'Both',
+  },
+  {
+    id: 'CRM-02', name: 'Rajesh Kumar', email: 'rajesh@email.com', loyalty: 'Silver', visits: 5, lastStay: '10 May',
+    interactionHistory: '20 Jun — WhatsApp: Multi-room group booking inquiry',
+    lastInteractionType: 'WhatsApp', offerType: 'Free Breakfast', couponCode: 'SILVER-BF', offerExpiry: '2026-09-30',
+    referralCode: 'RAJESH-REF', referredBy: 'John Williams', referralStatus: 'Completed',
+    supportSubject: 'Late checkout request', supportPriority: 'Low', supportStatus: 'Resolved',
+    birthday: '1990-11-08', anniversary: '', campaignOptIn: true, campaignType: 'Birthday Offer',
+  },
+  {
+    id: 'CRM-03', name: 'John Williams', email: 'john@travel.com', loyalty: 'Platinum', visits: 28, lastStay: '1 Jun',
+    interactionHistory: '24 Jun — Feedback: 5-star front desk rating\n1 Jun — Walk-in: Extended stay by 2 nights',
+    lastInteractionType: 'Feedback', offerType: 'Room Upgrade', couponCode: 'PLAT-UPG', offerExpiry: '2027-01-31',
+    referralCode: 'JOHN-REF', referredBy: '', referralStatus: 'Active',
+    supportSubject: 'Spa booking reschedule', supportPriority: 'Medium', supportStatus: 'In Progress',
+    birthday: '1975-07-22', anniversary: '2005-12-10', campaignOptIn: true, campaignType: 'Both',
+  },
 ]
 
 export const fnbEvents = [

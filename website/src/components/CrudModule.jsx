@@ -8,7 +8,7 @@ export default function CrudModule({
   title, description, features, sectionTitle, createLabel,
   data, columns, viewFields, formFields,
   storeKey, prefix, moduleName, onCreate, onUpdate, onDelete,
-  keyField = 'id', extra,
+  keyField = 'id', extra, customModal,
 }) {
   const crud = useCrudModal()
 
@@ -51,14 +51,21 @@ export default function CrudModule({
 
       {extra}
 
-      <GenericCrudModal
-        open={crud.isCreate || crud.isEdit}
-        onClose={crud.closeModal}
-        onSubmit={handleSubmit}
-        title={moduleName}
-        fields={formFields}
-        editItem={crud.isEdit ? crud.item : null}
-      />
+      {customModal ? customModal({
+        open: crud.isCreate || crud.isEdit,
+        onClose: crud.closeModal,
+        onSubmit: (form) => handleSubmit(form, crud.isEdit),
+        editItem: crud.isEdit ? crud.item : null,
+      }) : (
+        <GenericCrudModal
+          open={crud.isCreate || crud.isEdit}
+          onClose={crud.closeModal}
+          onSubmit={handleSubmit}
+          title={moduleName}
+          fields={formFields}
+          editItem={crud.isEdit ? crud.item : null}
+        />
+      )}
 
       <ViewDetailModal
         open={crud.isView}

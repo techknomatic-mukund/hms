@@ -4,13 +4,7 @@ import {
   posOrders, menuItems, kitchenOrders, inventoryItems, purchaseOrders,
   employees, leaveRequests, crmCustomers, fnbEvents, addonServices,
   feedbackEntries, maintenanceTickets, transactions, systemUsers, activityLog,
-  guestFolios, guestDeposits, guestRequests,
-  crmOffers, crmReferrals, crmSupportTickets, crmCampaigns, customerInteractions,
-  housekeepingStaff, cleaningChecklists, amenitiesReplenishment, deepCleaningSchedule,
-  laundryItemTags, laundryServiceHistory,
-  maintenanceSchedules, maintenanceTechnicians, sparePartsInventory, assetMaintenanceHistory,
 } from '../data/initialState'
-import { nextStage } from '../utils/laundryHelpers'
 import { nextId } from '../utils/helpers'
 import { historyEntry } from '../utils/reservationHelpers'
 
@@ -94,28 +88,10 @@ function reducer(state, action) {
       const res = state.reservations.find((r) => r.id === action.id)
       if (!res) return state
       const roomNum = res.room.split(' ').pop()
-      const hasFolio = state.guestFolios.some((f) => f.reservationId === res.id)
-      const newFolio = hasFolio ? null : {
-        id: nextId('FOL-', state.guestFolios),
-        reservationId: res.id,
-        guest: res.guest,
-        room: res.room,
-        status: 'Open',
-        charges: [{
-          id: nextId('FC-', []),
-          date: new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }),
-          category: 'Room',
-          description: `${res.room} — Check-in`,
-          amount: 8500,
-          tax: 425,
-        }],
-        payments: [],
-      }
       return {
         ...state,
         reservations: state.reservations.map((r) => (r.id === action.id ? { ...r, status: 'Checked In' } : r)),
         rooms: state.rooms.map((rm) => (rm.number === roomNum ? { ...rm, status: 'Occupied' } : rm)),
-        guestFolios: newFolio ? [newFolio, ...state.guestFolios] : state.guestFolios,
         housekeepingTasks: [{
           id: nextId('HK-', state.housekeepingTasks),
           room: res.room,
@@ -177,200 +153,6 @@ function reducer(state, action) {
         [action.key]: state[action.key].filter((item) => item.id !== action.id && item.name !== action.id),
         activityLog: logActivity(state.activityLog, 'Delete', action.module, String(action.id)),
       }
-    case 'FOLIO_ADD_CHARGE': {
-      const folio = state.guestFolios.find((f) => f.id === action.folioId)
-      if (!folio) return state
-      const charge = { ...action.payload, id: nextId('FC-', folio.charges) }
-      return {
-        ...state,
-        guestFolios: state.guestFolios.map((f) => (f.id === action.folioId
-          ? { ...f, charges: [...f.charges, charge] } : f)),
-        activityLog: logActivity(state.activityLog, 'Folio Charge', 'Front Office', `${folio.guest} — ${charge.description}`),
-      }
-    }
-    case 'FOLIO_ADD_PAYMENT': {
-      const folio = state.guestFolios.find((f) => f.id === action.folioId)
-      if (!folio) return state
-      const payment = { ...action.payload, id: nextId('FP-', folio.payments) }
-      return {
-        ...state,
-        guestFolios: state.guestFolios.map((f) => (f.id === action.folioId
-          ? { ...f, payments: [...f.payments, payment] } : f)),
-        transactions: [{
-          id: nextId('TXN-', state.transactions),
-          type: 'Revenue',
-          category: 'Payment',
-          description: `Folio payment — ${folio.guest}`,
-          amount: `₹${payment.amount.toLocaleString('en-IN')}`,
-          date: payment.date,
-        }, ...state.transactions],
-        activityLog: logActivity(state.activityLog, 'Folio Payment', 'Front Office', `${folio.guest} — ₹${payment.amount}`),
-      }
-    }
-    case 'DEPOSIT_SAVE': {
-      const item = {
-        ...action.payload,
-        id: action.id || nextId('DEP-', state.guestDeposits),
-        balance: Math.max(0, (action.payload.amount || 0) - (action.payload.received || 0)),
-      }
-      const deposits = action.id
-        ? state.guestDeposits.map((d) => (d.id === action.id ? { ...d, ...item } : d))
-        : [item, ...state.guestDeposits]
-      return {
-        ...state,
-        guestDeposits: deposits,
-        activityLog: logActivity(state.activityLog, action.id ? 'Update' : 'Create', 'Deposit', `${item.guest} — ${item.type}`),
-      }
-    }
-    case 'GUEST_REQUEST_SAVE': {
-      const item = {
-        ...action.payload,
-        id: action.id || nextId('GR-', state.guestRequests),
-      }
-      const isNew = !action.id
-      let hk = state.housekeepingTasks
-      let maint = state.maintenanceTickets
-      let laundry = state.laundryOrders
-      if (isNew) {
-        if (item.department === 'Housekeeping') {
-          hk = [{
-            id: nextId('HK-', hk),
-            room: item.room,
-            task: `Guest request: ${item.requestType}`,
-            assignee: 'Unassigned',
-            status: 'Pending',
-            priority: item.priority,
-          }, ...hk]
-        } else if (item.department === 'Maintenance') {
-          const roomNum = item.room.split(' ').pop()
-          maint = [{
-            id: nextId('WO-', maint),
-            asset: `Room ${roomNum}`,
-            complaint: item.notes || item.requestType,
-            priority: item.priority,
-            status: 'Open',
-            assignee: 'Maintenance Team',
-          }, ...maint]
-        } else if (item.department === 'Laundry') {
-          laundry = [{
-            id: nextId('LD-', laundry),
-            guest: item.guest,
-            room: item.room.split(' ').pop(),
-            items: item.requestType,
-            service: 'Guest Request',
-            status: 'Pickup Scheduled',
-            amount: 'TBD',
-          }, ...laundry]
-        }
-      }
-      const requests = action.id
-        ? state.guestRequests.map((r) => (r.id === action.id ? { ...r, ...item } : r))
-        : [item, ...state.guestRequests]
-      return {
-        ...state,
-        guestRequests: requests,
-        housekeepingTasks: hk,
-        maintenanceTickets: maint,
-        laundryOrders: laundry,
-        activityLog: logActivity(state.activityLog, isNew ? 'Create' : 'Update', 'Guest Request', `${item.guest} → ${item.department}`),
-      }
-    }
-    case 'LAUNDRY_ADVANCE_STAGE': {
-      const order = state.laundryOrders.find((o) => o.id === action.id)
-      if (!order || order.stage === 'Delivery') return state
-      const stage = nextStage(order.stage)
-      const time = new Date().toLocaleString('en-GB', {
-        day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit',
-      })
-      const entry = { time, action: stage, detail: `Order moved to ${stage}` }
-      const deliveredDate = stage === 'Delivery'
-        ? new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })
-        : order.deliveredDate
-      const newHistory = stage === 'Delivery' ? [{
-        id: nextId('LH-', state.laundryServiceHistory),
-        orderId: order.id,
-        guest: order.guest,
-        service: order.service,
-        items: order.items,
-        amount: order.amount,
-        delivered: deliveredDate,
-        status: 'Delivered',
-        express: order.express,
-      }, ...state.laundryServiceHistory] : state.laundryServiceHistory
-      return {
-        ...state,
-        laundryOrders: state.laundryOrders.map((o) => (o.id === action.id ? {
-          ...o,
-          stage,
-          status: stage,
-          deliveredDate,
-          history: [entry, ...(o.history || [])],
-        } : o)),
-        laundryItemTags: state.laundryItemTags.map((t) => (
-          t.orderId === action.id ? { ...t, status: stage } : t
-        )),
-        laundryServiceHistory: newHistory,
-        activityLog: logActivity(state.activityLog, 'Stage Update', 'Laundry', `${order.id} → ${stage}`),
-      }
-    }
-    case 'LAUNDRY_QUALITY_CHECK': {
-      const order = state.laundryOrders.find((o) => o.id === action.id)
-      if (!order) return state
-      const qc = action.payload
-      const time = qc.time
-      const entry = {
-        time,
-        action: 'Quality Check',
-        detail: qc.passed ? 'Passed — ready for delivery' : `Failed — ${qc.notes || 'rework required'}`,
-      }
-      const stage = qc.passed ? 'Delivery' : 'Ironing'
-      return {
-        ...state,
-        laundryOrders: state.laundryOrders.map((o) => (o.id === action.id ? {
-          ...o,
-          qualityCheck: qc,
-          stage,
-          status: stage,
-          history: [entry, ...(o.history || [])],
-        } : o)),
-        laundryItemTags: state.laundryItemTags.map((t) => (
-          t.orderId === action.id ? { ...t, status: stage } : t
-        )),
-        activityLog: logActivity(state.activityLog, 'QC', 'Laundry', `${order.id} — ${qc.passed ? 'Passed' : 'Failed'}`),
-      }
-    }
-    case 'HK_UPDATE_CHECKLIST': {
-      const progress = action.progress
-      return {
-        ...state,
-        housekeepingTasks: state.housekeepingTasks.map((t) => (t.id === action.id ? {
-          ...t,
-          checklistProgress: progress,
-          status: progress >= 100 ? 'Completed' : t.status === 'Pending' ? 'In Progress' : t.status,
-        } : t)),
-        activityLog: logActivity(state.activityLog, 'Checklist', 'Housekeeping', `${action.id} — ${progress}%`),
-      }
-    }
-    case 'CRM_SEND_CAMPAIGN': {
-      const campaign = state.crmCampaigns.find((c) => c.id === action.id)
-      if (!campaign) return state
-      const interaction = {
-        id: nextId('INT-', state.customerInteractions),
-        customer: campaign.guest,
-        type: 'Campaign',
-        detail: `${campaign.type} campaign sent — ${campaign.offer}`,
-        date: new Date().toLocaleString('en-GB', {
-          day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit',
-        }),
-        channel: campaign.channel,
-      }
-      return {
-        ...state,
-        crmCampaigns: state.crmCampaigns.map((c) => (c.id === action.id ? { ...c, status: 'Sent' } : c)),
-        customerInteractions: [interaction, ...state.customerInteractions],
-        activityLog: logActivity(state.activityLog, 'Campaign', 'CRM', `${campaign.guest} — ${campaign.type}`),
-      }
-    }
     case 'CUSTOMER_BOOKING': {
       const booking = {
         id: nextId('CB-', state.customerBookings),
@@ -426,24 +208,6 @@ const initialState = {
   activityLog,
   customerBookings: [],
   customerServiceBookings: [],
-  guestFolios,
-  guestDeposits,
-  guestRequests,
-  crmOffers,
-  crmReferrals,
-  crmSupportTickets,
-  crmCampaigns,
-  customerInteractions,
-  housekeepingStaff,
-  cleaningChecklists,
-  amenitiesReplenishment,
-  deepCleaningSchedule,
-  laundryItemTags,
-  laundryServiceHistory,
-  maintenanceSchedules,
-  maintenanceTechnicians,
-  sparePartsInventory,
-  assetMaintenanceHistory,
 }
 
 export function StoreProvider({ children }) {
@@ -462,14 +226,6 @@ export function StoreProvider({ children }) {
     transferRoom: (id, payload) => dispatch({ type: 'ROOM_TRANSFER', id, ...payload }),
     checkIn: (id) => dispatch({ type: 'CHECK_IN', id }),
     checkOut: (id) => dispatch({ type: 'CHECK_OUT', id }),
-    addFolioCharge: (folioId, payload) => dispatch({ type: 'FOLIO_ADD_CHARGE', folioId, payload }),
-    addFolioPayment: (folioId, payload) => dispatch({ type: 'FOLIO_ADD_PAYMENT', folioId, payload }),
-    saveDeposit: (payload, id = null) => dispatch({ type: 'DEPOSIT_SAVE', payload, id }),
-    saveGuestRequest: (payload, id = null) => dispatch({ type: 'GUEST_REQUEST_SAVE', payload, id }),
-    sendCampaign: (id) => dispatch({ type: 'CRM_SEND_CAMPAIGN', id }),
-    updateChecklistProgress: (id, progress) => dispatch({ type: 'HK_UPDATE_CHECKLIST', id, progress }),
-    advanceLaundryStage: (id) => dispatch({ type: 'LAUNDRY_ADVANCE_STAGE', id }),
-    saveLaundryQualityCheck: (id, payload) => dispatch({ type: 'LAUNDRY_QUALITY_CHECK', id, payload }),
     customerBookRoom: (payload) => dispatch({ type: 'CUSTOMER_BOOKING', payload }),
     customerBookService: (payload) =>
       dispatch({

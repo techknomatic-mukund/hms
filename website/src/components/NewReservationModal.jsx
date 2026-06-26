@@ -1,10 +1,10 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Modal } from './UI'
 import { FormActions, FormField } from './FormFields'
 import { formatDisplayDate } from '../utils/helpers'
+import { ROOM_OPTIONS, getRoomBookingConflicts, roomConflictLabel } from '../utils/reservationHelpers'
 
 const BOOKING_SOURCES = ['Walk-in', 'OTA', 'Corporate', 'Phone', 'Email', 'Travel Agent']
-const ROOM_TYPES = ['Standard 201', 'Standard 204', 'Deluxe 302', 'Deluxe 305', 'Suite 501', 'Suite 502']
 
 const getEmpty = (defaultSource = 'Walk-in') => ({
   guest: '',
@@ -20,9 +20,16 @@ export function nextReservationId(existing) {
   return `RES-${max + 1}`
 }
 
-export default function NewReservationModal({ open, onClose, onSubmit, defaultSource = 'Walk-in', editItem = null }) {
+export default function NewReservationModal({ open, onClose, onSubmit, defaultSource = 'Walk-in', editItem = null, reservations = [] }) {
   const [form, setForm] = useState(getEmpty(defaultSource))
   const [errors, setErrors] = useState({})
+
+  const roomConflicts = useMemo(
+    () => getRoomBookingConflicts(reservations, form.checkIn, form.checkOut, editItem?.id),
+    [reservations, form.checkIn, form.checkOut, editItem?.id],
+  )
+
+  const datesReady = form.checkIn && form.checkOut && form.checkOut >= form.checkIn
 
   useEffect(() => {
     if (!open) return
@@ -56,8 +63,11 @@ export default function NewReservationModal({ open, onClose, onSubmit, defaultSo
     if (!form.guest.trim()) next.guest = 'Guest name is required'
     if (!form.checkIn) next.checkIn = 'Check-in date is required'
     if (!form.checkOut) next.checkOut = 'Check-out date is required'
-    if (form.checkIn && form.checkOut && form.checkOut <= form.checkIn) {
-      next.checkOut = 'Check-out must be after check-in'
+    if (form.checkIn && form.checkOut && form.checkOut < form.checkIn) {
+      next.checkOut = 'Check-out cannot be before check-in'
+    }
+    if (datesReady && roomConflicts[form.room]) {
+      next.room = roomConflictLabel(roomConflicts[form.room][0])
     }
     return setFieldErrors(next)
   }
@@ -69,8 +79,11 @@ export default function NewReservationModal({ open, onClose, onSubmit, defaultSo
       guest: form.guest.trim(),
       source: form.source,
       room: form.room,
+      rooms: [form.room],
       checkIn: form.checkIn ? formatDisplayDate(form.checkIn) : editItem?.checkIn,
       checkOut: form.checkOut ? formatDisplayDate(form.checkOut) : editItem?.checkOut,
+      checkInIso: form.checkIn || editItem?.checkInIso,
+      checkOutIso: form.checkOut || editItem?.checkOutIso,
       status: editItem?.status || 'Confirmed',
     })
   }
@@ -92,9 +105,16 @@ export default function NewReservationModal({ open, onClose, onSubmit, defaultSo
               {BOOKING_SOURCES.map((s) => <option key={s} value={s}>{s}</option>)}
             </select>
           </FormField>
-          <FormField label="Room" required>
+          <FormField label="Room" required error={errors.room}>
             <select value={form.room} onChange={(e) => update('room', e.target.value)}>
-              {ROOM_TYPES.map((r) => <option key={r} value={r}>{r}</option>)}
+              {ROOM_OPTIONS.map((r) => {
+                const conflict = datesReady ? roomConflicts[r]?.[0] : null
+                return (
+                  <option key={r} value={r} disabled={Boolean(conflict)}>
+                    {r}{conflict ? ' — This room is booked on that day' : ''}
+                  </option>
+                )
+              })}
             </select>
           </FormField>
           <FormField label="Check-in Date" required error={errors.checkIn}>
@@ -107,6 +127,7 @@ export default function NewReservationModal({ open, onClose, onSubmit, defaultSo
               min={form.checkIn || undefined}
               onChange={(e) => update('checkOut', e.target.value)}
             />
+            <span className="field-hint">Same as check-in for a one-day booking</span>
           </FormField>
         </div>
         <FormActions onCancel={onClose} submitLabel={editItem ? 'Update Reservation' : 'Add Reservation'} />

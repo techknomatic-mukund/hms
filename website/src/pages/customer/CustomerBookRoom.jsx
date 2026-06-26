@@ -20,6 +20,8 @@ export default function CustomerBookRoom() {
       room: form.room.split(' —')[0],
       checkIn: formatDisplayDate(form.checkIn),
       checkOut: formatDisplayDate(form.checkOut),
+      checkInIso: form.checkIn,
+      checkOutIso: form.checkOut,
     })
     setBooked(true)
   }
@@ -42,7 +44,10 @@ export default function CustomerBookRoom() {
                 </select>
               </FormField>
               <FormField label="Check-in" required><input type="date" required value={form.checkIn} onChange={(e) => setForm((p) => ({ ...p, checkIn: e.target.value }))} /></FormField>
-              <FormField label="Check-out" required><input type="date" required value={form.checkOut} onChange={(e) => setForm((p) => ({ ...p, checkOut: e.target.value }))} /></FormField>
+              <FormField label="Check-out" required>
+                <input type="date" required min={form.checkIn || undefined} value={form.checkOut} onChange={(e) => setForm((p) => ({ ...p, checkOut: e.target.value }))} />
+                <span className="field-hint">Same as check-in for a one-day booking</span>
+              </FormField>
             </div>
             <FormActions onCancel={() => {}} submitLabel="Confirm Booking" />
           </form>

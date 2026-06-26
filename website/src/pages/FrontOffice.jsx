@@ -100,6 +100,7 @@ export default function FrontOffice() {
 
       <NewReservationModal
         open={reservationModalOpen}
+        reservations={store.reservations}
         onClose={() => { setReservationModalOpen(false); setEditItem(null) }}
         onSubmit={handleSave}
         defaultSource={walkInMode ? 'Walk-in' : 'OTA'}

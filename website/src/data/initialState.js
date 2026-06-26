@@ -1,8 +1,38 @@
 export const reservations = [
-  { id: 'RES-1042', guest: 'Rajesh Kumar', source: 'OTA', room: 'Deluxe 302', checkIn: '25 Jun', checkOut: '28 Jun', status: 'Confirmed' },
-  { id: 'RES-1041', guest: 'Sarah Mitchell', source: 'Corporate', room: 'Suite 501', checkIn: '25 Jun', checkOut: '27 Jun', status: 'Checked In' },
-  { id: 'RES-1040', guest: 'Amit Shah', source: 'Walk-in', room: 'Standard 204', checkIn: '25 Jun', checkOut: '26 Jun', status: 'Checked In' },
-  { id: 'RES-1039', guest: 'Priya Nair', source: 'Phone', room: 'Deluxe 305', checkIn: '26 Jun', checkOut: '29 Jun', status: 'Confirmed' },
+  {
+    id: 'RES-1042', guest: 'Rajesh Kumar', source: 'OTA', room: 'Deluxe 302',
+    rooms: ['Deluxe 302', 'Deluxe 305'], checkIn: '25 Jun', checkOut: '28 Jun',
+    checkInIso: '2026-06-25', checkOutIso: '2026-06-28', status: 'Confirmed',
+    notes: 'Corporate group — airport pickup at 6 PM. VIP welcome amenity.',
+    history: [
+      { time: '20 Jun, 10:00', action: 'Created', detail: 'Multi-room booking — 2 rooms' },
+      { time: '22 Jun, 14:30', action: 'Modified', detail: 'Added reservation notes' },
+    ],
+  },
+  {
+    id: 'RES-1041', guest: 'Sarah Mitchell', source: 'Corporate', room: 'Suite 501',
+    rooms: ['Suite 501'], checkIn: '25 Jun', checkOut: '27 Jun',
+    checkInIso: '2026-06-25', checkOutIso: '2026-06-27', status: 'Checked In',
+    notes: 'Late checkout requested. Extra bed in room.',
+    history: [
+      { time: '18 Jun, 09:15', action: 'Created', detail: 'Booking confirmed — 1 room' },
+      { time: '24 Jun, 11:00', action: 'Room Upgrade', detail: 'Deluxe 305 → Suite 501' },
+      { time: '25 Jun, 14:20', action: 'Check-in', detail: 'Guest checked in' },
+    ],
+  },
+  {
+    id: 'RES-1040', guest: 'Amit Shah', source: 'Walk-in', room: 'Standard 204',
+    rooms: ['Standard 204'], checkIn: '25 Jun', checkOut: '26 Jun',
+    checkInIso: '2026-06-25', checkOutIso: '2026-06-26', status: 'Checked In', notes: '',
+    history: [{ time: '25 Jun, 08:30', action: 'Created', detail: 'Walk-in booking' }],
+  },
+  {
+    id: 'RES-1039', guest: 'Priya Nair', source: 'Phone', room: 'Deluxe 305',
+    rooms: ['Deluxe 305'], checkIn: '26 Jun', checkOut: '29 Jun',
+    checkInIso: '2026-06-26', checkOutIso: '2026-06-29', status: 'Confirmed',
+    notes: 'Anniversary stay — decorate room with flowers.',
+    history: [{ time: '23 Jun, 16:45', action: 'Created', detail: 'Phone booking confirmed' }],
+  },
 ]
 
 export const rooms = [

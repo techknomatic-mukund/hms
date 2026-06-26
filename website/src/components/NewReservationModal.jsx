@@ -20,16 +20,26 @@ export function nextReservationId(existing) {
   return `RES-${max + 1}`
 }
 
-export default function NewReservationModal({ open, onClose, onSubmit, defaultSource = 'Walk-in' }) {
+export default function NewReservationModal({ open, onClose, onSubmit, defaultSource = 'Walk-in', editItem = null }) {
   const [form, setForm] = useState(getEmpty(defaultSource))
   const [errors, setErrors] = useState({})
 
   useEffect(() => {
-    if (open) {
+    if (!open) return
+    if (editItem) {
+      setForm({
+        guest: editItem.guest,
+        source: editItem.source,
+        room: editItem.room,
+        checkIn: '',
+        checkOut: '',
+        status: editItem.status,
+      })
+    } else {
       setForm(getEmpty(defaultSource))
-      setErrors({})
     }
-  }, [open, defaultSource])
+    setErrors({})
+  }, [open, defaultSource, editItem])
 
   const update = (field, value) => {
     setForm((prev) => ({ ...prev, [field]: value }))
@@ -59,14 +69,14 @@ export default function NewReservationModal({ open, onClose, onSubmit, defaultSo
       guest: form.guest.trim(),
       source: form.source,
       room: form.room,
-      checkIn: formatDisplayDate(form.checkIn),
-      checkOut: formatDisplayDate(form.checkOut),
-      status: 'Confirmed',
+      checkIn: form.checkIn ? formatDisplayDate(form.checkIn) : editItem?.checkIn,
+      checkOut: form.checkOut ? formatDisplayDate(form.checkOut) : editItem?.checkOut,
+      status: editItem?.status || 'Confirmed',
     })
   }
 
   return (
-    <Modal open={open} onClose={onClose} title="New Reservation">
+    <Modal open={open} onClose={onClose} title={editItem ? 'Edit Reservation' : 'New Reservation'}>
       <form className="entity-form" onSubmit={handleSubmit}>
         <div className="form-grid">
           <FormField label="Guest Name" required error={errors.guest} full>
@@ -99,7 +109,7 @@ export default function NewReservationModal({ open, onClose, onSubmit, defaultSo
             />
           </FormField>
         </div>
-        <FormActions onCancel={onClose} submitLabel="Add Reservation" />
+        <FormActions onCancel={onClose} submitLabel={editItem ? 'Update Reservation' : 'Add Reservation'} />
       </form>
     </Modal>
   )

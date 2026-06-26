@@ -1,95 +1,54 @@
 import { useMemo, useState } from 'react'
-import { feedbackEntries as initialFeedback } from '../data/mockData'
-import { PageShell, SectionHeader, FeatureGrid, DataTable } from '../components/UI'
+import { useStore } from '../context/StoreContext'
+import { PageShell, SectionHeader, FeatureGrid } from '../components/UI'
+import { CrudTable } from '../components/CrudTable'
 import CollectFeedbackModal from '../components/CollectFeedbackModal'
-import { nextId } from '../utils/helpers'
-
-const features = [
-  'QR code-based feedback', 'Voice of Customer system', 'Property-wide feedback',
-]
+import DeleteConfirmModal, { ViewDetailModal } from '../components/DeleteConfirmModal'
+import { useCrudModal } from '../hooks/useCrudModal'
 
 function StarRating({ rating }) {
-  return (
-    <span className="star-rating" aria-label={`${rating} out of 5 stars`}>
-      {'★'.repeat(rating)}{'☆'.repeat(5 - rating)}
-    </span>
-  )
+  return <span className="star-rating">{'★'.repeat(rating)}{'☆'.repeat(5 - rating)}</span>
 }
 
 export default function Feedback() {
-  const [feedbackList, setFeedbackList] = useState(initialFeedback)
+  const store = useStore()
+  const crud = useCrudModal()
   const [modalOpen, setModalOpen] = useState(false)
 
   const avgRating = useMemo(() => {
-    if (!feedbackList.length) return '0.0'
-    return (feedbackList.reduce((s, f) => s + f.rating, 0) / feedbackList.length).toFixed(1)
-  }, [feedbackList])
+    if (!store.feedback.length) return '0.0'
+    return (store.feedback.reduce((s, f) => s + f.rating, 0) / store.feedback.length).toFixed(1)
+  }, [store.feedback])
+
+  const cols = [
+    { key: 'id', label: 'ID' }, { key: 'guest', label: 'Guest' },
+    { key: 'rating', label: 'Rating', render: (r) => <StarRating rating={r.rating} /> },
+    { key: 'channel', label: 'Channel' }, { key: 'comment', label: 'Comment' }, { key: 'date', label: 'Date' },
+  ]
 
   return (
-    <PageShell
-      title="Customer Feedback Management"
-      description="QR-based feedback collection & Voice of Customer across the property"
-    >
-      <section className="panel">
-        <SectionHeader title="Module Features" />
-        <FeatureGrid features={features} />
-      </section>
-
-      <div className="feedback-hero">
-        <div className="qr-demo">
-          <div className="qr-placeholder">
-            <span>QR</span>
-            <small>Scan to feedback</small>
-          </div>
-          <p>Place QR codes in rooms, restaurant & common areas for instant guest feedback.</p>
-          <button type="button" className="btn btn-primary btn-sm" onClick={() => setModalOpen(true)}>Simulate QR Scan</button>
-        </div>
-        <div className="feedback-stats">
-          <div className="feedback-stat">
-            <span className="feedback-stat-value">{avgRating}</span>
-            <span className="feedback-stat-label">Avg Rating</span>
-          </div>
-          <div className="feedback-stat">
-            <span className="feedback-stat-value">{feedbackList.length}</span>
-            <span className="feedback-stat-label">Responses (7 days)</span>
-          </div>
-          <div className="feedback-stat">
-            <span className="feedback-stat-value">92%</span>
-            <span className="feedback-stat-label">Response Rate</span>
-          </div>
-        </div>
+    <PageShell title="Customer Feedback" description="QR & Voice of Customer — property-wide feedback">
+      <section className="panel"><SectionHeader title="Features" /><FeatureGrid features={['QR feedback', 'Voice of Customer', 'CRM integration', 'Loyalty impact']} /></section>
+      <div className="feedback-stats" style={{ marginBottom: 20 }}>
+        <div className="feedback-stat"><span className="feedback-stat-value">{avgRating}</span><span className="feedback-stat-label">Avg Rating</span></div>
+        <div className="feedback-stat"><span className="feedback-stat-value">{store.feedback.length}</span><span className="feedback-stat-label">Responses</span></div>
       </div>
-
       <section className="panel">
-        <SectionHeader
-          title="Recent Feedback"
-          action={<button type="button" className="btn btn-primary" onClick={() => setModalOpen(true)}>+ Collect Feedback</button>}
-        />
-        <DataTable
-          columns={[
-            { key: 'id', label: 'ID' },
-            { key: 'guest', label: 'Guest' },
-            {
-              key: 'rating',
-              label: 'Rating',
-              render: (row) => <StarRating rating={row.rating} />,
-            },
-            { key: 'channel', label: 'Channel' },
-            { key: 'comment', label: 'Comment' },
-            { key: 'date', label: 'Date' },
-          ]}
-          rows={feedbackList}
-        />
+        <SectionHeader title="Feedback" action={<button type="button" className="btn btn-primary" onClick={() => setModalOpen(true)}>+ Collect Feedback</button>} />
+        <CrudTable columns={cols} rows={store.feedback} onView={crud.openView} onEdit={crud.openEdit} onDelete={crud.openDelete} />
       </section>
-
       <CollectFeedbackModal
-        open={modalOpen}
-        onClose={() => setModalOpen(false)}
+        open={modalOpen || crud.isEdit}
+        editItem={crud.isEdit ? crud.item : null}
+        onClose={() => { setModalOpen(false); crud.closeModal() }}
         onSubmit={(entry) => {
-          setFeedbackList((prev) => [{ id: nextId('FB-', prev), ...entry }, ...prev])
-          setModalOpen(false)
+          if (crud.isEdit && crud.item) store.update('feedback', 'Feedback', crud.item.id, entry)
+          else store.create('feedback', 'FB-', 'Feedback', entry)
+          setModalOpen(false); crud.closeModal()
         }}
       />
+      <ViewDetailModal open={crud.isView} onClose={crud.closeModal} title="Feedback" data={crud.item} fields={cols} />
+      <DeleteConfirmModal open={!!crud.deleteTarget} onClose={crud.closeDelete} onConfirm={() => store.remove('feedback', 'Feedback', crud.deleteTarget.id)} itemName={crud.deleteTarget?.guest} />
     </PageShell>
   )
 }

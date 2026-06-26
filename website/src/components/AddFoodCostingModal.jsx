@@ -1,50 +1,35 @@
+import { useEffect, useState } from 'react'
 import { Modal } from './UI'
 import { FormActions, FormField } from './FormFields'
-import { useFormState } from '../hooks/useFormState'
 import { calcMargin, formatINR } from '../utils/helpers'
 
-const empty = { name: '', cost: '', sell: '' }
+export default function AddFoodCostingModal({ open, onClose, onSubmit, editItem = null }) {
+  const [form, setForm] = useState({ name: '', cost: '', sell: '' })
+  const [errors, setErrors] = useState({})
 
-export default function AddFoodCostingModal({ open, onClose, onSubmit }) {
-  const { form, errors, update, setFieldErrors } = useFormState(empty, open)
+  useEffect(() => {
+    if (!open) return
+    setForm(editItem ? { name: editItem.name, cost: editItem.cost, sell: editItem.sell } : { name: '', cost: '', sell: '' })
+    setErrors({})
+  }, [open, editItem])
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    const next = {}
-    if (!form.name.trim()) next.name = 'Item name is required'
-    if (!form.cost || parseFloat(form.cost) <= 0) next.cost = 'Valid cost required'
-    if (!form.sell || parseFloat(form.sell) <= 0) next.sell = 'Valid sell price required'
-    if (!setFieldErrors(next)) return
-    const cost = parseFloat(form.cost)
-    const sell = parseFloat(form.sell)
-    onSubmit({
-      name: form.name.trim(),
-      cost,
-      sell,
-      margin: calcMargin(cost, sell),
-    })
+    if (!form.name.trim() || !form.cost || !form.sell) { setErrors({ name: 'Fill all fields' }); return }
+    const cost = parseFloat(form.cost); const sell = parseFloat(form.sell)
+    onSubmit({ name: form.name.trim(), cost, sell, margin: calcMargin(cost, sell) })
   }
 
   return (
-    <Modal open={open} onClose={onClose} title="Add Food Costing Item">
+    <Modal open={open} onClose={onClose} title={editItem ? 'Edit Costing' : 'Add Food Costing'}>
       <form className="entity-form" onSubmit={handleSubmit}>
         <div className="form-grid">
-          <FormField label="Dish Name" required error={errors.name} full>
-            <input type="text" value={form.name} onChange={(e) => update('name', e.target.value)} />
-          </FormField>
-          <FormField label="Cost (₹)" required error={errors.cost}>
-            <input type="number" min="1" value={form.cost} onChange={(e) => update('cost', e.target.value)} />
-          </FormField>
-          <FormField label="Sell Price (₹)" required error={errors.sell}>
-            <input type="number" min="1" value={form.sell} onChange={(e) => update('sell', e.target.value)} />
-          </FormField>
+          <FormField label="Dish" required full><input type="text" value={form.name} onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))} /></FormField>
+          <FormField label="Cost (₹)"><input type="number" value={form.cost} onChange={(e) => setForm((p) => ({ ...p, cost: e.target.value }))} /></FormField>
+          <FormField label="Sell (₹)"><input type="number" value={form.sell} onChange={(e) => setForm((p) => ({ ...p, sell: e.target.value }))} /></FormField>
         </div>
-        {form.cost && form.sell && (
-          <p className="info-text form-preview">
-            Margin preview: {calcMargin(form.cost, form.sell)} ({formatINR(form.sell - form.cost)} profit)
-          </p>
-        )}
-        <FormActions onCancel={onClose} submitLabel="Add Item" />
+        {form.cost && form.sell && <p className="form-preview">Margin: {calcMargin(form.cost, form.sell)}</p>}
+        <FormActions onCancel={onClose} submitLabel={editItem ? 'Update' : 'Add'} />
       </form>
     </Modal>
   )

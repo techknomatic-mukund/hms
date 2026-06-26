@@ -1,68 +1,38 @@
 import { useState } from 'react'
-import { addonServices as initialBookings } from '../data/mockData'
-import { PageShell, SectionHeader, FeatureGrid, DataTable, Badge } from '../components/UI'
+import { useStore } from '../context/StoreContext'
+import { PageShell, SectionHeader, FeatureGrid, Badge } from '../components/UI'
+import { CrudTable } from '../components/CrudTable'
 import NewAddonBookingModal from '../components/NewAddonBookingModal'
+import DeleteConfirmModal, { ViewDetailModal } from '../components/DeleteConfirmModal'
+import { useCrudModal } from '../hooks/useCrudModal'
 
-const serviceCategories = ['Spa', 'Swimming Pool', 'Gym', 'Rental services', 'Health club services']
-
-const statusBadge = (s) => {
-  if (s === 'Completed') return 'success'
-  if (s === 'Active') return 'info'
-  return 'warning'
-}
+const serviceCategories = ['Spa', 'Gym', 'Pool', 'Airport Pickup', 'Vehicle Rental', 'Health Club']
 
 export default function AddOnServices() {
-  const [bookingList, setBookingList] = useState(initialBookings)
-  const [modalOpen, setModalOpen] = useState(false)
+  const store = useStore()
+  const crud = useCrudModal()
+  const [modal, setModal] = useState({ open: false, item: null })
+
+  const cols = [
+    { key: 'service', label: 'Service' }, { key: 'guest', label: 'Guest' }, { key: 'room', label: 'Room' },
+    { key: 'time', label: 'Time' }, { key: 'amount', label: 'Amount' },
+    { key: 'status', label: 'Status', render: (r) => <Badge variant="info">{r.status}</Badge> },
+  ]
 
   return (
-    <PageShell
-      title="Add-on Services"
-      description="Spa, pool, gym, rentals & health club — billed to guest folio"
-    >
+    <PageShell title="Membership & Add-on Services" description="Spa, gym, pool, airport pickup — billed to guest folio">
+      <section className="panel"><SectionHeader title="Services" /><FeatureGrid features={serviceCategories} /></section>
       <section className="panel">
-        <SectionHeader title="Service Categories" />
-        <FeatureGrid features={serviceCategories} />
+        <SectionHeader title="Bookings" action={<button type="button" className="btn btn-primary" onClick={() => setModal({ open: true, item: null })}>+ New Booking</button>} />
+        <CrudTable columns={cols} rows={store.addonBookings} keyField="id" onView={crud.openView} onEdit={(item) => setModal({ open: true, item })} onDelete={crud.openDelete} />
       </section>
-
-      <section className="panel">
-        <SectionHeader
-          title="Today's Bookings"
-          action={<button type="button" className="btn btn-primary" onClick={() => setModalOpen(true)}>+ New Booking</button>}
-        />
-        <DataTable
-          columns={[
-            { key: 'service', label: 'Service' },
-            { key: 'guest', label: 'Guest' },
-            { key: 'room', label: 'Room' },
-            { key: 'time', label: 'Time' },
-            { key: 'amount', label: 'Amount' },
-            {
-              key: 'status',
-              label: 'Status',
-              render: (row) => <Badge variant={statusBadge(row.status)}>{row.status}</Badge>,
-            },
-          ]}
-          rows={bookingList}
-        />
-      </section>
-
-      <section className="panel panel-highlight">
-        <SectionHeader title="Guest Folio Integration" />
-        <p className="info-text">
-          All add-on charges post automatically to the guest folio during their stay —
-          Restaurant, Laundry, Spa, Health Club, and Rentals appear on the final bill at check-out.
-        </p>
-      </section>
-
-      <NewAddonBookingModal
-        open={modalOpen}
-        onClose={() => setModalOpen(false)}
-        onSubmit={(booking) => {
-          setBookingList((prev) => [booking, ...prev])
-          setModalOpen(false)
-        }}
-      />
+      <NewAddonBookingModal open={modal.open} editItem={modal.item} onClose={() => setModal({ open: false, item: null })} onSubmit={(b) => {
+        if (modal.item) store.update('addonBookings', 'Add-ons', modal.item.id, b)
+        else store.create('addonBookings', 'ADD-', 'Add-ons', b)
+        setModal({ open: false, item: null })
+      }} />
+      <ViewDetailModal open={crud.isView} onClose={crud.closeModal} title="Booking" data={crud.item} fields={cols} />
+      <DeleteConfirmModal open={!!crud.deleteTarget} onClose={crud.closeDelete} onConfirm={() => store.remove('addonBookings', 'Add-ons', crud.deleteTarget.id)} itemName={crud.deleteTarget?.service} />
     </PageShell>
   )
 }

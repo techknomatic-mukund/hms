@@ -1,13 +1,16 @@
 import { useState } from 'react'
-import { reservations as initialReservations, bookingSourcePerformance } from '../data/mockData'
+import { bookingSourcePerformance } from '../data/initialState'
+import { useStore } from '../context/StoreContext'
 import { PageShell, SectionHeader, FeatureGrid, DataTable, Badge } from '../components/UI'
+import { CrudTable } from '../components/CrudTable'
 import NewReservationModal, { nextReservationId } from '../components/NewReservationModal'
 import GuestActionModal from '../components/GuestActionModal'
+import DeleteConfirmModal, { ViewDetailModal } from '../components/DeleteConfirmModal'
+import { useCrudModal } from '../hooks/useCrudModal'
 
 const features = [
-  'Reservation', 'Room booking', 'Walk-in guests', 'OTA bookings',
-  'Corporate bookings', 'Check-in', 'Registration cards', 'Guest profile',
-  'Check-out', 'Guest billing', 'Room charges',
+  'Guest Registration', 'Check-in', 'Check-out', 'Room Allocation', 'Room Upgrade',
+  'Key Card', 'Billing', 'Registration Cards',
 ]
 
 const statusVariant = (s) => {
@@ -25,37 +28,42 @@ const QUICK_ACTIONS = {
   'Check-out': 'check-out',
 }
 
+const resColumns = [
+  { key: 'id', label: 'Ref' },
+  { key: 'guest', label: 'Guest' },
+  { key: 'source', label: 'Source' },
+  { key: 'room', label: 'Room' },
+  { key: 'checkIn', label: 'Check-in' },
+  { key: 'checkOut', label: 'Check-out' },
+  { key: 'status', label: 'Status', render: (row) => <Badge variant={statusVariant(row.status)}>{row.status}</Badge> },
+]
+
 export default function FrontOffice() {
-  const [reservationList, setReservationList] = useState(initialReservations)
+  const store = useStore()
+  const crud = useCrudModal()
   const [reservationModalOpen, setReservationModalOpen] = useState(false)
   const [walkInMode, setWalkInMode] = useState(false)
   const [guestAction, setGuestAction] = useState(null)
+  const [editItem, setEditItem] = useState(null)
 
-  const handleAddReservation = (data) => {
-    setReservationList((prev) => [{ id: nextReservationId(prev), ...data }, ...prev])
+  const openCreate = () => { setEditItem(null); setWalkInMode(false); setReservationModalOpen(true) }
+  const openEdit = (item) => { setEditItem(item); setReservationModalOpen(true) }
+
+  const handleSave = (data) => {
+    if (editItem) store.updateReservation(editItem.id, data)
+    else store.createReservation(data)
     setReservationModalOpen(false)
-    setWalkInMode(false)
-  }
-
-  const updateStatus = (id, status) => {
-    setReservationList((prev) => prev.map((r) => (r.id === id ? { ...r, status } : r)))
+    setEditItem(null)
   }
 
   const openQuickAction = (label) => {
     const action = QUICK_ACTIONS[label]
-    if (action === 'walk-in') {
-      setWalkInMode(true)
-      setReservationModalOpen(true)
-    } else {
-      setGuestAction(action)
-    }
+    if (action === 'walk-in') { setWalkInMode(true); setEditItem(null); setReservationModalOpen(true) }
+    else setGuestAction(action)
   }
 
   return (
-    <PageShell
-      title="Front Office (PMS)"
-      description="Property Management — reservations, check-in/out, guest profiles & billing"
-    >
+    <PageShell title="Front Office" description="Guest operations — integrates with Housekeeping, Finance & CRM">
       <section className="panel">
         <SectionHeader title="Module Features" />
         <FeatureGrid features={features} />
@@ -64,28 +72,14 @@ export default function FrontOffice() {
       <section className="panel">
         <SectionHeader
           title="Active Reservations"
-          subtitle="Walk-in, phone, email, corporate, OTA & travel agent bookings"
-          action={(
-            <button type="button" className="btn btn-primary" onClick={() => { setWalkInMode(false); setReservationModalOpen(true) }}>
-              + New Reservation
-            </button>
-          )}
+          action={<button type="button" className="btn btn-primary" onClick={openCreate}>+ New Reservation</button>}
         />
-        <DataTable
-          columns={[
-            { key: 'id', label: 'Ref' },
-            { key: 'guest', label: 'Guest' },
-            { key: 'source', label: 'Source' },
-            { key: 'room', label: 'Room' },
-            { key: 'checkIn', label: 'Check-in' },
-            { key: 'checkOut', label: 'Check-out' },
-            {
-              key: 'status',
-              label: 'Status',
-              render: (row) => <Badge variant={statusVariant(row.status)}>{row.status}</Badge>,
-            },
-          ]}
-          rows={reservationList}
+        <CrudTable
+          columns={resColumns}
+          rows={store.reservations}
+          onView={crud.openView}
+          onEdit={openEdit}
+          onDelete={crud.openDelete}
         />
       </section>
 
@@ -94,47 +88,40 @@ export default function FrontOffice() {
           <SectionHeader title="Quick Actions" />
           <div className="action-grid">
             {Object.keys(QUICK_ACTIONS).map((label) => (
-              <button key={label} type="button" className="action-btn" onClick={() => openQuickAction(label)}>
-                {label}
-              </button>
+              <button key={label} type="button" className="action-btn" onClick={() => openQuickAction(label)}>{label}</button>
             ))}
           </div>
         </section>
-
         <section className="panel">
-          <SectionHeader title="Booking Source Report" subtitle="Performance by channel" />
-          <DataTable
-            columns={[
-              { key: 'source', label: 'Source' },
-              { key: 'bookings', label: 'Bookings' },
-              { key: 'revenue', label: 'Revenue' },
-            ]}
-            rows={bookingSourcePerformance}
-            keyField="source"
-          />
+          <SectionHeader title="Booking Source Report" />
+          <DataTable columns={[{ key: 'source', label: 'Source' }, { key: 'bookings', label: 'Bookings' }, { key: 'revenue', label: 'Revenue' }]} rows={bookingSourcePerformance} keyField="source" />
         </section>
       </div>
 
-      <section className="panel panel-highlight">
-        <SectionHeader title="Future: Passport Scanner" subtitle="Auto-extract guest details & fill registration form" />
-        <p className="info-text">Passport scan integration planned — scan passport, auto-fill registration card fields.</p>
-      </section>
-
       <NewReservationModal
         open={reservationModalOpen}
-        onClose={() => { setReservationModalOpen(false); setWalkInMode(false) }}
-        onSubmit={handleAddReservation}
+        onClose={() => { setReservationModalOpen(false); setEditItem(null) }}
+        onSubmit={handleSave}
         defaultSource={walkInMode ? 'Walk-in' : 'OTA'}
+        editItem={editItem}
       />
 
       <GuestActionModal
         open={!!guestAction}
         type={guestAction}
         onClose={() => setGuestAction(null)}
-        reservations={reservationList}
-        onCheckIn={(id) => updateStatus(id, 'Checked In')}
-        onCheckOut={(id) => updateStatus(id, 'Checked Out')}
+        reservations={store.reservations}
+        onCheckIn={store.checkIn}
+        onCheckOut={store.checkOut}
         onSaveRegistration={() => {}}
+      />
+
+      <ViewDetailModal open={crud.isView} onClose={crud.closeModal} title="Reservation Details" data={crud.item} fields={resColumns} />
+      <DeleteConfirmModal
+        open={!!crud.deleteTarget}
+        onClose={crud.closeDelete}
+        onConfirm={() => store.deleteReservation(crud.deleteTarget.id)}
+        itemName={crud.deleteTarget?.guest}
       />
     </PageShell>
   )

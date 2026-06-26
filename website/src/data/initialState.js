@@ -116,14 +116,37 @@ export const kitchenOrders = [
 ]
 
 export const inventoryItems = [
-  { id: 'INV-101', name: 'Basmati Rice', category: 'Food', stock: 45, unit: 'kg', reorder: 20, status: 'OK' },
-  { id: 'INV-102', name: 'Bath Towels', category: 'Linen', stock: 12, unit: 'pcs', reorder: 30, status: 'Low Stock' },
-  { id: 'INV-103', name: 'Cleaning Solution', category: 'Housekeeping', stock: 8, unit: 'L', reorder: 10, status: 'Low Stock' },
+  {
+    id: 'INV-101', name: 'Basmati Rice', category: 'Food', stock: 45, unit: 'kg', reorder: 20, status: 'OK',
+    skuCode: 'RICE-BAS-01', storageLocation: 'Main Store — Shelf A2', alertEnabled: true,
+    batchNumber: 'BATCH-2026-06', expiryDate: '2026-12-31', lastCountDate: '2026-06-20', reportCategory: 'Stock Valuation',
+  },
+  {
+    id: 'INV-102', name: 'Bath Towels', category: 'Linen', stock: 12, unit: 'pcs', reorder: 30, status: 'Low Stock',
+    skuCode: 'LIN-TOW-01', storageLocation: 'Linen Room', alertEnabled: true, alertThreshold: '30',
+    replenishmentTrigger: true, reportCategory: 'Reorder',
+  },
+  {
+    id: 'INV-103', name: 'Cleaning Solution', category: 'Housekeeping', stock: 8, unit: 'L', reorder: 10, status: 'Low Stock',
+    skuCode: 'HK-CLN-01', storageLocation: 'HK Store', expiryDate: '2027-03-15', reportCategory: 'Consumption',
+  },
 ]
 
 export const purchaseOrders = [
-  { id: 'PO-201', vendor: 'Fresh Foods Pvt Ltd', items: 'Vegetables, Dairy', amount: '₹42,000', status: 'Pending Approval' },
-  { id: 'PO-202', vendor: 'Linen Supply Co', items: 'Towels, Bedsheets', amount: '₹28,500', status: 'Approved' },
+  {
+    id: 'PO-201', vendor: 'Fresh Foods Pvt Ltd', items: 'Vegetables, Dairy', amount: '₹42,000', status: 'Pending Approval',
+    requestRef: 'PR-201', requestedBy: 'Chef Ravi', approvalStatus: 'Pending', department: 'Kitchen',
+    quote1Vendor: 'Fresh Foods Pvt Ltd', quote1Amount: '42000', quote2Vendor: 'Metro Foods', quote2Amount: '44500',
+    selectedQuote: '1', grnNumber: '', inspectionStatus: 'Pending', paymentStatus: 'Pending',
+    syncToInventory: true, reportTag: 'Standard',
+  },
+  {
+    id: 'PO-202', vendor: 'Linen Supply Co', items: 'Towels, Bedsheets', amount: '₹28,500', status: 'Approved',
+    requestRef: 'PR-202', requestedBy: 'HK Supervisor', approvalStatus: 'Level 2 Approved', department: 'Housekeeping',
+    grnNumber: 'GRN-202', grnDate: '2026-06-24', inspectionStatus: 'Passed', paymentStatus: 'Processing',
+    replenishmentTrigger: true, reorderQty: '50', syncToInventory: true, stockUpdated: true, inventorySku: 'INV-102',
+    reportTag: 'Low Stock Replenishment',
+  },
 ]
 
 export const employees = [

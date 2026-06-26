@@ -45,8 +45,86 @@ export const rooms = [
 ]
 
 export const housekeepingTasks = [
-  { id: 'HK-101', room: 'Standard 204', task: 'Daily cleaning', assignee: 'Sneha Patel', status: 'In Progress', priority: 'Normal' },
-  { id: 'HK-102', room: 'Suite 501', task: 'Turndown service', assignee: 'Ravi Menon', status: 'Pending', priority: 'Normal' },
+  {
+    id: 'HK-101', room: 'Standard 204', task: 'Daily cleaning', taskType: 'Daily',
+    assignee: 'Ravi Menon', status: 'In Progress', priority: 'Normal',
+    shift: 'Morning (7 AM – 3 PM)', scheduledTime: '08:30', estimatedMins: 35, checklistProgress: 60,
+  },
+  {
+    id: 'HK-102', room: 'Suite 501', task: 'Turndown service', taskType: 'Turndown',
+    assignee: 'Priya Sharma', status: 'Pending', priority: 'Normal',
+    shift: 'Evening (3 PM – 11 PM)', scheduledTime: '18:00', estimatedMins: 20, checklistProgress: 0,
+  },
+  {
+    id: 'HK-103', room: 'Deluxe 305', task: 'Checkout cleaning', taskType: 'Checkout',
+    assignee: 'Karan Singh', status: 'Pending', priority: 'High',
+    shift: 'Morning (7 AM – 3 PM)', scheduledTime: '09:00', estimatedMins: 45, checklistProgress: 0,
+  },
+  {
+    id: 'HK-104', room: 'Suite 502', task: 'Pre-arrival setup', taskType: 'Setup',
+    assignee: 'Ravi Menon', status: 'Scheduled', priority: 'High',
+    shift: 'Morning (7 AM – 3 PM)', scheduledTime: '10:00', estimatedMins: 25, checklistProgress: 0,
+  },
+]
+
+export const housekeepingStaff = [
+  { id: 'HK-ST-01', name: 'Sneha Patel', shift: 'Morning (7 AM – 3 PM)', workload: 0, status: 'On Leave' },
+  { id: 'HK-ST-02', name: 'Ravi Menon', shift: 'Morning (7 AM – 3 PM)', workload: 2, status: 'Active' },
+  { id: 'HK-ST-03', name: 'Priya Sharma', shift: 'Evening (3 PM – 11 PM)', workload: 1, status: 'Active' },
+  { id: 'HK-ST-04', name: 'Karan Singh', shift: 'Morning (7 AM – 3 PM)', workload: 1, status: 'Active' },
+]
+
+export const cleaningChecklists = [
+  {
+    id: 'CL-STD', roomType: 'Standard',
+    items: ['Make bed & change linen', 'Vacuum carpet', 'Clean bathroom', 'Dust surfaces', 'Restock minibar', 'Empty trash'],
+  },
+  {
+    id: 'CL-DLX', roomType: 'Deluxe',
+    items: ['Make bed & change linen', 'Vacuum & mop', 'Deep clean bathroom', 'Polish mirrors', 'Restock amenities', 'Turndown prep', 'Check minibar'],
+  },
+  {
+    id: 'CL-STE', roomType: 'Suite',
+    items: ['Full linen change', 'Living area cleaning', 'Bathroom sanitization', 'Kitchenette check', 'Premium amenity setup', 'Flower arrangement', 'Minibar full check'],
+  },
+]
+
+export const amenitiesReplenishment = [
+  {
+    id: 'AR-01', room: 'Standard 204', date: '25 Jun', staff: 'Ravi Menon',
+    items: 'Towels x2, Shampoo, Soap, Water bottles x2', status: 'Completed',
+  },
+  {
+    id: 'AR-02', room: 'Suite 501', date: '25 Jun', staff: 'Priya Sharma',
+    items: 'Bathrobes, Slippers, Dental kit, Minibar snacks', status: 'In Progress',
+  },
+  {
+    id: 'AR-03', room: 'Deluxe 305', date: '25 Jun', staff: 'Unassigned',
+    items: 'Full amenity kit, Extra pillows', status: 'Pending',
+  },
+]
+
+export const deepCleaningSchedule = [
+  {
+    id: 'DC-01', area: 'Deluxe 302', type: 'Room', frequency: 'Monthly',
+    lastDone: '1 Jun', lastDoneIso: '2026-06-01', nextDue: '1 Jul', nextDueIso: '2026-07-01',
+    assignee: 'Priya Sharma', status: 'Scheduled',
+  },
+  {
+    id: 'DC-02', area: 'Lobby & Reception', type: 'Public Area', frequency: 'Weekly',
+    lastDone: '22 Jun', lastDoneIso: '2026-06-22', nextDue: '29 Jun', nextDueIso: '2026-06-29',
+    assignee: 'Karan Singh', status: 'Due Soon',
+  },
+  {
+    id: 'DC-03', area: 'Pool Deck', type: 'Public Area', frequency: 'Bi-weekly',
+    lastDone: '15 Jun', lastDoneIso: '2026-06-15', nextDue: '29 Jun', nextDueIso: '2026-06-29',
+    assignee: 'Ravi Menon', status: 'Scheduled',
+  },
+  {
+    id: 'DC-04', area: 'Standard 201', type: 'Room', frequency: 'Quarterly',
+    lastDone: '1 Apr', lastDoneIso: '2026-04-01', nextDue: '1 Jul', nextDueIso: '2026-07-01',
+    assignee: 'Sneha Patel', status: 'Upcoming',
+  },
 ]
 
 export const laundryOrders = [

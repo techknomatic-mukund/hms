@@ -6,6 +6,7 @@ import {
   feedbackEntries, maintenanceTickets, transactions, systemUsers, activityLog,
   guestFolios, guestDeposits, guestRequests,
   crmOffers, crmReferrals, crmSupportTickets, crmCampaigns, customerInteractions,
+  housekeepingStaff, cleaningChecklists, amenitiesReplenishment, deepCleaningSchedule,
 } from '../data/initialState'
 import { nextId } from '../utils/helpers'
 import { historyEntry } from '../utils/reservationHelpers'
@@ -271,6 +272,18 @@ function reducer(state, action) {
         activityLog: logActivity(state.activityLog, isNew ? 'Create' : 'Update', 'Guest Request', `${item.guest} → ${item.department}`),
       }
     }
+    case 'HK_UPDATE_CHECKLIST': {
+      const progress = action.progress
+      return {
+        ...state,
+        housekeepingTasks: state.housekeepingTasks.map((t) => (t.id === action.id ? {
+          ...t,
+          checklistProgress: progress,
+          status: progress >= 100 ? 'Completed' : t.status === 'Pending' ? 'In Progress' : t.status,
+        } : t)),
+        activityLog: logActivity(state.activityLog, 'Checklist', 'Housekeeping', `${action.id} — ${progress}%`),
+      }
+    }
     case 'CRM_SEND_CAMPAIGN': {
       const campaign = state.crmCampaigns.find((c) => c.id === action.id)
       if (!campaign) return state
@@ -354,6 +367,10 @@ const initialState = {
   crmSupportTickets,
   crmCampaigns,
   customerInteractions,
+  housekeepingStaff,
+  cleaningChecklists,
+  amenitiesReplenishment,
+  deepCleaningSchedule,
 }
 
 export function StoreProvider({ children }) {
@@ -377,6 +394,7 @@ export function StoreProvider({ children }) {
     saveDeposit: (payload, id = null) => dispatch({ type: 'DEPOSIT_SAVE', payload, id }),
     saveGuestRequest: (payload, id = null) => dispatch({ type: 'GUEST_REQUEST_SAVE', payload, id }),
     sendCampaign: (id) => dispatch({ type: 'CRM_SEND_CAMPAIGN', id }),
+    updateChecklistProgress: (id, progress) => dispatch({ type: 'HK_UPDATE_CHECKLIST', id, progress }),
     customerBookRoom: (payload) => dispatch({ type: 'CUSTOMER_BOOKING', payload }),
     customerBookService: (payload) =>
       dispatch({

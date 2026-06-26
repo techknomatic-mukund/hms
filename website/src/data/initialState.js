@@ -150,9 +150,21 @@ export const purchaseOrders = [
 ]
 
 export const employees = [
-  { id: 'EMP-101', name: 'Anita Verma', dept: 'Front Office', attendance: 'Present', leave: '0 pending' },
-  { id: 'EMP-102', name: 'Ravi Menon', dept: 'F&B', attendance: 'Present', leave: '1 pending' },
-  { id: 'EMP-103', name: 'Sneha Patel', dept: 'Housekeeping', attendance: 'On Leave', leave: 'Approved' },
+  {
+    id: 'EMP-101', name: 'Anita Verma', dept: 'Front Office', attendance: 'Present', leave: '0 pending',
+    email: 'anita@hotel.com', shift: 'Morning', leaveBalance: '12', salary: '35000',
+    systemRole: 'Staff', assignedPermissions: 'View, Create, Update', performanceRating: '4',
+  },
+  {
+    id: 'EMP-102', name: 'Ravi Menon', dept: 'F&B', attendance: 'Present', leave: '1 pending',
+    email: 'ravi@hotel.com', shift: 'Evening', leaveBalance: '10', salary: '32000',
+    systemRole: 'Supervisor', performanceRating: '5',
+  },
+  {
+    id: 'EMP-103', name: 'Sneha Patel', dept: 'Housekeeping', attendance: 'On Leave', leave: 'Approved',
+    email: 'sneha@hotel.com', shift: 'Morning', leaveBalance: '8', salary: '28000',
+    systemRole: 'Staff',
+  },
 ]
 
 export const leaveRequests = [
@@ -230,13 +242,30 @@ export const maintenanceTickets = [
 ]
 
 export const transactions = [
-  { id: 'TXN-301', type: 'Revenue', category: 'Room', description: 'Room revenue — Jun 24', amount: '₹82,000', date: '24 Jun' },
-  { id: 'TXN-302', type: 'Expense', category: 'Utilities', description: 'Electricity bill', amount: '₹18,500', date: '23 Jun' },
+  {
+    id: 'TXN-301', type: 'Revenue', category: 'Room', description: 'Room revenue — Jun 24', amount: '₹82,000', date: '24 Jun',
+    invoiceNumber: 'INV-301', paymentStatus: 'Completed', gstRate: '18', accountCode: '4100-ROOM',
+    sourceModule: 'Front Office', reportPeriod: 'Monthly',
+  },
+  {
+    id: 'TXN-302', type: 'Expense', category: 'Utilities', description: 'Electricity bill', amount: '₹18,500', date: '23 Jun',
+    expenseType: 'Utilities', vendor: 'State Electricity Board', paymentStatus: 'Pending', gstRate: '18',
+    sourceModule: 'Finance',
+  },
 ]
 
 export const systemUsers = [
-  { id: 'USR-01', name: 'Anita Verma', email: 'reception@demo.com', role: 'Receptionist', status: 'Active' },
-  { id: 'USR-02', name: 'System Admin', email: 'admin@demo.com', role: 'Administrator', status: 'Active' },
+  {
+    id: 'USR-01', name: 'Anita Verma', email: 'reception@demo.com', role: 'Receptionist', status: 'Active',
+    accessLevel: 'Standard', moduleAccess: 'Front Office, POS, Reservations',
+    assignedPermissions: 'View, Create, Update, Export', authMethod: 'Email/Password', mfaEnabled: false,
+  },
+  {
+    id: 'USR-02', name: 'System Admin', email: 'admin@demo.com', role: 'Administrator', status: 'Active',
+    accessLevel: 'Full Access', moduleAccess: 'Front Office, Housekeeping, POS, Finance, HRMS, CRM, Admin, Reports',
+    assignedPermissions: 'View, Create, Update, Delete, Approve, Export', authMethod: 'Email/Password', mfaEnabled: true,
+    passwordPolicy: 'Enterprise',
+  },
 ]
 
 export const activityLog = [

@@ -3,12 +3,16 @@ import { financeSummary } from '../data/initialState'
 import { useStore } from '../context/StoreContext'
 import { PageShell, SectionHeader, FeatureGrid, StatCard, Badge } from '../components/UI'
 import { CrudTable } from '../components/CrudTable'
-import RecordTransactionModal, { formatTransactionRow } from '../components/RecordTransactionModal'
+import FinanceTransactionModal, { formatTransactionRow } from '../components/FinanceTransactionModal'
 import DeleteConfirmModal, { ViewDetailModal } from '../components/DeleteConfirmModal'
 import { useCrudModal } from '../hooks/useCrudModal'
 import { formatINR, nextId } from '../utils/helpers'
 
-const features = ['Invoice', 'Guest Folio', 'Accounts', 'GST', 'Revenue', 'Expenses', 'Reports']
+const features = [
+  'Invoice Management', 'Guest Folio Management', 'Revenue Management', 'Expense Management',
+  'GST & Tax Management', 'Accounts Management', 'Transaction Recording', 'Payment Management',
+  'Financial Reporting', 'Budget & Cost Control', 'Audit Trail', 'Integration Management',
+]
 
 export default function Finance() {
   const store = useStore()
@@ -21,7 +25,17 @@ export default function Finance() {
     { key: 'category', label: 'Category' },
     { key: 'description', label: 'Description' },
     { key: 'amount', label: 'Amount' },
+    { key: 'paymentStatus', label: 'Payment', render: (r) => r.paymentStatus || '—' },
     { key: 'date', label: 'Date' },
+  ]
+
+  const viewFields = [
+    ...cols,
+    { key: 'invoiceNumber', label: 'Invoice' },
+    { key: 'folioRef', label: 'Folio' },
+    { key: 'gstRate', label: 'GST Rate', render: (r) => (r.gstRate ? `${r.gstRate}%` : '—') },
+    { key: 'accountCode', label: 'Account' },
+    { key: 'sourceModule', label: 'Source Module' },
   ]
 
   const stats = useMemo(() => {
@@ -47,7 +61,7 @@ export default function Finance() {
         <SectionHeader title="Transactions" action={<button type="button" className="btn btn-primary" onClick={() => setModal({ open: true, item: null })}>+ Record Transaction</button>} />
         <CrudTable columns={cols} rows={store.transactions} onView={crud.openView} onEdit={(item) => setModal({ open: true, item })} onDelete={crud.openDelete} />
       </section>
-      <RecordTransactionModal
+      <FinanceTransactionModal
         open={modal.open}
         editItem={modal.item}
         onClose={() => setModal({ open: false, item: null })}
@@ -57,7 +71,7 @@ export default function Finance() {
           setModal({ open: false, item: null })
         }}
       />
-      <ViewDetailModal open={crud.isView} onClose={crud.closeModal} title="Transaction" data={crud.item} fields={cols} />
+      <ViewDetailModal open={crud.isView} onClose={crud.closeModal} title="Transaction" data={crud.item} fields={viewFields} />
       <DeleteConfirmModal open={!!crud.deleteTarget} onClose={crud.closeDelete} onConfirm={() => store.remove('transactions', 'Finance', crud.deleteTarget.id)} itemName={crud.deleteTarget?.id} />
     </PageShell>
   )

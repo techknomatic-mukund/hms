@@ -45,13 +45,39 @@ export const rooms = [
 ]
 
 export const housekeepingTasks = [
-  { id: 'HK-101', room: 'Standard 204', task: 'Daily cleaning', assignee: 'Sneha Patel', status: 'In Progress', priority: 'Normal' },
-  { id: 'HK-102', room: 'Suite 501', task: 'Turndown service', assignee: 'Ravi Menon', status: 'Pending', priority: 'Normal' },
+  {
+    id: 'HK-101', room: 'Standard 204', task: 'Daily cleaning', assignee: 'Sneha Patel', status: 'In Progress', priority: 'Normal',
+    shift: 'Morning', scheduledDate: '2026-06-25', scheduledTime: '09:00',
+    cleaningChecklist: 'Bed made, Bathroom cleaned, Floors mopped, Trash emptied',
+    amenitiesReplenish: 'Towels, Soap, Toilet paper',
+    deepCleanRequired: false, deepCleanType: 'None', deepCleanDate: '',
+    inspector: 'HK Supervisor', qualityScore: '9', performanceNote: 'Room ready before 10 AM',
+  },
+  {
+    id: 'HK-102', room: 'Suite 501', task: 'Turndown service', assignee: 'Ravi Menon', status: 'Pending', priority: 'Normal',
+    shift: 'Evening', scheduledDate: '2026-06-25', scheduledTime: '18:00',
+    cleaningChecklist: 'Bed made, Bathroom cleaned',
+    amenitiesReplenish: 'Tea/coffee, Water bottles',
+    deepCleanRequired: true, deepCleanType: 'Weekly', deepCleanDate: '2026-06-26',
+    inspector: '', qualityScore: '', performanceNote: '',
+  },
 ]
 
 export const laundryOrders = [
-  { id: 'LD-301', guest: 'Sarah Mitchell', room: '501', items: 'Shirts x3, Trousers x2', service: 'Wash & Iron', status: 'In Progress', amount: '₹850' },
-  { id: 'LD-302', guest: 'Amit Shah', room: '204', items: 'Suits x1', service: 'Dry Clean', status: 'Pickup Scheduled', amount: '₹600' },
+  {
+    id: 'LD-301', guest: 'Sarah Mitchell', room: '501', items: 'Shirts x3, Trousers x2', service: 'Wash & Iron', status: 'In Progress', amount: '₹850',
+    trackingStatus: 'Ironing', pickupTime: '2026-06-25T08:00', deliveryTime: '',
+    itemTag: 'TAG-458921', garmentCount: '5', expressService: false, expressDeadline: '',
+    inspectionStatus: 'Pending', inspectionNote: '', inspectedBy: '',
+    serviceHistory: '25 Jun — Received: Items collected from room 501\n25 Jun — Washing: Sent to wash section',
+  },
+  {
+    id: 'LD-302', guest: 'Amit Shah', room: '204', items: 'Suits x1', service: 'Dry Clean', status: 'Pickup Scheduled', amount: '₹600',
+    trackingStatus: 'Received', pickupTime: '', deliveryTime: '',
+    itemTag: 'TAG-458930', garmentCount: '1', expressService: true, expressDeadline: '2026-06-25T14:00',
+    inspectionStatus: 'Pending', inspectionNote: '', inspectedBy: '',
+    serviceHistory: '25 Jun — Received: Express order — 4hr turnaround',
+  },
 ]
 
 export const posOrders = [
@@ -134,8 +160,20 @@ export const feedbackEntries = [
 ]
 
 export const maintenanceTickets = [
-  { id: 'WO-601', asset: 'AC Unit — Room 305', complaint: 'Not cooling properly', priority: 'High', status: 'Open', assignee: 'Maintenance Team' },
-  { id: 'WO-602', asset: 'Elevator B', complaint: 'Unusual noise', priority: 'Medium', status: 'In Progress', assignee: 'Karan Singh' },
+  {
+    id: 'WO-601', asset: 'AC Unit — Room 305', complaint: 'Not cooling properly', priority: 'High', status: 'Open', assignee: 'Maintenance Team',
+    maintenanceType: 'Corrective', scheduledDate: '2026-06-26', scheduledTime: '10:00',
+    assetHistory: '20 Jun — Preventive: Filter cleaned\n10 May — Corrective: Gas refill',
+    spareParts: 'AC filter x1', partsCost: '450', technicianPhone: '+91 98765 43210',
+    trackingStatus: 'Assigned', laborCost: '800', totalCost: '1250', costCategory: 'HVAC',
+  },
+  {
+    id: 'WO-602', asset: 'Elevator B', complaint: 'Unusual noise', priority: 'Medium', status: 'In Progress', assignee: 'Karan Singh',
+    maintenanceType: 'Inspection', scheduledDate: '2026-06-25', scheduledTime: '14:00',
+    assetHistory: '1 Jun — Inspection: Annual safety check passed',
+    spareParts: '', partsCost: '', technicianPhone: '+91 98765 43211',
+    trackingStatus: 'On Site', laborCost: '1200', totalCost: '1200', costCategory: 'Elevator',
+  },
 ]
 
 export const transactions = [

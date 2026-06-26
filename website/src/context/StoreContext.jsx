@@ -8,6 +8,7 @@ import {
   crmOffers, crmReferrals, crmSupportTickets, crmCampaigns, customerInteractions,
   housekeepingStaff, cleaningChecklists, amenitiesReplenishment, deepCleaningSchedule,
   laundryItemTags, laundryServiceHistory,
+  maintenanceSchedules, maintenanceTechnicians, sparePartsInventory, assetMaintenanceHistory,
 } from '../data/initialState'
 import { nextStage } from '../utils/laundryHelpers'
 import { nextId } from '../utils/helpers'
@@ -439,6 +440,10 @@ const initialState = {
   deepCleaningSchedule,
   laundryItemTags,
   laundryServiceHistory,
+  maintenanceSchedules,
+  maintenanceTechnicians,
+  sparePartsInventory,
+  assetMaintenanceHistory,
 }
 
 export function StoreProvider({ children }) {

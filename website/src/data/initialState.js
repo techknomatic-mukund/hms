@@ -431,8 +431,91 @@ export const feedbackEntries = [
 ]
 
 export const maintenanceTickets = [
-  { id: 'WO-601', asset: 'AC Unit — Room 305', complaint: 'Not cooling properly', priority: 'High', status: 'Open', assignee: 'Maintenance Team' },
-  { id: 'WO-602', asset: 'Elevator B', complaint: 'Unusual noise', priority: 'Medium', status: 'In Progress', assignee: 'Karan Singh' },
+  {
+    id: 'WO-601', asset: 'AC Unit — Room 305', complaint: 'Not cooling properly',
+    type: 'Corrective', priority: 'High', status: 'Open', assignee: 'Karan Singh',
+    technician: 'Karan Singh', estCompletion: '25 Jun, 6 PM', laborCost: 1500, partsCost: 800,
+    sparePartsUsed: 'AC Filter 2-ton', scheduledDate: '25 Jun',
+    history: [{ time: '25 Jun, 09:00', action: 'Created', detail: 'Guest complaint — urgent' }],
+  },
+  {
+    id: 'WO-602', asset: 'Elevator B', complaint: 'Unusual noise on descent',
+    type: 'Corrective', priority: 'Medium', status: 'In Progress', assignee: 'Suresh Reddy',
+    technician: 'Suresh Reddy', estCompletion: '26 Jun, 12 PM', laborCost: 2000, partsCost: 0,
+    sparePartsUsed: '', scheduledDate: '24 Jun',
+    history: [
+      { time: '24 Jun, 14:00', action: 'Created', detail: 'Noise reported by security' },
+      { time: '25 Jun, 08:00', action: 'In Progress', detail: 'Inspection started' },
+    ],
+  },
+  {
+    id: 'WO-603', asset: 'Generator — Basement', complaint: 'Monthly preventive check',
+    type: 'Preventive', priority: 'Normal', status: 'Scheduled', assignee: 'Karan Singh',
+    technician: 'Karan Singh', estCompletion: '28 Jun', laborCost: 1000, partsCost: 500,
+    sparePartsUsed: 'Engine Oil 5L', scheduledDate: '28 Jun',
+    history: [{ time: '20 Jun', action: 'Scheduled', detail: 'Recurring PM schedule' }],
+  },
+]
+
+export const maintenanceSchedules = [
+  {
+    id: 'MS-01', asset: 'HVAC — Floor 3 Central Unit', category: 'HVAC', frequency: 'Monthly',
+    lastDone: '1 Jun', lastDoneIso: '2026-06-01', nextDue: '1 Jul', nextDueIso: '2026-07-01',
+    assignee: 'Karan Singh', status: 'Scheduled', description: 'Filter replacement & coil cleaning',
+  },
+  {
+    id: 'MS-02', asset: 'Elevator A & B', category: 'Elevator', frequency: 'Monthly',
+    lastDone: '15 Jun', lastDoneIso: '2026-06-15', nextDue: '15 Jul', nextDueIso: '2026-07-15',
+    assignee: 'Suresh Reddy', status: 'Scheduled', description: 'Safety inspection & lubrication',
+  },
+  {
+    id: 'MS-03', asset: 'Backup Generator', category: 'Generator', frequency: 'Weekly',
+    lastDone: '22 Jun', lastDoneIso: '2026-06-22', nextDue: '29 Jun', nextDueIso: '2026-06-29',
+    assignee: 'Karan Singh', status: 'Due Soon', description: 'Load test & fuel check',
+  },
+  {
+    id: 'MS-04', asset: 'Main Plumbing — Kitchen Block', category: 'Plumbing', frequency: 'Quarterly',
+    lastDone: '1 Apr', lastDoneIso: '2026-04-01', nextDue: '1 Jul', nextDueIso: '2026-07-01',
+    assignee: 'Suresh Reddy', status: 'Upcoming', description: 'Pipe inspection & pressure test',
+  },
+]
+
+export const maintenanceTechnicians = [
+  { id: 'MT-01', name: 'Karan Singh', specialty: 'HVAC & Electrical', workload: 2, status: 'Active', shift: 'Day (8 AM – 4 PM)' },
+  { id: 'MT-02', name: 'Suresh Reddy', specialty: 'Plumbing & Elevator', workload: 1, status: 'Active', shift: 'Day (8 AM – 4 PM)' },
+  { id: 'MT-03', name: 'Vikram Joshi', specialty: 'General Maintenance', workload: 0, status: 'Active', shift: 'Evening (4 PM – 12 AM)' },
+  { id: 'MT-04', name: 'Ramesh Kumar', specialty: 'Fire Safety', workload: 0, status: 'On Leave', shift: 'Day (8 AM – 4 PM)' },
+]
+
+export const sparePartsInventory = [
+  { id: 'SP-01', name: 'AC Filter 2-ton', category: 'HVAC', stock: 8, unit: 'pcs', reorder: 5, lastUsed: '20 Jun', status: 'OK' },
+  { id: 'SP-02', name: 'Elevator Belt', category: 'Elevator', stock: 2, unit: 'pcs', reorder: 3, lastUsed: '—', status: 'Low Stock' },
+  { id: 'SP-03', name: 'Engine Oil 5L', category: 'Generator', stock: 6, unit: 'cans', reorder: 4, lastUsed: '15 Jun', status: 'OK' },
+  { id: 'SP-04', name: 'Pipe Fitting Kit', category: 'Plumbing', stock: 4, unit: 'kits', reorder: 5, lastUsed: '10 Jun', status: 'Low Stock' },
+  { id: 'SP-05', name: 'Thermostat Sensor', category: 'HVAC', stock: 12, unit: 'pcs', reorder: 6, lastUsed: '18 Jun', status: 'OK' },
+]
+
+export const assetMaintenanceHistory = [
+  {
+    id: 'AH-01', asset: 'AC Unit — Room 305', date: '15 May', type: 'Repair',
+    workOrder: 'WO-580', technician: 'Karan Singh', cost: '₹3,200',
+    partsUsed: 'AC Filter, Refrigerant', notes: 'Replaced filter and recharged gas',
+  },
+  {
+    id: 'AH-02', asset: 'Elevator B', date: '1 Jun', type: 'Preventive',
+    workOrder: 'WO-590', technician: 'Suresh Reddy', cost: '₹5,500',
+    partsUsed: 'Lubricant, Elevator Belt', notes: 'Monthly PM — belt replaced',
+  },
+  {
+    id: 'AH-03', asset: 'Generator — Basement', date: '8 Jun', type: 'Inspection',
+    workOrder: 'WO-595', technician: 'Karan Singh', cost: '₹1,800',
+    partsUsed: 'Engine Oil 5L', notes: 'Weekly load test passed',
+  },
+  {
+    id: 'AH-04', asset: 'AC Unit — Room 305', date: '20 Mar', type: 'Repair',
+    workOrder: 'WO-520', technician: 'Karan Singh', cost: '₹2,100',
+    partsUsed: 'Thermostat Sensor', notes: 'Thermostat replaced',
+  },
 ]
 
 export const transactions = [

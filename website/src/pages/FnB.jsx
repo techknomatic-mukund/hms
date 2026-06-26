@@ -8,7 +8,12 @@ import DeleteConfirmModal, { ViewDetailModal } from '../components/DeleteConfirm
 import { useCrudModal } from '../hooks/useCrudModal'
 import { formatINR } from '../utils/helpers'
 
-const features = ['Hall Booking', 'Catering', 'Decoration', 'Event Billing', 'Food Costing']
+const features = [
+  'Event Inquiry Management', 'Quotation Management', 'Booking & Confirmation',
+  'Venue Allocation', 'Resource & Staff Allocation', 'Catering & Menu Management',
+  'Billing & Payment Management', 'Event Execution Tracking', 'Customer Feedback Management',
+  'Reports & Analytics',
+]
 
 export default function FnB() {
   const store = useStore()
@@ -21,9 +26,23 @@ export default function FnB() {
   ])
 
   const eventCols = [
-    { key: 'id', label: 'Ref' }, { key: 'name', label: 'Event' }, { key: 'type', label: 'Type' },
-    { key: 'date', label: 'Date' }, { key: 'guests', label: 'Guests' },
+    { key: 'id', label: 'Ref' },
+    { key: 'name', label: 'Event' },
+    { key: 'type', label: 'Type' },
+    { key: 'date', label: 'Date' },
+    { key: 'guests', label: 'Guests' },
+    { key: 'venue', label: 'Venue', render: (r) => r.venue || '—' },
     { key: 'status', label: 'Status', render: (r) => <Badge variant="success">{r.status}</Badge> },
+  ]
+
+  const eventViewFields = [
+    ...eventCols,
+    { key: 'inquirySource', label: 'Inquiry Source' },
+    { key: 'quotedAmount', label: 'Quoted Amount', render: (r) => (r.quotedAmount ? `₹${r.quotedAmount}` : '—') },
+    { key: 'menuPackage', label: 'Menu Package' },
+    { key: 'paymentStatus', label: 'Payment' },
+    { key: 'executionStatus', label: 'Execution' },
+    { key: 'feedbackScore', label: 'Feedback Score' },
   ]
 
   return (
@@ -56,7 +75,7 @@ export default function FnB() {
         else setCostingList((p) => [{ ...item, id: `FC-${p.length + 1}` }, ...p])
         setCostModal({ open: false, item: null })
       }} />
-      <ViewDetailModal open={crud.isView} onClose={crud.closeModal} title="Event" data={crud.item} fields={eventCols} />
+      <ViewDetailModal open={crud.isView} onClose={crud.closeModal} title="Event" data={crud.item} fields={eventViewFields} />
       <DeleteConfirmModal open={!!crud.deleteTarget} onClose={crud.closeDelete} onConfirm={() => store.remove('fnbEvents', 'F&B', crud.deleteTarget.id)} itemName={crud.deleteTarget?.name} />
     </PageShell>
   )

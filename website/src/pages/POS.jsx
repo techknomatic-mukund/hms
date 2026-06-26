@@ -8,7 +8,11 @@ import DeleteConfirmModal, { ViewDetailModal } from '../components/DeleteConfirm
 import { useCrudModal } from '../hooks/useCrudModal'
 import { formatINR, nextId } from '../utils/helpers'
 
-const features = ['Table Reservation', 'Food Orders', 'Billing', 'Discounts', 'Split Billing', 'Bill-to-room']
+const features = [
+  'Order Management', 'Table Reservation Management', 'Kitchen Integration',
+  'Billing & Payment Management', 'Room Charge Posting', 'Discount & Offer Management',
+  'Split Billing', 'Order Status Tracking', 'Menu Management', 'Restaurant Reports & Analytics',
+]
 
 const orderBadge = (s) => {
   if (s === 'Paid') return 'success'
@@ -36,10 +40,22 @@ export default function POS() {
   const orderCols = [
     { key: 'id', label: 'Order' },
     { key: 'table', label: 'Table/Room' },
+    { key: 'orderType', label: 'Type', render: (row) => row.orderType || '—' },
     { key: 'items', label: 'Items' },
     { key: 'amount', label: 'Amount' },
     { key: 'payment', label: 'Payment' },
+    { key: 'trackingStatus', label: 'Tracking', render: (row) => row.trackingStatus || '—' },
     { key: 'status', label: 'Status', render: (row) => <Badge variant={orderBadge(row.status)}>{row.status}</Badge> },
+  ]
+
+  const orderViewFields = [
+    ...orderCols,
+    { key: 'waiter', label: 'Waiter' },
+    { key: 'kitchenNote', label: 'Kitchen Notes' },
+    { key: 'discountType', label: 'Discount' },
+    { key: 'roomCharge', label: 'Room Charge', render: (r) => (r.roomCharge ? `Room ${r.roomNumber}` : 'No') },
+    { key: 'splitBilling', label: 'Split Bill', render: (r) => (r.splitBilling ? `Yes (${r.splitCount})` : 'No') },
+    { key: 'reportTag', label: 'Report Tag' },
   ]
 
   return (
@@ -95,7 +111,7 @@ export default function POS() {
 
       <ViewDetailModal open={menuCrud.isView} onClose={menuCrud.closeModal} title="Menu Item" data={menuCrud.item} fields={menuCols} />
       <DeleteConfirmModal open={!!menuCrud.deleteTarget} onClose={menuCrud.closeDelete} onConfirm={() => store.remove('menuItems', 'POS', menuCrud.deleteTarget.id)} itemName={menuCrud.deleteTarget?.name} />
-      <ViewDetailModal open={orderCrud.isView} onClose={orderCrud.closeModal} title="Order" data={orderCrud.item} fields={orderCols} />
+      <ViewDetailModal open={orderCrud.isView} onClose={orderCrud.closeModal} title="Order" data={orderCrud.item} fields={orderViewFields} />
       <DeleteConfirmModal open={!!orderCrud.deleteTarget} onClose={orderCrud.closeDelete} onConfirm={() => store.remove('posOrders', 'POS', orderCrud.deleteTarget.id)} itemName={orderCrud.deleteTarget?.id} />
     </PageShell>
   )

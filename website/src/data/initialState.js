@@ -81,8 +81,17 @@ export const laundryOrders = [
 ]
 
 export const posOrders = [
-  { id: 'POS-8821', table: 'T-12', items: 'Butter Chicken, Naan x2', amount: '₹1,240', payment: 'Bill to Room 302', status: 'Served' },
-  { id: 'POS-8820', table: 'T-05', items: 'Continental Breakfast', amount: '₹680', payment: 'Direct - UPI', status: 'Paid' },
+  {
+    id: 'POS-8821', table: 'T-12', items: 'Butter Chicken, Naan x2', amount: '₹1,240', payment: 'Bill to Room 302', status: 'Served',
+    orderType: 'Dine-in', waiter: 'Ravi Menon', sendToKitchen: true, kitchenPriority: 'Normal',
+    trackingStatus: 'Served', discountType: 'None', roomCharge: true, roomNumber: '302', guestName: 'Guest',
+    menuCategory: 'Main Course', reportTag: 'Peak Hour',
+  },
+  {
+    id: 'POS-8820', table: 'T-05', items: 'Continental Breakfast', amount: '₹680', payment: 'Direct - UPI', status: 'Paid',
+    orderType: 'Dine-in', waiter: 'Anita Verma', trackingStatus: 'Paid', discountType: 'Percentage', discountValue: '10%',
+    splitBilling: false, menuCategory: 'Breakfast', reportTag: 'Walk-in',
+  },
 ]
 
 export const menuItems = [
@@ -92,8 +101,18 @@ export const menuItems = [
 ]
 
 export const kitchenOrders = [
-  { id: 'KIT-401', orderRef: 'POS-8821', dish: 'Butter Chicken', qty: 2, station: 'Main Kitchen', status: 'Cooking' },
-  { id: 'KIT-402', orderRef: 'POS-8819', dish: 'Room Service Lunch', qty: 1, station: 'Room Service', status: 'Queued' },
+  {
+    id: 'KIT-401', orderRef: 'POS-8821', dish: 'Butter Chicken', qty: 2, station: 'Main Kitchen', status: 'Cooking',
+    queuePriority: 'High', prepStage: 'Cooking', chefName: 'Chef Ravi',
+    recipe: 'Standard Butter Chicken', ingredients: 'Chicken, Butter, Cream, Spices',
+    trackingStatus: 'Cooking', ingredientsUsed: 'Chicken 0.4kg', consumptionQty: '2 portions',
+    performanceScore: '8',
+  },
+  {
+    id: 'KIT-402', orderRef: 'POS-8819', dish: 'Room Service Lunch', qty: 1, station: 'Room Service', status: 'Queued',
+    queuePriority: 'Normal', prepStage: 'Not Started', chefName: 'Chef Anita',
+    trackingStatus: 'Queued',
+  },
 ]
 
 export const inventoryItems = [
@@ -145,8 +164,19 @@ export const crmCustomers = [
 ]
 
 export const fnbEvents = [
-  { id: 'EVT-201', name: 'Corporate Dinner - TCS', type: 'Banquet', date: '28 Jun', guests: 80, status: 'Confirmed' },
-  { id: 'EVT-202', name: 'Wedding Reception', type: 'Event', date: '30 Jun', guests: 200, status: 'Planning' },
+  {
+    id: 'EVT-201', name: 'Corporate Dinner - TCS', type: 'Banquet', date: '28 Jun', dateIso: '2026-06-28', guests: 80, status: 'Confirmed',
+    inquirySource: 'Corporate', contactPerson: 'Mr. Sharma', quotedAmount: '450000', quotationStatus: 'Accepted',
+    venue: 'Grand Ballroom', hallSetup: 'Banquet rounds', staffAssigned: 'Banquet team x6',
+    menuPackage: 'Premium buffet', advanceAmount: '150000', paymentStatus: 'Advance Received',
+    executionStatus: 'Not Started', reportCategory: 'Corporate',
+  },
+  {
+    id: 'EVT-202', name: 'Wedding Reception', type: 'Wedding', date: '30 Jun', dateIso: '2026-06-30', guests: 200, status: 'Planning',
+    inquirySource: 'Walk-in', contactPerson: 'Priya Nair', quotedAmount: '1200000', quotationStatus: 'Sent',
+    venue: 'Garden Lawn', menuPackage: 'Multi-cuisine live counters', paymentStatus: 'Pending',
+    executionStatus: 'Not Started', reportCategory: 'Wedding',
+  },
 ]
 
 export const addonServices = [

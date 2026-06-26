@@ -43,12 +43,13 @@ function reducer(state, action) {
     case 'RESERVATION_UPDATE': {
       const prev = state.reservations.find((r) => r.id === action.id)
       const rooms = action.payload.rooms?.length ? action.payload.rooms : action.payload.room ? [action.payload.room] : prev?.rooms
+      const { historyNote, ...rest } = action.payload
       const updated = {
-        ...action.payload,
+        ...rest,
         rooms,
-        room: rooms?.[0] || action.payload.room,
+        room: rooms?.[0] || action.payload.room || prev?.room,
         history: [
-          historyEntry('Modified', action.payload.historyNote || 'Reservation details updated'),
+          historyEntry('Modified', historyNote || 'Reservation details updated'),
           ...(prev?.history || []),
         ],
       }

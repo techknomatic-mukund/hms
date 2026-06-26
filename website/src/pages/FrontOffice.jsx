@@ -117,7 +117,14 @@ export default function FrontOffice() {
         reservations={store.reservations}
         onCheckIn={store.checkIn}
         onCheckOut={store.checkOut}
-        onSaveRegistration={() => {}}
+        onSaveRegistration={(id, reg) => {
+          const res = store.reservations.find((r) => r.id === id)
+          if (!res) return
+          store.updateReservation(id, {
+            notes: [res.notes, reg.phone && `Phone: ${reg.phone}`, reg.email && `Email: ${reg.email}`, reg.idProof && `ID: ${reg.idProof}`].filter(Boolean).join(' | '),
+            historyNote: 'Registration card saved',
+          })
+        }}
       />
 
       <ViewDetailModal open={crud.isView} onClose={crud.closeModal} title="Reservation Details" data={crud.item} fields={resColumns} />

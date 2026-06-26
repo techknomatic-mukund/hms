@@ -103,7 +103,17 @@ export default function POS() {
           } else {
             const id = nextId('POS-', store.posOrders)
             store.create('posOrders', 'POS-', 'POS', { ...order, id }, order.items)
-            store.create('kitchenOrders', 'KIT-', 'Kitchen', { orderRef: id, dish: order.items, qty: 1, station: 'Main Kitchen', status: 'Queued' }, `From ${id}`)
+            if (order.sendToKitchen !== false) {
+              store.create('kitchenOrders', 'KIT-', 'Kitchen', {
+                orderRef: id,
+                dish: order.items,
+                qty: 1,
+                station: 'Main Kitchen',
+                status: 'Queued',
+                chefName: '',
+                queuePriority: order.kitchenPriority || 'Normal',
+              }, `From ${id}`)
+            }
           }
           setOrderModal({ open: false, item: null })
         }}

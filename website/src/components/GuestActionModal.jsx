@@ -13,13 +13,11 @@ export default function GuestActionModal({
     'check-in': 'Check-in Guest',
     'check-out': 'Check-out Guest',
     registration: 'Registration Card',
-    folio: 'Guest Folio',
   }
 
   const eligible = reservations.filter((r) => {
     if (type === 'check-in') return r.status === 'Confirmed'
     if (type === 'check-out') return r.status === 'Checked In'
-    if (type === 'folio') return r.status === 'Checked In'
     return true
   })
 
@@ -27,10 +25,6 @@ export default function GuestActionModal({
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    if (type === 'folio') {
-      onClose()
-      return
-    }
     if (!form.reservationId) {
       setFieldErrors({ reservationId: 'Please select a reservation' })
       return
@@ -93,21 +87,10 @@ export default function GuestActionModal({
             </>
           )}
 
-          {type === 'folio' && selected && (
-            <div className="folio-preview form-field-full">
-              <h3>Folio — {selected.guest}</h3>
-              <ul className="folio-lines">
-                <li><span>Room charges ({selected.room})</span><span>₹8,500</span></li>
-                <li><span>Restaurant (POS)</span><span>₹2,150</span></li>
-                <li><span>Spa services</span><span>₹3,500</span></li>
-                <li className="folio-total"><span>Total</span><span>₹14,150</span></li>
-              </ul>
-            </div>
-          )}
         </div>
         <FormActions
           onCancel={onClose}
-          submitLabel={type === 'folio' ? 'Close' : type === 'registration' ? 'Save Registration' : type === 'check-in' ? 'Check In' : 'Check Out'}
+          submitLabel={type === 'registration' ? 'Save Registration' : type === 'check-in' ? 'Check In' : 'Check Out'}
         />
       </form>
     </Modal>

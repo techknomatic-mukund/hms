@@ -128,8 +128,65 @@ export const deepCleaningSchedule = [
 ]
 
 export const laundryOrders = [
-  { id: 'LD-301', guest: 'Sarah Mitchell', room: '501', items: 'Shirts x3, Trousers x2', service: 'Wash & Iron', status: 'In Progress', amount: '₹850' },
-  { id: 'LD-302', guest: 'Amit Shah', room: '204', items: 'Suits x1', service: 'Dry Clean', status: 'Pickup Scheduled', amount: '₹600' },
+  {
+    id: 'LD-301', guest: 'Sarah Mitchell', room: '501',
+    items: 'Shirts x3, Trousers x2', service: 'Wash & Iron',
+    stage: 'Ironing', status: 'Ironing', express: false, expressCharge: '',
+    amount: '₹850', pickupDate: '25 Jun', expectedDelivery: '26 Jun', deliveredDate: '',
+    qualityCheck: null,
+    history: [
+      { time: '25 Jun, 09:00', action: 'Pickup', detail: 'Items collected from Room 501' },
+      { time: '25 Jun, 11:30', action: 'Washing', detail: 'Wash cycle started' },
+      { time: '25 Jun, 14:00', action: 'Drying', detail: 'Moved to dryer' },
+      { time: '25 Jun, 16:00', action: 'Ironing', detail: 'Ironing in progress' },
+    ],
+  },
+  {
+    id: 'LD-302', guest: 'Amit Shah', room: '204',
+    items: 'Suits x1', service: 'Express Dry Clean',
+    stage: 'Pickup', status: 'Pickup Scheduled', express: true, expressCharge: '₹200',
+    amount: '₹800', pickupDate: '25 Jun', expectedDelivery: '25 Jun, 8 PM', deliveredDate: '',
+    qualityCheck: null,
+    history: [{ time: '25 Jun, 10:00', action: 'Created', detail: 'Express order — priority processing' }],
+  },
+  {
+    id: 'LD-303', guest: 'Rajesh Kumar', room: '302',
+    items: 'Kurtas x2, Trousers x1', service: 'Wash & Iron',
+    stage: 'Quality Check', status: 'Quality Check', express: false, expressCharge: '',
+    amount: '₹650', pickupDate: '24 Jun', expectedDelivery: '25 Jun', deliveredDate: '',
+    qualityCheck: { passed: null, inspector: '', notes: '', checks: [] },
+    history: [
+      { time: '24 Jun, 08:00', action: 'Pickup', detail: 'Collected from Room 302' },
+      { time: '24 Jun, 10:00', action: 'Washing', detail: 'Standard wash' },
+      { time: '24 Jun, 13:00', action: 'Drying', detail: 'Complete' },
+      { time: '24 Jun, 15:00', action: 'Ironing', detail: 'Complete' },
+      { time: '25 Jun, 09:00', action: 'Quality Check', detail: 'Awaiting inspection' },
+    ],
+  },
+]
+
+export const laundryItemTags = [
+  { id: 'TAG-1001', tag: 'TAG-1001', orderId: 'LD-301', item: 'Shirt — Blue formal', guest: 'Sarah Mitchell', room: '501', status: 'Ironing' },
+  { id: 'TAG-1002', tag: 'TAG-1002', orderId: 'LD-301', item: 'Shirt — White cotton', guest: 'Sarah Mitchell', room: '501', status: 'Ironing' },
+  { id: 'TAG-1003', tag: 'TAG-1003', orderId: 'LD-301', item: 'Trousers — Grey x2', guest: 'Sarah Mitchell', room: '501', status: 'Ironing' },
+  { id: 'TAG-1004', tag: 'TAG-1004', orderId: 'LD-302', item: 'Suit — Navy', guest: 'Amit Shah', room: '204', status: 'Pickup' },
+  { id: 'TAG-1005', tag: 'TAG-1005', orderId: 'LD-303', item: 'Kurta — Cream x2', guest: 'Rajesh Kumar', room: '302', status: 'Quality Check' },
+  { id: 'TAG-1006', tag: 'TAG-1006', orderId: 'LD-303', item: 'Trousers — Black', guest: 'Rajesh Kumar', room: '302', status: 'Quality Check' },
+]
+
+export const laundryServiceHistory = [
+  {
+    id: 'LH-01', orderId: 'LD-298', guest: 'John Williams', service: 'Express Wash & Iron',
+    items: 'Shirts x2, Trousers x1', amount: '₹1,050', delivered: '20 Jun', status: 'Delivered', express: true,
+  },
+  {
+    id: 'LH-02', orderId: 'LD-295', guest: 'Sarah Mitchell', service: 'Dry Clean',
+    items: 'Blazer x1', amount: '₹450', delivered: '15 Jun', status: 'Delivered', express: false,
+  },
+  {
+    id: 'LH-03', orderId: 'LD-290', guest: 'Amit Shah', service: 'Wash & Iron',
+    items: 'Casuals x4', amount: '₹720', delivered: '10 Jun', status: 'Delivered', express: false,
+  },
 ]
 
 export const posOrders = [

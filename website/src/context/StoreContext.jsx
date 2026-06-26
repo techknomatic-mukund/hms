@@ -7,7 +7,9 @@ import {
   guestFolios, guestDeposits, guestRequests,
   crmOffers, crmReferrals, crmSupportTickets, crmCampaigns, customerInteractions,
   housekeepingStaff, cleaningChecklists, amenitiesReplenishment, deepCleaningSchedule,
+  laundryItemTags, laundryServiceHistory,
 } from '../data/initialState'
+import { nextStage } from '../utils/laundryHelpers'
 import { nextId } from '../utils/helpers'
 import { historyEntry } from '../utils/reservationHelpers'
 
@@ -272,6 +274,70 @@ function reducer(state, action) {
         activityLog: logActivity(state.activityLog, isNew ? 'Create' : 'Update', 'Guest Request', `${item.guest} → ${item.department}`),
       }
     }
+    case 'LAUNDRY_ADVANCE_STAGE': {
+      const order = state.laundryOrders.find((o) => o.id === action.id)
+      if (!order || order.stage === 'Delivery') return state
+      const stage = nextStage(order.stage)
+      const time = new Date().toLocaleString('en-GB', {
+        day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit',
+      })
+      const entry = { time, action: stage, detail: `Order moved to ${stage}` }
+      const deliveredDate = stage === 'Delivery'
+        ? new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })
+        : order.deliveredDate
+      const newHistory = stage === 'Delivery' ? [{
+        id: nextId('LH-', state.laundryServiceHistory),
+        orderId: order.id,
+        guest: order.guest,
+        service: order.service,
+        items: order.items,
+        amount: order.amount,
+        delivered: deliveredDate,
+        status: 'Delivered',
+        express: order.express,
+      }, ...state.laundryServiceHistory] : state.laundryServiceHistory
+      return {
+        ...state,
+        laundryOrders: state.laundryOrders.map((o) => (o.id === action.id ? {
+          ...o,
+          stage,
+          status: stage,
+          deliveredDate,
+          history: [entry, ...(o.history || [])],
+        } : o)),
+        laundryItemTags: state.laundryItemTags.map((t) => (
+          t.orderId === action.id ? { ...t, status: stage } : t
+        )),
+        laundryServiceHistory: newHistory,
+        activityLog: logActivity(state.activityLog, 'Stage Update', 'Laundry', `${order.id} → ${stage}`),
+      }
+    }
+    case 'LAUNDRY_QUALITY_CHECK': {
+      const order = state.laundryOrders.find((o) => o.id === action.id)
+      if (!order) return state
+      const qc = action.payload
+      const time = qc.time
+      const entry = {
+        time,
+        action: 'Quality Check',
+        detail: qc.passed ? 'Passed — ready for delivery' : `Failed — ${qc.notes || 'rework required'}`,
+      }
+      const stage = qc.passed ? 'Delivery' : 'Ironing'
+      return {
+        ...state,
+        laundryOrders: state.laundryOrders.map((o) => (o.id === action.id ? {
+          ...o,
+          qualityCheck: qc,
+          stage,
+          status: stage,
+          history: [entry, ...(o.history || [])],
+        } : o)),
+        laundryItemTags: state.laundryItemTags.map((t) => (
+          t.orderId === action.id ? { ...t, status: stage } : t
+        )),
+        activityLog: logActivity(state.activityLog, 'QC', 'Laundry', `${order.id} — ${qc.passed ? 'Passed' : 'Failed'}`),
+      }
+    }
     case 'HK_UPDATE_CHECKLIST': {
       const progress = action.progress
       return {
@@ -371,6 +437,8 @@ const initialState = {
   cleaningChecklists,
   amenitiesReplenishment,
   deepCleaningSchedule,
+  laundryItemTags,
+  laundryServiceHistory,
 }
 
 export function StoreProvider({ children }) {
@@ -395,6 +463,8 @@ export function StoreProvider({ children }) {
     saveGuestRequest: (payload, id = null) => dispatch({ type: 'GUEST_REQUEST_SAVE', payload, id }),
     sendCampaign: (id) => dispatch({ type: 'CRM_SEND_CAMPAIGN', id }),
     updateChecklistProgress: (id, progress) => dispatch({ type: 'HK_UPDATE_CHECKLIST', id, progress }),
+    advanceLaundryStage: (id) => dispatch({ type: 'LAUNDRY_ADVANCE_STAGE', id }),
+    saveLaundryQualityCheck: (id, payload) => dispatch({ type: 'LAUNDRY_QUALITY_CHECK', id, payload }),
     customerBookRoom: (payload) => dispatch({ type: 'CUSTOMER_BOOKING', payload }),
     customerBookService: (payload) =>
       dispatch({

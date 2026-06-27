@@ -82,15 +82,10 @@ export const laundryOrders = [
 
 export const posOrders = [
   {
-    id: 'POS-8821', table: 'T-12', items: 'Butter Chicken, Naan x2', amount: '₹1,240', payment: 'Bill to Room 302', status: 'Served',
-    orderType: 'Dine-in', waiter: 'Ravi Menon', sendToKitchen: true, kitchenPriority: 'Normal',
-    trackingStatus: 'Served', discountType: 'None', roomCharge: true, roomNumber: '302', guestName: 'Guest',
-    menuCategory: 'Main Course', reportTag: 'Peak Hour',
+    id: 'POS-8821', table: 'T-12', waiter: 'Ravi Menon', items: 'Butter Chicken x1, Paneer Tikka x1', subtotal: 700, taxAmount: 35, amount: '₹735', payment: 'Bill to Deluxe 302', status: 'Served', date: '25 Jun', dateIso: '2026-06-25',
   },
   {
-    id: 'POS-8820', table: 'T-05', items: 'Continental Breakfast', amount: '₹680', payment: 'Direct - UPI', status: 'Paid',
-    orderType: 'Dine-in', waiter: 'Anita Verma', trackingStatus: 'Paid', discountType: 'Percentage', discountValue: '10%',
-    splitBilling: false, menuCategory: 'Breakfast', reportTag: 'Walk-in',
+    id: 'POS-8820', table: 'T-05', waiter: 'Anita Verma', items: 'Continental Breakfast x1', subtotal: 680, taxAmount: 34, amount: '₹714', payment: 'Direct - UPI', status: 'Paid', date: '25 Jun', dateIso: '2026-06-25',
   },
 ]
 
@@ -117,18 +112,16 @@ export const kitchenOrders = [
 
 export const inventoryItems = [
   {
-    id: 'INV-101', name: 'Basmati Rice', category: 'Food', stock: 45, unit: 'kg', reorder: 20, status: 'OK',
-    skuCode: 'RICE-BAS-01', storageLocation: 'Main Store — Shelf A2', alertEnabled: true,
-    batchNumber: 'BATCH-2026-06', expiryDate: '2026-12-31', lastCountDate: '2026-06-20', reportCategory: 'Stock Valuation',
+    id: 'INV-101', name: 'Basmati Rice', category: 'Food', stock: 45, unit: 'kg', status: 'OK',
+    skuCode: 'RICE-BAS-01', storageLocation: 'Main Store — Shelf A2', itemDescription: 'Premium long-grain basmati',
   },
   {
-    id: 'INV-102', name: 'Bath Towels', category: 'Linen', stock: 12, unit: 'pcs', reorder: 30, status: 'Low Stock',
-    skuCode: 'LIN-TOW-01', storageLocation: 'Linen Room', alertEnabled: true, alertThreshold: '30',
-    replenishmentTrigger: true, reportCategory: 'Reorder',
+    id: 'INV-102', name: 'Bath Towels', category: 'Linen', stock: 12, unit: 'pcs', status: 'Low Stock',
+    skuCode: 'LIN-TOW-01', storageLocation: 'Linen Room', itemDescription: 'White cotton bath towels',
   },
   {
-    id: 'INV-103', name: 'Cleaning Solution', category: 'Housekeeping', stock: 8, unit: 'L', reorder: 10, status: 'Low Stock',
-    skuCode: 'HK-CLN-01', storageLocation: 'HK Store', expiryDate: '2027-03-15', reportCategory: 'Consumption',
+    id: 'INV-103', name: 'Cleaning Solution', category: 'Housekeeping', stock: 8, unit: 'L', status: 'Low Stock',
+    skuCode: 'HK-CLN-01', storageLocation: 'HK Store', itemDescription: 'Multi-surface cleaning concentrate',
   },
 ]
 
@@ -202,21 +195,19 @@ export const fnbEvents = [
   {
     id: 'EVT-201', name: 'Corporate Dinner - TCS', type: 'Banquet', date: '28 Jun', dateIso: '2026-06-28', guests: 80, status: 'Confirmed',
     inquirySource: 'Corporate', contactPerson: 'Mr. Sharma', quotedAmount: '450000', quotationStatus: 'Accepted',
-    venue: 'Grand Ballroom', hallSetup: 'Banquet rounds', staffAssigned: 'Banquet team x6',
-    menuPackage: 'Premium buffet', advanceAmount: '150000', paymentStatus: 'Advance Received',
-    executionStatus: 'Not Started', reportCategory: 'Corporate',
+    venue: 'Grand Ballroom', hallSetup: 'Banquet rounds', staffAssigned: 'Ravi Menon',
+    balance: 300000, balanceStatus: 'Partial',
   },
   {
     id: 'EVT-202', name: 'Wedding Reception', type: 'Wedding', date: '30 Jun', dateIso: '2026-06-30', guests: 200, status: 'Planning',
     inquirySource: 'Walk-in', contactPerson: 'Priya Nair', quotedAmount: '1200000', quotationStatus: 'Sent',
-    venue: 'Garden Lawn', menuPackage: 'Multi-cuisine live counters', paymentStatus: 'Pending',
-    executionStatus: 'Not Started', reportCategory: 'Wedding',
+    venue: 'Garden Lawn', balance: 1200000, balanceStatus: 'Pending',
   },
 ]
 
 export const addonServices = [
-  { id: 'ADD-501', service: 'Spa - Aromatherapy', guest: 'Sarah Mitchell', room: '501', time: '3:00 PM', amount: '₹3,500', status: 'Booked' },
-  { id: 'ADD-502', service: 'Gym - Personal Trainer', guest: 'Amit Shah', room: '204', time: '6:00 AM', amount: '₹1,200', status: 'Completed' },
+  { id: 'ADD-501', service: 'Spa - Aromatherapy', guest: 'Sarah Mitchell', room: 'Suite 501', time: '3:00 PM', amount: '₹3,500', status: 'Booked', date: '25 Jun', dateIso: '2026-06-25' },
+  { id: 'ADD-502', service: 'Gym - Personal Trainer', guest: 'Amit Shah', room: 'Standard 204', time: '6:00 AM', amount: '₹1,200', status: 'Completed', date: '24 Jun', dateIso: '2026-06-24' },
 ]
 
 export const feedbackEntries = [
@@ -226,14 +217,14 @@ export const feedbackEntries = [
 
 export const maintenanceTickets = [
   {
-    id: 'WO-601', asset: 'AC Unit — Room 305', complaint: 'Not cooling properly', priority: 'High', status: 'Open', assignee: 'Maintenance Team',
+    id: 'WO-601', room: 'Deluxe 305', asset: 'AC Unit — Deluxe 305', complaint: 'Not cooling properly', priority: 'High', status: 'Open', assignee: 'Maintenance Team',
     maintenanceType: 'Corrective', scheduledDate: '2026-06-26', scheduledTime: '10:00',
     assetHistory: '20 Jun — Preventive: Filter cleaned\n10 May — Corrective: Gas refill',
     spareParts: 'AC filter x1', partsCost: '450', technicianPhone: '+91 98765 43210',
     trackingStatus: 'Assigned', laborCost: '800', totalCost: '1250', costCategory: 'HVAC',
   },
   {
-    id: 'WO-602', asset: 'Elevator B', complaint: 'Unusual noise', priority: 'Medium', status: 'In Progress', assignee: 'Karan Singh',
+    id: 'WO-602', room: 'Common Area', asset: 'Elevator B', complaint: 'Unusual noise', priority: 'Medium', status: 'In Progress', assignee: 'Karan Singh',
     maintenanceType: 'Inspection', scheduledDate: '2026-06-25', scheduledTime: '14:00',
     assetHistory: '1 Jun — Inspection: Annual safety check passed',
     spareParts: '', partsCost: '', technicianPhone: '+91 98765 43211',
@@ -243,14 +234,42 @@ export const maintenanceTickets = [
 
 export const transactions = [
   {
-    id: 'TXN-301', type: 'Revenue', category: 'Room', description: 'Room revenue — Jun 24', amount: '₹82,000', date: '24 Jun',
+    id: 'TXN-301', type: 'Revenue', category: 'Room', description: 'Room revenue — Jun 24', amount: '₹82,000', date: '24 Jun', dateIso: '2026-06-24',
     invoiceNumber: 'INV-301', paymentStatus: 'Completed', gstRate: '18', accountCode: '4100-ROOM',
     sourceModule: 'Front Office', reportPeriod: 'Monthly',
   },
   {
-    id: 'TXN-302', type: 'Expense', category: 'Utilities', description: 'Electricity bill', amount: '₹18,500', date: '23 Jun',
-    expenseType: 'Utilities', vendor: 'State Electricity Board', paymentStatus: 'Pending', gstRate: '18',
+    id: 'TXN-302', type: 'Expense', category: 'Utilities', description: 'Electricity bill', amount: '₹18,500', date: '23 Jun', dateIso: '2026-06-23',
+    expenseType: 'Utilities', expenseBucket: 'Miscellaneous', vendor: 'State Electricity Board', paymentStatus: 'Pending', gstRate: '18',
     sourceModule: 'Finance',
+  },
+  {
+    id: 'TXN-303', type: 'Revenue', category: 'Room', description: 'Room charges — Suite 501', amount: '₹28,500', date: '25 Jun', dateIso: '2026-06-25',
+    invoiceNumber: 'INV-303', paymentStatus: 'Completed', gstRate: '18', sourceModule: 'Front Office',
+  },
+  {
+    id: 'TXN-304', type: 'Revenue', category: 'F&B', description: 'Restaurant & banquet sales', amount: '₹42,000', date: '25 Jun', dateIso: '2026-06-25',
+    paymentStatus: 'Completed', sourceModule: 'POS',
+  },
+  {
+    id: 'TXN-305', type: 'Revenue', category: 'Add-on', description: 'Spa & gym bookings', amount: '₹12,500', date: '25 Jun', dateIso: '2026-06-25',
+    paymentStatus: 'Completed', sourceModule: 'Add-ons',
+  },
+  {
+    id: 'TXN-306', type: 'Expense', category: 'Payroll', description: 'Daily staff payroll accrual', amount: '₹32,000', date: '25 Jun', dateIso: '2026-06-25',
+    expenseBucket: 'Staff Salary', paymentStatus: 'Pending', sourceModule: 'HRMS',
+  },
+  {
+    id: 'TXN-307', type: 'Expense', category: 'Kitchen', description: 'Kitchen inventory purchase', amount: '₹8,200', date: '25 Jun', dateIso: '2026-06-25',
+    expenseBucket: 'Kitchen Inventory', paymentStatus: 'Completed', sourceModule: 'Inventory',
+  },
+  {
+    id: 'TXN-308', type: 'Expense', category: 'Housekeeping', description: 'Linen & cleaning supplies', amount: '₹4,800', date: '25 Jun', dateIso: '2026-06-25',
+    expenseBucket: 'Housekeeping Inventory', paymentStatus: 'Completed', sourceModule: 'Inventory',
+  },
+  {
+    id: 'TXN-309', type: 'Expense', category: 'Operations', description: 'Misc operational costs', amount: '₹2,500', date: '25 Jun', dateIso: '2026-06-25',
+    expenseBucket: 'Miscellaneous', paymentStatus: 'Pending', sourceModule: 'Finance',
   },
 ]
 
@@ -327,8 +346,15 @@ export const deploymentInfo = {
   benefits: ['One database for all departments', 'Auto-sync across modules', 'Offline POS & Front Office', 'Real-time reports'],
 }
 
-export const financeSummary = [
+export const financeRevenueSummary = [
   { label: 'Room Revenue', value: '₹82L', type: 'revenue' },
   { label: 'F&B Revenue', value: '₹28L', type: 'revenue' },
   { label: 'Add-on Revenue', value: '₹14L', type: 'revenue' },
+]
+
+export const financeExpenseSummary = [
+  { label: 'Staff Salary', value: '₹32L', type: 'expense' },
+  { label: 'Kitchen Inventory', value: '₹8L', type: 'expense' },
+  { label: 'Housekeeping Inventory', value: '₹5L', type: 'expense' },
+  { label: 'Miscellaneous', value: '₹3L', type: 'expense' },
 ]

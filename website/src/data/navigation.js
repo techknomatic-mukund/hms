@@ -9,9 +9,9 @@ export const erpModuleGroups = [
   {
     label: 'Guest Operations',
     modules: [
-      { id: 'reservations', path: '/erp/reservations', label: 'Reservations', icon: '📅' },
-      { id: 'front-office', path: '/erp/front-office', label: 'Front Office', icon: '🏨' },
-      { id: 'crm', path: '/erp/crm', label: 'CRM', icon: '🤝' },
+      { id: 'reservations', path: '/erp/reservations', label: 'Front Office', icon: '📅' },
+      // { id: 'front-office', path: '/erp/front-office', label: 'Front Office', icon: '🏨' },
+      // { id: 'crm', path: '/erp/crm', label: 'CRM', icon: '🤝' },
     ],
   },
   {
@@ -27,7 +27,7 @@ export const erpModuleGroups = [
     label: 'F&B',
     modules: [
       { id: 'pos', path: '/erp/pos', label: 'Restaurant & POS', icon: '🍽️' },
-      { id: 'kitchen', path: '/erp/kitchen', label: 'Kitchen', icon: '👨‍🍳' },
+      // { id: 'kitchen', path: '/erp/kitchen', label: 'Kitchen', icon: '👨‍🍳' },
       { id: 'fnb', path: '/erp/fnb', label: 'Events & Banquet', icon: '🥂' },
     ],
   },
@@ -35,7 +35,7 @@ export const erpModuleGroups = [
     label: 'Supply Chain',
     modules: [
       { id: 'inventory', path: '/erp/inventory', label: 'Inventory', icon: '📦' },
-      { id: 'procurement', path: '/erp/procurement', label: 'Procurement', icon: '🛒' },
+      // { id: 'procurement', path: '/erp/procurement', label: 'Procurement', icon: '🛒' },
     ],
   },
   {
@@ -45,7 +45,7 @@ export const erpModuleGroups = [
       { id: 'hrms', path: '/erp/hrms', label: 'HRMS', icon: '👥' },
       // { id: 'feedback', path: '/erp/feedback', label: 'Feedback', icon: '⭐' },
       // { id: 'reports', path: '/erp/reports', label: 'Reports', icon: '📈' },
-      { id: 'admin', path: '/erp/admin', label: 'Administration', icon: '⚙️' },
+      // { id: 'admin', path: '/erp/admin', label: 'Administration', icon: '⚙️' },
     ],
   },
 ]

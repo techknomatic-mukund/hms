@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { Modal } from './UI'
 import { FormActions, FormField } from './FormFields'
 import FormSection from './FormSection'
-import { formatINR } from '../utils/helpers'
+import { formatDisplayDate, formatINR } from '../utils/helpers'
 
 const CATEGORIES = ['Room', 'F&B', 'Add-on', 'Operations', 'Payroll', 'Utilities', 'GST', 'Maintenance']
 const PAYMENT_METHODS = ['Cash', 'Card', 'UPI', 'Bank Transfer', 'Room Folio', 'Corporate']
@@ -36,11 +36,13 @@ function itemToForm(editItem) {
 }
 
 export function formatTransactionRow(txn, id, date) {
+  const dateIso = txn.dateIso || new Date().toISOString().slice(0, 10)
   return {
     ...txn,
     id,
+    dateIso,
     amount: formatINR(typeof txn.amount === 'number' ? txn.amount : parseFloat(txn.amount) || 0),
-    date: date || new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }),
+    date: date || formatDisplayDate(dateIso),
   }
 }
 

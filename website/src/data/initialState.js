@@ -82,10 +82,10 @@ export const laundryOrders = [
 
 export const posOrders = [
   {
-    id: 'POS-8821', table: 'T-12', waiter: 'Ravi Menon', items: 'Butter Chicken x1, Paneer Tikka x1', subtotal: 700, taxAmount: 35, amount: '₹735', payment: 'Bill to Deluxe 302', status: 'Served',
+    id: 'POS-8821', table: 'T-12', waiter: 'Ravi Menon', items: 'Butter Chicken x1, Paneer Tikka x1', subtotal: 700, taxAmount: 35, amount: '₹735', payment: 'Bill to Deluxe 302', status: 'Served', date: '25 Jun', dateIso: '2026-06-25',
   },
   {
-    id: 'POS-8820', table: 'T-05', waiter: 'Anita Verma', items: 'Continental Breakfast x1', subtotal: 680, taxAmount: 34, amount: '₹714', payment: 'Direct - UPI', status: 'Paid',
+    id: 'POS-8820', table: 'T-05', waiter: 'Anita Verma', items: 'Continental Breakfast x1', subtotal: 680, taxAmount: 34, amount: '₹714', payment: 'Direct - UPI', status: 'Paid', date: '25 Jun', dateIso: '2026-06-25',
   },
 ]
 
@@ -206,8 +206,8 @@ export const fnbEvents = [
 ]
 
 export const addonServices = [
-  { id: 'ADD-501', service: 'Spa - Aromatherapy', guest: 'Sarah Mitchell', room: 'Suite 501', time: '3:00 PM', amount: '₹3,500', status: 'Booked' },
-  { id: 'ADD-502', service: 'Gym - Personal Trainer', guest: 'Amit Shah', room: 'Standard 204', time: '6:00 AM', amount: '₹1,200', status: 'Completed' },
+  { id: 'ADD-501', service: 'Spa - Aromatherapy', guest: 'Sarah Mitchell', room: 'Suite 501', time: '3:00 PM', amount: '₹3,500', status: 'Booked', date: '25 Jun', dateIso: '2026-06-25' },
+  { id: 'ADD-502', service: 'Gym - Personal Trainer', guest: 'Amit Shah', room: 'Standard 204', time: '6:00 AM', amount: '₹1,200', status: 'Completed', date: '24 Jun', dateIso: '2026-06-24' },
 ]
 
 export const feedbackEntries = [
@@ -234,14 +234,42 @@ export const maintenanceTickets = [
 
 export const transactions = [
   {
-    id: 'TXN-301', type: 'Revenue', category: 'Room', description: 'Room revenue — Jun 24', amount: '₹82,000', date: '24 Jun',
+    id: 'TXN-301', type: 'Revenue', category: 'Room', description: 'Room revenue — Jun 24', amount: '₹82,000', date: '24 Jun', dateIso: '2026-06-24',
     invoiceNumber: 'INV-301', paymentStatus: 'Completed', gstRate: '18', accountCode: '4100-ROOM',
     sourceModule: 'Front Office', reportPeriod: 'Monthly',
   },
   {
-    id: 'TXN-302', type: 'Expense', category: 'Utilities', description: 'Electricity bill', amount: '₹18,500', date: '23 Jun',
-    expenseType: 'Utilities', vendor: 'State Electricity Board', paymentStatus: 'Pending', gstRate: '18',
+    id: 'TXN-302', type: 'Expense', category: 'Utilities', description: 'Electricity bill', amount: '₹18,500', date: '23 Jun', dateIso: '2026-06-23',
+    expenseType: 'Utilities', expenseBucket: 'Miscellaneous', vendor: 'State Electricity Board', paymentStatus: 'Pending', gstRate: '18',
     sourceModule: 'Finance',
+  },
+  {
+    id: 'TXN-303', type: 'Revenue', category: 'Room', description: 'Room charges — Suite 501', amount: '₹28,500', date: '25 Jun', dateIso: '2026-06-25',
+    invoiceNumber: 'INV-303', paymentStatus: 'Completed', gstRate: '18', sourceModule: 'Front Office',
+  },
+  {
+    id: 'TXN-304', type: 'Revenue', category: 'F&B', description: 'Restaurant & banquet sales', amount: '₹42,000', date: '25 Jun', dateIso: '2026-06-25',
+    paymentStatus: 'Completed', sourceModule: 'POS',
+  },
+  {
+    id: 'TXN-305', type: 'Revenue', category: 'Add-on', description: 'Spa & gym bookings', amount: '₹12,500', date: '25 Jun', dateIso: '2026-06-25',
+    paymentStatus: 'Completed', sourceModule: 'Add-ons',
+  },
+  {
+    id: 'TXN-306', type: 'Expense', category: 'Payroll', description: 'Daily staff payroll accrual', amount: '₹32,000', date: '25 Jun', dateIso: '2026-06-25',
+    expenseBucket: 'Staff Salary', paymentStatus: 'Pending', sourceModule: 'HRMS',
+  },
+  {
+    id: 'TXN-307', type: 'Expense', category: 'Kitchen', description: 'Kitchen inventory purchase', amount: '₹8,200', date: '25 Jun', dateIso: '2026-06-25',
+    expenseBucket: 'Kitchen Inventory', paymentStatus: 'Completed', sourceModule: 'Inventory',
+  },
+  {
+    id: 'TXN-308', type: 'Expense', category: 'Housekeeping', description: 'Linen & cleaning supplies', amount: '₹4,800', date: '25 Jun', dateIso: '2026-06-25',
+    expenseBucket: 'Housekeeping Inventory', paymentStatus: 'Completed', sourceModule: 'Inventory',
+  },
+  {
+    id: 'TXN-309', type: 'Expense', category: 'Operations', description: 'Misc operational costs', amount: '₹2,500', date: '25 Jun', dateIso: '2026-06-25',
+    expenseBucket: 'Miscellaneous', paymentStatus: 'Pending', sourceModule: 'Finance',
   },
 ]
 

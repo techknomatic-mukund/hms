@@ -1,12 +1,18 @@
 import { useMemo, useState } from 'react'
-import { financeRevenueSummary, financeExpenseSummary } from '../data/initialState'
 import { useStore } from '../context/StoreContext'
 import { PageShell, SectionHeader, StatCard, Badge } from '../components/UI'
 import { CrudTable } from '../components/CrudTable'
+import DateRangeFilter from '../components/DateRangeFilter'
 import FinanceTransactionModal, { formatTransactionRow } from '../components/FinanceTransactionModal'
 import DeleteConfirmModal, { ViewDetailModal } from '../components/DeleteConfirmModal'
 import { useCrudModal } from '../hooks/useCrudModal'
-import { formatINR, nextId } from '../utils/helpers'
+import { currentMonthRange, formatINR, getRangeLabel, nextId } from '../utils/helpers'
+import {
+  computeExpenseBreakdown,
+  computeFinanceTotals,
+  computeRevenueBreakdown,
+  filterFinanceTransactions,
+} from '../utils/financeMetrics'
 
 function KpiGrid({ items }) {
   return (
@@ -27,6 +33,14 @@ export default function Finance() {
   const store = useStore()
   const crud = useCrudModal()
   const [modal, setModal] = useState({ open: false, item: null })
+  const { start: defaultStart, end: defaultEnd } = currentMonthRange()
+  const [startDate, setStartDate] = useState(defaultStart)
+  const [endDate, setEndDate] = useState(defaultEnd)
+
+  const handleStartChange = (value) => {
+    setStartDate(value)
+    if (value > endDate) setEndDate(value)
+  }
 
   const cols = [
     { key: 'id', label: 'Ref' },
@@ -47,24 +61,44 @@ export default function Finance() {
     { key: 'sourceModule', label: 'Source Module' },
   ]
 
+  const filteredTransactions = useMemo(
+    () => filterFinanceTransactions(store.transactions, startDate, endDate),
+    [store.transactions, startDate, endDate],
+  )
+
   const totals = useMemo(() => {
-    const parseAmt = (s) => parseFloat(String(s).replace(/[^\d.]/g, '')) || 0
-    let revenue = 12400000
-    let expense = 6850000
-    store.transactions.forEach((t) => {
-      const amt = parseAmt(t.amount)
-      if (t.type === 'Revenue') revenue += amt
-      else expense += amt
-    })
+    const { revenue, expense, profit } = computeFinanceTotals(filteredTransactions)
+    const rangeLabel = getRangeLabel(startDate, endDate)
     return [
-      { label: 'Total Revenue (MTD)', value: formatINR(revenue), type: 'revenue' },
-      { label: 'Total Expenses (MTD)', value: formatINR(expense), type: 'expense' },
-      { label: 'Net P&L (MTD)', value: formatINR(revenue - expense), type: 'profit' },
+      { label: `Total Revenue (${rangeLabel})`, value: formatINR(revenue), type: 'revenue' },
+      { label: `Total Expenses (${rangeLabel})`, value: formatINR(expense), type: 'expense' },
+      { label: `Net P&L (${rangeLabel})`, value: formatINR(profit), type: 'profit' },
     ]
-  }, [store.transactions])
+  }, [filteredTransactions, startDate, endDate])
+
+  const revenueKpis = useMemo(
+    () => computeRevenueBreakdown(filteredTransactions),
+    [filteredTransactions],
+  )
+
+  const expenseKpis = useMemo(
+    () => computeExpenseBreakdown(filteredTransactions),
+    [filteredTransactions],
+  )
 
   return (
-    <PageShell title="Finance" description="Billing, GST, revenue, expenses — integrated with all operations">
+    <PageShell
+      title="Finance"
+      description="Billing, GST, revenue, expenses — integrated with all operations"
+      headerAction={(
+        <DateRangeFilter
+          startDate={startDate}
+          endDate={endDate}
+          onStartChange={handleStartChange}
+          onEndChange={setEndDate}
+        />
+      )}
+    >
       <div className="stats-grid">
         {totals.map((s) => (
           <StatCard
@@ -78,17 +112,17 @@ export default function Finance() {
 
       <section className="panel">
         <SectionHeader title="Revenue" />
-        <KpiGrid items={financeRevenueSummary} />
+        <KpiGrid items={revenueKpis} />
       </section>
 
       <section className="panel">
         <SectionHeader title="Expenses" />
-        <KpiGrid items={financeExpenseSummary} />
+        <KpiGrid items={expenseKpis} />
       </section>
 
       <section className="panel">
         <SectionHeader title="Transactions" action={<button type="button" className="btn btn-primary" onClick={() => setModal({ open: true, item: null })}>+ Record Transaction</button>} />
-        <CrudTable columns={cols} rows={store.transactions} onView={crud.openView} onEdit={(item) => setModal({ open: true, item })} onDelete={crud.openDelete} />
+        <CrudTable columns={cols} rows={filteredTransactions} onView={crud.openView} onEdit={(item) => setModal({ open: true, item })} onDelete={crud.openDelete} />
       </section>
       <FinanceTransactionModal
         open={modal.open}

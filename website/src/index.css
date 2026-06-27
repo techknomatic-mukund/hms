@@ -164,12 +164,17 @@ p { margin: 0; }
 .page-header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: flex-end;
   margin-bottom: 24px;
   gap: 16px;
+  flex-wrap: wrap;
 }
 
+.page-header-text { flex: 1; min-width: 200px; }
+
 .page-header p { color: var(--muted); margin-top: 4px; font-size: 0.9rem; }
+
+.page-shell .page-header { margin-bottom: 20px; }
 
 .demo-badge {
   background: var(--gold);
@@ -180,8 +185,6 @@ p { margin: 0; }
   font-weight: 600;
   white-space: nowrap;
 }
-
-.page-shell .page-header { margin-bottom: 20px; flex-direction: column; }
 
 /* Panels */
 .panel {
@@ -218,6 +221,32 @@ p { margin: 0; }
 .two-col { margin-bottom: 20px; }
 
 /* Stats */
+.date-range-filter {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-left: auto;
+}
+
+.date-range-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.date-range-field input {
+  min-width: 150px;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 0.9rem;
+  background: var(--surface);
+}
+
 .finance-kpi-grid {
   margin-bottom: 0;
 }

@@ -1,16 +1,40 @@
-# React + Vite
+# Hotel ERP Demo (React + Vite)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Integrated hotel ERP / PMS demo built with React, React Router, and in-memory demo data.
 
-Currently, two official plugins are available:
+## Local development
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+```bash
+npm install
+npm run dev
+```
 
-## React Compiler
+Open `http://localhost:5173` — demo login password: `demo`
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## GitHub Pages
 
-## Expanding the ESLint configuration
+This app is configured for project-site hosting at:
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+**https://techknomatic-mukund.github.io/hms/**
+
+### One-time GitHub setup
+
+1. Push this repo to GitHub (`techknomatic-mukund/hms`).
+2. Go to **Settings → Pages**.
+3. Under **Build and deployment**, set **Source** to **Deploy from a branch**.
+4. Choose branch **`gh-pages`**, folder **`/ (root)`**, then **Save**.
+5. Push to `main`, `master`, or `muknd` — the workflow in `.github/workflows/deploy-pages.yml` builds `website/` and publishes to `gh-pages`.
+
+After the workflow finishes (Actions tab), the site is live at the URL above.
+
+### Test production build locally
+
+```bash
+npm run preview:pages
+```
+
+Then open the URL shown in the terminal (paths use the `/hms/` base, same as GitHub Pages).
+
+## If the repo name changes
+
+Update the base path in `vite.config.js` (`GITHUB_PAGES_BASE`) and `homepage` in `package.json` to match the new repo name.

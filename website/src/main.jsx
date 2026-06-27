@@ -6,9 +6,11 @@ import { StoreProvider } from './context/StoreContext'
 import './index.css'
 import App from './App.jsx'
 
+const routerBasename = import.meta.env.BASE_URL.replace(/\/$/, '') || undefined
+
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <BrowserRouter>
+    <BrowserRouter basename={routerBasename}>
       <AuthProvider>
         <StoreProvider>
           <App />

@@ -1,24 +1,16 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useStore } from '../context/StoreContext'
-import { PageShell, SectionHeader, FeatureGrid, Badge } from '../components/UI'
+import { PageShell, SectionHeader, StatCard, Badge } from '../components/UI'
 import { CrudTable } from '../components/CrudTable'
 import EmployeeModal from '../components/EmployeeModal'
-import InfoModal from '../components/InfoModal'
 import DeleteConfirmModal, { ViewDetailModal } from '../components/DeleteConfirmModal'
 import { useCrudModal } from '../hooks/useCrudModal'
-import { nextId } from '../utils/helpers'
-
-const features = [
-  'Employee Management', 'Attendance Management', 'Leave Management', 'Payroll Management',
-  'Recruitment Management', 'Performance Management', 'Employee Document Management',
-  'Reports & Analytics', 'Role & Permission Management', 'Notification Management',
-]
+import { formatINR } from '../utils/helpers'
 
 export default function HRMS() {
   const store = useStore()
   const crud = useCrudModal()
   const [empModal, setEmpModal] = useState({ open: false, item: null })
-  const [mobileOpen, setMobileOpen] = useState(false)
 
   const cols = [
     { key: 'id', label: 'ID' },
@@ -37,41 +29,42 @@ export default function HRMS() {
     { key: 'systemRole', label: 'Role' },
   ]
 
-  const handleLeave = (id, decision) => {
-    store.update('leaveRequests', 'HRMS', id, { status: decision })
-    const leave = store.leaveRequests.find((l) => l.id === id)
-    if (leave && decision === 'approved') {
-      store.update('employees', 'HRMS', store.employees.find((e) => e.name === leave.name)?.id, { attendance: 'On Leave', leave: 'Approved' })
-    }
-  }
+  const stats = useMemo(() => {
+    const { employees, leaveRequests } = store
+    const present = employees.filter((e) => e.attendance === 'Present').length
+    const onLeave = employees.filter((e) => e.attendance === 'On Leave').length
+    const pendingLeave = leaveRequests.filter((l) => l.status === 'pending').length
+    const payroll = employees.reduce((sum, e) => sum + (parseFloat(e.salary) || 0), 0)
+    const departments = new Set(employees.map((e) => e.dept)).size
+    const avgRating = employees.filter((e) => e.performanceRating).length
+      ? (employees.reduce((sum, e) => sum + (parseFloat(e.performanceRating) || 0), 0)
+        / employees.filter((e) => e.performanceRating).length).toFixed(1)
+      : '—'
+
+    return [
+      { label: 'Total Employees', value: String(employees.length), trend: 'neutral' },
+      { label: 'Present Today', value: String(present), trend: 'up' },
+      { label: 'On Leave', value: String(onLeave), trend: onLeave > 0 ? 'down' : 'neutral' },
+      { label: 'Pending Leave', value: String(pendingLeave), trend: pendingLeave > 0 ? 'down' : 'neutral' },
+      { label: 'Monthly Payroll', value: formatINR(payroll), trend: 'neutral' },
+      { label: 'Departments', value: String(departments), trend: 'neutral' },
+      { label: 'Avg Performance', value: avgRating === '—' ? avgRating : `${avgRating} / 5`, trend: 'up' },
+    ]
+  }, [store.employees, store.leaveRequests])
 
   return (
-    <PageShell title="HRMS" description="Employees, attendance, leave approvals & payroll">
-      <section className="panel"><SectionHeader title="Module Features" /><FeatureGrid features={features} /></section>
+    <PageShell title="HRMS" description="Employees, attendance, leave & payroll">
+      <div className="stats-grid">
+        {stats.map((s) => (
+          <StatCard key={s.label} label={s.label} value={s.value} trend={s.trend} />
+        ))}
+      </div>
+
       <section className="panel">
         <SectionHeader title="Employee Directory" action={<button type="button" className="btn btn-primary" onClick={() => setEmpModal({ open: true, item: null })}>+ Add Employee</button>} />
         <CrudTable columns={cols} rows={store.employees} onView={crud.openView} onEdit={(item) => setEmpModal({ open: true, item })} onDelete={crud.openDelete} />
       </section>
-      <div className="two-col">
-        <section className="panel">
-          <SectionHeader title="Leave Approvals" subtitle="Manager → Finance → GM workflow" />
-          {store.leaveRequests.map((leave) => (
-            <div key={leave.id} className="approval-item">
-              <div><strong>{leave.name}</strong><span>{leave.detail}</span>{leave.status !== 'pending' && <Badge variant={leave.status === 'approved' ? 'success' : 'warning'}>{leave.status}</Badge>}</div>
-              {leave.status === 'pending' && (
-                <div className="approval-actions">
-                  <button type="button" className="btn btn-success btn-sm" onClick={() => handleLeave(leave.id, 'approved')}>Approve</button>
-                  <button type="button" className="btn btn-secondary btn-sm" onClick={() => handleLeave(leave.id, 'rejected')}>Reject</button>
-                </div>
-              )}
-            </div>
-          ))}
-        </section>
-        <section className="panel">
-          <SectionHeader title="Mobile Access" />
-          <button type="button" className="btn btn-secondary" onClick={() => setMobileOpen(true)}>Open Mobile Portal</button>
-        </section>
-      </div>
+
       <EmployeeModal
         open={empModal.open}
         editItem={empModal.item}
@@ -84,7 +77,6 @@ export default function HRMS() {
       />
       <ViewDetailModal open={crud.isView} onClose={crud.closeModal} title="Employee" data={crud.item} fields={viewFields} />
       <DeleteConfirmModal open={!!crud.deleteTarget} onClose={crud.closeDelete} onConfirm={() => store.remove('employees', 'HRMS', crud.deleteTarget.id)} itemName={crud.deleteTarget?.name} />
-      <InfoModal open={mobileOpen} onClose={() => setMobileOpen(false)} title="Mobile Portal"><p>Attendance, leave & payslip access.</p></InfoModal>
     </PageShell>
   )
 }

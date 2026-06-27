@@ -1,18 +1,12 @@
 import { useState } from 'react'
 import { useStore } from '../context/StoreContext'
-import { PageShell, SectionHeader, FeatureGrid, Badge } from '../components/UI'
+import { PageShell, SectionHeader, Badge } from '../components/UI'
 import { CrudTable } from '../components/CrudTable'
 import AddMenuItemModal from '../components/AddMenuItemModal'
 import NewPosOrderModal from '../components/NewPosOrderModal'
 import DeleteConfirmModal, { ViewDetailModal } from '../components/DeleteConfirmModal'
 import { useCrudModal } from '../hooks/useCrudModal'
-import { formatINR, nextId } from '../utils/helpers'
-
-const features = [
-  'Order Management', 'Table Reservation Management', 'Kitchen Integration',
-  'Billing & Payment Management', 'Room Charge Posting', 'Discount & Offer Management',
-  'Split Billing', 'Order Status Tracking', 'Menu Management', 'Restaurant Reports & Analytics',
-]
+import { nextId } from '../utils/helpers'
 
 const orderBadge = (s) => {
   if (s === 'Paid') return 'success'
@@ -26,9 +20,6 @@ export default function POS() {
   const orderCrud = useCrudModal()
   const [menuModal, setMenuModal] = useState({ open: false, item: null })
   const [orderModal, setOrderModal] = useState({ open: false, item: null })
-  const [taxMode, setTaxMode] = useState('inclusive')
-  const [autoTax, setAutoTax] = useState(true)
-  const [taxSaved, setTaxSaved] = useState(false)
 
   const menuCols = [
     { key: 'name', label: 'Item' },
@@ -40,28 +31,21 @@ export default function POS() {
   const orderCols = [
     { key: 'id', label: 'Order' },
     { key: 'table', label: 'Table/Room' },
-    { key: 'orderType', label: 'Type', render: (row) => row.orderType || '—' },
+    { key: 'waiter', label: 'Waiter' },
     { key: 'items', label: 'Items' },
     { key: 'amount', label: 'Amount' },
     { key: 'payment', label: 'Payment' },
-    { key: 'trackingStatus', label: 'Tracking', render: (row) => row.trackingStatus || '—' },
     { key: 'status', label: 'Status', render: (row) => <Badge variant={orderBadge(row.status)}>{row.status}</Badge> },
   ]
 
   const orderViewFields = [
     ...orderCols,
-    { key: 'waiter', label: 'Waiter' },
-    { key: 'kitchenNote', label: 'Kitchen Notes' },
-    { key: 'discountType', label: 'Discount' },
-    { key: 'roomCharge', label: 'Room Charge', render: (r) => (r.roomCharge ? `Room ${r.roomNumber}` : 'No') },
-    { key: 'splitBilling', label: 'Split Bill', render: (r) => (r.splitBilling ? `Yes (${r.splitCount})` : 'No') },
-    { key: 'reportTag', label: 'Report Tag' },
+    { key: 'subtotal', label: 'Subtotal', render: (r) => (r.subtotal != null ? `₹${Number(r.subtotal).toLocaleString('en-IN')}` : '—') },
+    { key: 'taxAmount', label: 'Tax', render: (r) => (r.taxAmount != null ? `₹${Number(r.taxAmount).toLocaleString('en-IN')}` : '—') },
   ]
 
   return (
     <PageShell title="Restaurant & POS" description="Restaurant billing — syncs orders to Kitchen module">
-      <section className="panel"><SectionHeader title="Module Features" /><FeatureGrid features={features} /></section>
-
       <div className="pos-layout">
         <section className="panel pos-menu">
           <SectionHeader title="Menu" action={<button type="button" className="btn btn-secondary" onClick={() => setMenuModal({ open: true, item: null })}>+ Add Item</button>} />
@@ -72,16 +56,6 @@ export default function POS() {
           <CrudTable columns={orderCols} rows={store.posOrders} onView={orderCrud.openView} onEdit={(item) => setOrderModal({ open: true, item })} onDelete={orderCrud.openDelete} />
         </section>
       </div>
-
-      <section className="panel">
-        <SectionHeader title="Tax Configuration" action={<button type="button" className="btn btn-primary btn-sm" onClick={() => { setTaxSaved(true); setTimeout(() => setTaxSaved(false), 2500) }}>Save Config</button>} />
-        <div className="tax-config">
-          <label className="tax-option"><input type="radio" name="tax" checked={taxMode === 'inclusive'} onChange={() => setTaxMode('inclusive')} /> GST — Tax inclusive</label>
-          <label className="tax-option"><input type="radio" name="tax" checked={taxMode === 'exclusive'} onChange={() => setTaxMode('exclusive')} /> GST — Tax exclusive</label>
-          <label className="tax-option"><input type="checkbox" checked={autoTax} onChange={(e) => setAutoTax(e.target.checked)} /> Automatic tax calculation</label>
-        </div>
-        {taxSaved && <p className="save-toast">Tax configuration saved</p>}
-      </section>
 
       <AddMenuItemModal
         open={menuModal.open}
@@ -96,6 +70,7 @@ export default function POS() {
       <NewPosOrderModal
         open={orderModal.open}
         editItem={orderModal.item}
+        menuItems={store.menuItems}
         onClose={() => setOrderModal({ open: false, item: null })}
         onSubmit={(order) => {
           if (orderModal.item) {
@@ -111,7 +86,7 @@ export default function POS() {
                 station: 'Main Kitchen',
                 status: 'Queued',
                 chefName: '',
-                queuePriority: order.kitchenPriority || 'Normal',
+                queuePriority: 'Normal',
               }, `From ${id}`)
             }
           }

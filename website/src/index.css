@@ -218,6 +218,10 @@ p { margin: 0; }
 .two-col { margin-bottom: 20px; }
 
 /* Stats */
+.finance-kpi-grid {
+  margin-bottom: 0;
+}
+
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
@@ -868,6 +872,90 @@ p { margin: 0; }
 
 .inline-field-row input { flex: 1; }
 
+/* Laundry order form */
+.service-type-toggle {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.service-type-toggle button {
+  flex: 1;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.service-type-toggle button.active {
+  background: var(--navy);
+  color: #fff;
+  border-color: var(--navy);
+}
+
+.laundry-lines-section {
+  margin: 16px 0;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+
+.laundry-lines-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--navy);
+}
+
+.laundry-line-row {
+  display: grid;
+  grid-template-columns: 1fr 80px 100px 32px;
+  gap: 10px;
+  align-items: end;
+  margin-bottom: 10px;
+}
+
+.laundry-line-remove {
+  margin-bottom: 4px;
+  font-size: 1.2rem;
+}
+
+.pos-billing-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-bottom: 1rem;
+}
+
+.laundry-total-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 16px;
+  background: #f0f7ff;
+  border: 1px solid #bee3f8;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  font-size: 1rem;
+}
+
+.laundry-total-row span {
+  font-weight: 700;
+  color: var(--navy);
+  font-size: 1.1rem;
+}
+
+.readonly-field {
+  background: var(--bg);
+  cursor: default;
+}
+
 .sidebar-overlay { display: none; }
 
 /* Responsive */
@@ -901,6 +989,7 @@ p { margin: 0; }
   .form-grid { grid-template-columns: 1fr; }
   .calendar-weekly { grid-template-columns: repeat(2, 1fr); }
   .calendar-monthly { grid-template-columns: repeat(7, minmax(40px, 1fr)); }
+  .laundry-line-row { grid-template-columns: 1fr; }
 }
 
 /* Login */

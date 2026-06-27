@@ -1,37 +1,96 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Modal } from './UI'
 import { FormActions, FormField } from './FormFields'
-import FormSection from './FormSection'
+import { ROOM_OPTIONS } from '../utils/reservationHelpers'
 
 const PRIORITIES = ['Low', 'Medium', 'High', 'Urgent']
 const STATUSES = ['Open', 'In Progress', 'Resolved', 'Closed']
-const MAINTENANCE_TYPES = ['Corrective', 'Preventive', 'Emergency', 'Inspection']
-const TRACKING_STATUSES = ['Assigned', 'En Route', 'On Site', 'Parts Ordered', 'Completed']
-const COST_CATEGORIES = ['Room Repair', 'HVAC', 'Plumbing', 'Electrical', 'Elevator', 'General']
+const COMMON_AREA = 'Common Area'
+
+const ROOM_ASSET_TYPES = ['AC Unit', 'Plumbing', 'Electrical', 'HVAC', 'Door Lock', 'TV / Entertainment']
+const BUILDING_ASSETS = [
+  'Elevator A',
+  'Elevator B',
+  'Boiler Room',
+  'Generator',
+  'Kitchen Exhaust System',
+  'Pool Pump',
+  'Laundry Equipment',
+  'Main Electrical Panel',
+  'Fire Safety System',
+]
+
+function resolveRoomValue(room) {
+  if (!room) return ROOM_OPTIONS[0]
+  if (room === COMMON_AREA) return COMMON_AREA
+  if (ROOM_OPTIONS.includes(room)) return room
+  const byNumber = ROOM_OPTIONS.find((r) => r.split(' ').pop() === String(room).replace(/^Room\s+/i, ''))
+  return byNumber || ROOM_OPTIONS[0]
+}
+
+function parseAssetFields(editItem) {
+  const asset = editItem?.asset || ''
+  const storedRoom = editItem?.room
+
+  if (storedRoom) {
+    const room = resolveRoomValue(storedRoom)
+    if (room === COMMON_AREA) {
+      const assetType = BUILDING_ASSETS.includes(asset) ? asset : BUILDING_ASSETS[0]
+      return { room, assetType }
+    }
+    if (asset.includes(' — ')) {
+      const assetType = asset.split(' — ')[0].trim()
+      return {
+        room,
+        assetType: ROOM_ASSET_TYPES.includes(assetType) ? assetType : ROOM_ASSET_TYPES[0],
+      }
+    }
+    return { room, assetType: ROOM_ASSET_TYPES[0] }
+  }
+
+  if (BUILDING_ASSETS.includes(asset)) {
+    return { room: COMMON_AREA, assetType: asset }
+  }
+
+  if (asset.includes(' — ')) {
+    const [assetType, ...rest] = asset.split(' — ')
+    const roomPart = rest.join(' — ').trim()
+    const room = ROOM_OPTIONS.find(
+      (r) => r === roomPart || r.split(' ').pop() === roomPart.replace(/^Room\s+/i, ''),
+    ) || ROOM_OPTIONS[0]
+    return {
+      room,
+      assetType: ROOM_ASSET_TYPES.includes(assetType.trim()) ? assetType.trim() : ROOM_ASSET_TYPES[0],
+    }
+  }
+
+  return { room: ROOM_OPTIONS[0], assetType: ROOM_ASSET_TYPES[0] }
+}
+
+function buildAssetLabel(room, assetType) {
+  return room === COMMON_AREA ? assetType : `${assetType} — ${room}`
+}
 
 const getEmpty = () => ({
-  asset: '',
+  room: ROOM_OPTIONS[0],
+  assetType: ROOM_ASSET_TYPES[0],
   complaint: '',
   priority: 'Medium',
   assignee: 'Maintenance Team',
   status: 'Open',
-  scheduledDate: '',
-  scheduledTime: '',
-  maintenanceType: 'Corrective',
-  assetHistory: '',
-  historyNote: '',
-  spareParts: '',
-  partsCost: '',
-  technicianPhone: '',
-  trackingStatus: 'Assigned',
-  laborCost: '',
-  totalCost: '',
-  costCategory: 'General',
 })
 
 function itemToForm(editItem) {
   if (!editItem) return getEmpty()
-  return { ...getEmpty(), ...editItem }
+  const { room, assetType } = parseAssetFields(editItem)
+  return {
+    room,
+    assetType,
+    complaint: editItem.complaint || '',
+    priority: editItem.priority || 'Medium',
+    assignee: editItem.assignee || 'Maintenance Team',
+    status: editItem.status || 'Open',
+  }
 }
 
 export default function MaintenanceWorkOrderModal({ open, onClose, onSubmit, editItem = null, technicians = [] }) {
@@ -45,33 +104,29 @@ export default function MaintenanceWorkOrderModal({ open, onClose, onSubmit, edi
     setErrors({})
   }, [open, editItem])
 
+  const assetOptions = useMemo(
+    () => (form.room === COMMON_AREA ? BUILDING_ASSETS : ROOM_ASSET_TYPES),
+    [form.room],
+  )
+
   const update = (field, value) => {
     setForm((prev) => {
       const next = { ...prev, [field]: value }
-      if (field === 'laborCost' || field === 'partsCost') {
-        const labor = parseFloat(field === 'laborCost' ? value : prev.laborCost) || 0
-        const parts = parseFloat(field === 'partsCost' ? value : prev.partsCost) || 0
-        next.totalCost = labor + parts > 0 ? String(labor + parts) : ''
+      if (field === 'room') {
+        const options = value === COMMON_AREA ? BUILDING_ASSETS : ROOM_ASSET_TYPES
+        if (!options.includes(prev.assetType)) {
+          next.assetType = options[0]
+        }
       }
       return next
     })
     setErrors((prev) => ({ ...prev, [field]: '' }))
   }
 
-  const appendHistory = () => {
-    if (!form.historyNote.trim()) return
-    const stamp = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })
-    const line = `${stamp} — ${form.maintenanceType}: ${form.historyNote.trim()}`
-    setForm((prev) => ({
-      ...prev,
-      assetHistory: prev.assetHistory ? `${line}\n${prev.assetHistory}` : line,
-      historyNote: '',
-    }))
-  }
-
   const validate = () => {
     const next = {}
-    if (!form.asset.trim()) next.asset = 'Asset is required'
+    if (!form.room) next.room = 'Room is required'
+    if (!form.assetType) next.assetType = 'Asset is required'
     if (!form.complaint.trim()) next.complaint = 'Complaint description is required'
     setErrors(next)
     return Object.keys(next).length === 0
@@ -81,21 +136,34 @@ export default function MaintenanceWorkOrderModal({ open, onClose, onSubmit, edi
     e.preventDefault()
     if (!validate()) return
     onSubmit({
-      ...form,
-      asset: form.asset.trim(),
+      room: form.room,
+      asset: buildAssetLabel(form.room, form.assetType),
       complaint: form.complaint.trim(),
-      spareParts: form.spareParts.trim(),
+      priority: form.priority,
+      assignee: form.assignee,
+      status: form.status,
     })
   }
 
   const techList = technicians.length ? technicians : ['Maintenance Team', 'Karan Singh', 'Electrical Team', 'HVAC Team']
 
   return (
-    <Modal open={open} onClose={onClose} title={isEdit ? 'Edit Work Order' : 'New Work Order'} wide>
+    <Modal open={open} onClose={onClose} title={isEdit ? 'Edit Work Order' : 'New Work Order'}>
       <form className="entity-form" onSubmit={handleSubmit}>
         <div className="form-grid">
-          <FormField label="Asset" required error={errors.asset} full>
-            <input type="text" value={form.asset} placeholder="e.g. AC Unit — Room 305" onChange={(e) => update('asset', e.target.value)} />
+          <FormField label="Room" required error={errors.room}>
+            <select value={form.room} onChange={(e) => update('room', e.target.value)}>
+              {ROOM_OPTIONS.map((room) => <option key={room} value={room}>{room}</option>)}
+              <option value={COMMON_AREA}>{COMMON_AREA}</option>
+            </select>
+          </FormField>
+          <FormField label="Asset" required error={errors.assetType}>
+            <select value={form.assetType} onChange={(e) => update('assetType', e.target.value)}>
+              {assetOptions.map((a) => <option key={a} value={a}>{a}</option>)}
+              {!assetOptions.includes(form.assetType) && form.assetType && (
+                <option value={form.assetType}>{form.assetType}</option>
+              )}
+            </select>
           </FormField>
           <FormField label="Complaint" required error={errors.complaint} full>
             <textarea rows={2} value={form.complaint} onChange={(e) => update('complaint', e.target.value)} />
@@ -110,82 +178,12 @@ export default function MaintenanceWorkOrderModal({ open, onClose, onSubmit, edi
               {STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
             </select>
           </FormField>
-        </div>
-
-        <FormSection title="Maintenance Scheduling" subtitle="Plan preventive or corrective maintenance visits">
-          <div className="form-grid">
-            <FormField label="Maintenance Type">
-              <select value={form.maintenanceType} onChange={(e) => update('maintenanceType', e.target.value)}>
-                {MAINTENANCE_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
-              </select>
-            </FormField>
-            <FormField label="Scheduled Date">
-              <input type="date" value={form.scheduledDate} onChange={(e) => update('scheduledDate', e.target.value)} />
-            </FormField>
-            <FormField label="Scheduled Time">
-              <input type="time" value={form.scheduledTime} onChange={(e) => update('scheduledTime', e.target.value)} />
-            </FormField>
-          </div>
-        </FormSection>
-
-        <FormSection title="Asset Maintenance History" subtitle="Complete service history for this asset">
-          {form.assetHistory && <pre className="interaction-log">{form.assetHistory}</pre>}
-          <FormField label="Add History Entry" full>
-            <div className="inline-field-row">
-              <input type="text" value={form.historyNote} placeholder="e.g. Filter replaced, coolant topped up" onChange={(e) => update('historyNote', e.target.value)} />
-              <button type="button" className="btn btn-secondary btn-sm" onClick={appendHistory}>Add Entry</button>
-            </div>
+          <FormField label="Technician" full>
+            <select value={form.assignee} onChange={(e) => update('assignee', e.target.value)}>
+              {techList.map((t) => <option key={t} value={t}>{t}</option>)}
+            </select>
           </FormField>
-        </FormSection>
-
-        <FormSection title="Spare Parts Inventory" subtitle="Parts used and inventory deduction">
-          <div className="form-grid">
-            <FormField label="Spare Parts Used" full>
-              <input type="text" value={form.spareParts} placeholder="e.g. AC filter x1, Capacitor x1" onChange={(e) => update('spareParts', e.target.value)} />
-            </FormField>
-            <FormField label="Parts Cost (₹)">
-              <input type="number" min="0" value={form.partsCost} onChange={(e) => update('partsCost', e.target.value)} />
-            </FormField>
-          </div>
-        </FormSection>
-
-        <FormSection title="Technician Assignment & Tracking" subtitle="Assign technician and track field progress">
-          <div className="form-grid">
-            <FormField label="Technician">
-              <select value={form.assignee} onChange={(e) => update('assignee', e.target.value)}>
-                {techList.map((t) => <option key={t} value={t}>{t}</option>)}
-              </select>
-            </FormField>
-            <FormField label="Contact Phone">
-              <input type="tel" value={form.technicianPhone} placeholder="+91..." onChange={(e) => update('technicianPhone', e.target.value)} />
-            </FormField>
-            <FormField label="Tracking Status">
-              <select value={form.trackingStatus} onChange={(e) => update('trackingStatus', e.target.value)}>
-                {TRACKING_STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
-              </select>
-            </FormField>
-          </div>
-        </FormSection>
-
-        <FormSection title="Maintenance Cost Analysis" subtitle="Labor, parts and total cost breakdown">
-          <div className="form-grid">
-            <FormField label="Cost Category">
-              <select value={form.costCategory} onChange={(e) => update('costCategory', e.target.value)}>
-                {COST_CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
-              </select>
-            </FormField>
-            <FormField label="Labor Cost (₹)">
-              <input type="number" min="0" value={form.laborCost} onChange={(e) => update('laborCost', e.target.value)} />
-            </FormField>
-            <FormField label="Parts Cost (₹)">
-              <input type="number" min="0" value={form.partsCost} onChange={(e) => update('partsCost', e.target.value)} />
-            </FormField>
-            <FormField label="Total Cost (₹)">
-              <input type="number" min="0" value={form.totalCost} readOnly placeholder="Auto-calculated" />
-            </FormField>
-          </div>
-        </FormSection>
-
+        </div>
         <FormActions onCancel={onClose} submitLabel={isEdit ? 'Update Work Order' : 'Create Work Order'} />
       </form>
     </Modal>

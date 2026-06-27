@@ -1,18 +1,27 @@
 import { useMemo, useState } from 'react'
-import { financeSummary } from '../data/initialState'
+import { financeRevenueSummary, financeExpenseSummary } from '../data/initialState'
 import { useStore } from '../context/StoreContext'
-import { PageShell, SectionHeader, FeatureGrid, StatCard, Badge } from '../components/UI'
+import { PageShell, SectionHeader, StatCard, Badge } from '../components/UI'
 import { CrudTable } from '../components/CrudTable'
 import FinanceTransactionModal, { formatTransactionRow } from '../components/FinanceTransactionModal'
 import DeleteConfirmModal, { ViewDetailModal } from '../components/DeleteConfirmModal'
 import { useCrudModal } from '../hooks/useCrudModal'
 import { formatINR, nextId } from '../utils/helpers'
 
-const features = [
-  'Invoice Management', 'Guest Folio Management', 'Revenue Management', 'Expense Management',
-  'GST & Tax Management', 'Accounts Management', 'Transaction Recording', 'Payment Management',
-  'Financial Reporting', 'Budget & Cost Control', 'Audit Trail', 'Integration Management',
-]
+function KpiGrid({ items }) {
+  return (
+    <div className="stats-grid finance-kpi-grid">
+      {items.map((s) => (
+        <StatCard
+          key={s.label}
+          label={s.label}
+          value={s.value}
+          trend={s.type === 'expense' ? 'down' : 'neutral'}
+        />
+      ))}
+    </div>
+  )
+}
 
 export default function Finance() {
   const store = useStore()
@@ -38,25 +47,45 @@ export default function Finance() {
     { key: 'sourceModule', label: 'Source Module' },
   ]
 
-  const stats = useMemo(() => {
+  const totals = useMemo(() => {
     const parseAmt = (s) => parseFloat(String(s).replace(/[^\d.]/g, '')) || 0
-    let revenue = 12400000; let expense = 6850000
+    let revenue = 12400000
+    let expense = 6850000
     store.transactions.forEach((t) => {
       const amt = parseAmt(t.amount)
-      if (t.type === 'Revenue') revenue += amt; else expense += amt
+      if (t.type === 'Revenue') revenue += amt
+      else expense += amt
     })
     return [
       { label: 'Total Revenue (MTD)', value: formatINR(revenue), type: 'revenue' },
       { label: 'Total Expenses (MTD)', value: formatINR(expense), type: 'expense' },
       { label: 'Net P&L (MTD)', value: formatINR(revenue - expense), type: 'profit' },
-      ...financeSummary,
     ]
   }, [store.transactions])
 
   return (
     <PageShell title="Finance" description="Billing, GST, revenue, expenses — integrated with all operations">
-      <section className="panel"><SectionHeader title="Module Features" /><FeatureGrid features={features} /></section>
-      <div className="stats-grid">{stats.map((s) => <StatCard key={s.label} label={s.label} value={s.value} trend={s.type === 'profit' ? 'up' : s.type === 'expense' ? 'down' : 'neutral'} />)}</div>
+      <div className="stats-grid">
+        {totals.map((s) => (
+          <StatCard
+            key={s.label}
+            label={s.label}
+            value={s.value}
+            trend={s.type === 'profit' ? 'up' : s.type === 'expense' ? 'down' : 'neutral'}
+          />
+        ))}
+      </div>
+
+      <section className="panel">
+        <SectionHeader title="Revenue" />
+        <KpiGrid items={financeRevenueSummary} />
+      </section>
+
+      <section className="panel">
+        <SectionHeader title="Expenses" />
+        <KpiGrid items={financeExpenseSummary} />
+      </section>
+
       <section className="panel">
         <SectionHeader title="Transactions" action={<button type="button" className="btn btn-primary" onClick={() => setModal({ open: true, item: null })}>+ Record Transaction</button>} />
         <CrudTable columns={cols} rows={store.transactions} onView={crud.openView} onEdit={(item) => setModal({ open: true, item })} onDelete={crud.openDelete} />

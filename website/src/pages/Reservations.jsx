@@ -70,10 +70,10 @@ export default function Reservations() {
       title="Reservation Management"
       description="Calendar, multi-room bookings, upgrades, notes & full audit history"
     >
-      <section className="panel">
+      {/* <section className="panel">
         <SectionHeader title="Module Features" />
         <FeatureGrid features={features} />
-      </section>
+      </section> */}
 
       <section className="panel">
         <SectionHeader
@@ -111,7 +111,7 @@ export default function Reservations() {
         </div>
       </section>
 
-      <section className="panel">
+      {/* <section className="panel">
         <SectionHeader title="Quick Actions" />
         <div className="action-grid">
           {store.reservations.slice(0, 4).map((r) => (
@@ -120,7 +120,7 @@ export default function Reservations() {
             </button>
           ))}
         </div>
-      </section>
+      </section> */}
 
       <ReservationModal
         open={resModal.open}

@@ -1,12 +1,10 @@
 import { useState } from 'react'
 import { useStore } from '../context/StoreContext'
-import { PageShell, SectionHeader, FeatureGrid, Badge } from '../components/UI'
+import { PageShell, SectionHeader, Badge } from '../components/UI'
 import { CrudTable } from '../components/CrudTable'
 import NewAddonBookingModal from '../components/NewAddonBookingModal'
 import DeleteConfirmModal, { ViewDetailModal } from '../components/DeleteConfirmModal'
 import { useCrudModal } from '../hooks/useCrudModal'
-
-const serviceCategories = ['Spa', 'Gym', 'Pool', 'Airport Pickup', 'Vehicle Rental', 'Health Club']
 
 export default function AddOnServices() {
   const store = useStore()
@@ -21,7 +19,6 @@ export default function AddOnServices() {
 
   return (
     <PageShell title="Membership & Add-on Services" description="Spa, gym, pool, airport pickup — billed to guest folio">
-      <section className="panel"><SectionHeader title="Services" /><FeatureGrid features={serviceCategories} /></section>
       <section className="panel">
         <SectionHeader title="Bookings" action={<button type="button" className="btn btn-primary" onClick={() => setModal({ open: true, item: null })}>+ New Booking</button>} />
         <CrudTable columns={cols} rows={store.addonBookings} keyField="id" onView={crud.openView} onEdit={(item) => setModal({ open: true, item })} onDelete={crud.openDelete} />

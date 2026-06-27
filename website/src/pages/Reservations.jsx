@@ -1,25 +1,25 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useStore } from '../context/StoreContext'
-import { PageShell, SectionHeader, FeatureGrid, Badge } from '../components/UI'
+import { PageShell, SectionHeader, Badge } from '../components/UI'
 import { CrudTable } from '../components/CrudTable'
+import FrontOfficeDashboard from '../components/FrontOfficeDashboard'
 import ReservationCalendar from '../components/ReservationCalendar'
 import ReservationModal from '../components/ReservationModal'
+import GuestCheckInModal from '../components/GuestCheckInModal'
 import RoomTransferModal from '../components/RoomTransferModal'
 import ReservationHistoryModal from '../components/ReservationHistoryModal'
 import DeleteConfirmModal, { ViewDetailModal } from '../components/DeleteConfirmModal'
 import { useCrudModal } from '../hooks/useCrudModal'
 import { normalizeReservation } from '../utils/reservationHelpers'
-
-const features = [
-  'Reservation Calendar', 'Multi-Room Booking', 'Room Upgrade / Transfer',
-  'Reservation Notes', 'Reservation History', 'Corporate', 'Waitlist',
-]
+import { computeFrontOfficeDashboard } from '../utils/frontOfficeMetrics'
 
 const statusBadge = (s) => {
   if (s === 'Checked In') return 'success'
   if (s === 'Confirmed') return 'info'
   if (s === 'Checked Out') return 'muted'
   if (s === 'Cancelled') return 'warning'
+  if (s === 'Tentative') return 'default'
+  if (s === 'No Show') return 'warning'
   return 'default'
 }
 
@@ -27,9 +27,15 @@ export default function Reservations() {
   const store = useStore()
   const crud = useCrudModal()
   const [resModal, setResModal] = useState({ open: false, item: null })
+  const [checkInModal, setCheckInModal] = useState({ open: false, item: null })
   const [transferOpen, setTransferOpen] = useState(false)
   const [transferPreselect, setTransferPreselect] = useState(null)
   const [historyItem, setHistoryItem] = useState(null)
+
+  const dashboardMetrics = useMemo(
+    () => computeFrontOfficeDashboard(store),
+    [store],
+  )
 
   const cols = [
     { key: 'id', label: 'Ref' },
@@ -67,13 +73,10 @@ export default function Reservations() {
 
   return (
     <PageShell
-      title="Reservation Management"
-      description="Calendar, multi-room bookings, upgrades, notes & full audit history"
+      title="Front Office Dashboard"
+      description="Room availability, arrivals, reservations, payments & guest alerts"
     >
-      {/* <section className="panel">
-        <SectionHeader title="Module Features" />
-        <FeatureGrid features={features} />
-      </section> */}
+      <FrontOfficeDashboard metrics={dashboardMetrics} />
 
       <section className="panel">
         <SectionHeader
@@ -102,12 +105,13 @@ export default function Reservations() {
         <CrudTable
           columns={cols}
           rows={store.reservations}
+          editTitle="Guest Check-In"
           onView={crud.openView}
-          onEdit={(item) => setResModal({ open: true, item })}
+          onEdit={(item) => setCheckInModal({ open: true, item })}
           onDelete={crud.openDelete}
         />
         <div className="table-extra-actions">
-          <span className="info-text">Per-row: use View for details · History available via calendar click or actions below</span>
+          <span className="info-text">Use ✏️ for Guest Check-In · View for details · Calendar click for history</span>
         </div>
       </section>
 
@@ -123,15 +127,24 @@ export default function Reservations() {
       </section> */}
 
       <ReservationModal
-        open={resModal.open}
-        editItem={resModal.item}
+        open={resModal.open && !resModal.item}
+        editItem={null}
         reservations={store.reservations}
         onClose={() => setResModal({ open: false, item: null })}
         onSubmit={(data) => {
-          if (resModal.item) store.updateReservation(resModal.item.id, data)
-          else store.createReservation(data)
+          store.createReservation(data)
           setResModal({ open: false, item: null })
         }}
+      />
+
+      <GuestCheckInModal
+        open={checkInModal.open}
+        reservation={checkInModal.item}
+        reservations={store.reservations}
+        maintenanceTickets={store.maintenanceTickets}
+        onClose={() => setCheckInModal({ open: false, item: null })}
+        onCheckIn={store.checkIn}
+        onUpdate={(id, data) => store.updateReservation(id, data)}
       />
 
       <RoomTransferModal

@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import { useStore } from '../context/StoreContext'
 import CrudModule from '../components/CrudModule'
 import LaundryOrderModal from '../components/LaundryOrderModal'
@@ -8,6 +9,8 @@ const viewFields = [
   { key: 'id', label: 'Ref' },
   { key: 'guest', label: 'Guest' },
   { key: 'room', label: 'Room' },
+  { key: 'collectedBy', label: 'Collected By' },
+  { key: 'employeeId', label: 'Employee ID' },
   { key: 'items', label: 'Items' },
   { key: 'service', label: 'Service' },
   { key: 'amount', label: 'Amount' },
@@ -17,6 +20,11 @@ const viewFields = [
 export default function Laundry() {
   const store = useStore()
   const key = 'laundryOrders'
+
+  const laundryStaff = useMemo(
+    () => store.employees.filter((e) => e.dept === 'Laundry'),
+    [store.employees],
+  )
 
   return (
     <CrudModule
@@ -29,6 +37,7 @@ export default function Laundry() {
         { key: 'id', label: 'Ref' },
         { key: 'guest', label: 'Guest' },
         { key: 'room', label: 'Room' },
+        { key: 'collectedBy', label: 'Collected By', render: (r) => r.collectedBy || '—' },
         { key: 'items', label: 'Items' },
         {
           key: 'service',
@@ -46,7 +55,13 @@ export default function Laundry() {
       onCreate={(f) => store.create(key, 'LD-', 'Laundry', { ...f, amount: formatINR(f.amount) })}
       onUpdate={(id, f) => store.update(key, 'Laundry', id, { ...f, amount: f.amount?.toString?.().includes?.('₹') ? f.amount : formatINR(f.amount) })}
       onDelete={(id) => store.remove(key, 'Laundry', id)}
-      customModal={(props) => <LaundryOrderModal {...props} />}
+      customModal={(props) => (
+        <LaundryOrderModal
+          {...props}
+          reservations={store.reservations}
+          staff={laundryStaff}
+        />
+      )}
     />
   )
 }

@@ -2,6 +2,113 @@ export const ROOM_OPTIONS = [
   'Standard 201', 'Standard 204', 'Deluxe 302', 'Deluxe 305', 'Suite 501', 'Suite 502',
 ]
 
+export const ROOM_TYPES = ['Standard', 'Deluxe', 'Executive', 'Suite']
+
+export const ROOM_MAX_OCCUPANCY = {
+  Standard: 2,
+  Deluxe: 3,
+  Executive: 3,
+  Suite: 3,
+}
+
+export const ROOMS_BY_TYPE = ROOM_TYPES.reduce((acc, type) => {
+  acc[type] = ROOM_OPTIONS.filter((room) => room.startsWith(type))
+  return acc
+}, {})
+
+export function roomNumberFromLabel(roomLabel) {
+  const match = (roomLabel || '').match(/(\d+)\s*$/)
+  return match ? match[1] : ''
+}
+
+export function floorFromRoomLabel(roomLabel) {
+  const num = parseInt(roomNumberFromLabel(roomLabel), 10)
+  if (!num) return ''
+  return Math.floor(num / 100)
+}
+
+export function roomLabelFromRecord(room) {
+  if (!room) return ''
+  if (typeof room === 'string') return room
+  return `${room.type} ${room.number}`
+}
+
+export function availableFloors(roomsData = []) {
+  if (roomsData.length) {
+    return [...new Set(roomsData.map((r) => r.floor))].sort((a, b) => a - b)
+  }
+  return [...new Set(ROOM_OPTIONS.map(floorFromRoomLabel).filter(Boolean))].sort((a, b) => a - b)
+}
+
+export function roomsOnFloor(floor, roomsData = []) {
+  if (floor === '' || floor == null) return []
+  const floorNum = Number(floor)
+  if (roomsData.length) {
+    const labels = roomsData
+      .filter((r) => r.floor === floorNum)
+      .map(roomLabelFromRecord)
+    return ROOM_OPTIONS.filter((opt) => labels.includes(opt))
+  }
+  return ROOM_OPTIONS.filter((opt) => floorFromRoomLabel(opt) === floorNum)
+}
+
+const GUEST_LOOKUP_STATUSES = ['Checked In', 'Confirmed']
+
+export function findGuestForRoom(reservations, roomLabel) {
+  if (!roomLabel) return { guestName: '', checkInDate: '' }
+  for (const status of GUEST_LOOKUP_STATUSES) {
+    const match = reservations.find((r) => {
+      if (r.status !== status) return false
+      const norm = normalizeReservation(r)
+      return norm.room === roomLabel || norm.rooms.includes(roomLabel)
+    })
+    if (match) return { guestName: match.guest, checkInDate: match.checkIn }
+  }
+  return { guestName: '', checkInDate: '' }
+}
+
+export const HK_CHECKLIST_ITEMS = [
+  { key: 'towelsPlaced', label: 'Towels placed' },
+  { key: 'washroomClean', label: 'Washroom cleaned' },
+  { key: 'bedMade', label: 'Bed made' },
+  { key: 'floorMopped', label: 'Floor mopped' },
+  { key: 'trashEmptied', label: 'Trash emptied' },
+  { key: 'amenitiesReplenished', label: 'Amenities replenished' },
+  { key: 'mirrorsCleaned', label: 'Mirrors cleaned' },
+]
+
+export function emptyHousekeepingChecklist() {
+  return HK_CHECKLIST_ITEMS.reduce((acc, { key }) => ({ ...acc, [key]: false }), {})
+}
+
+export function parseHousekeepingChecklist(editItem) {
+  if (editItem?.checklist && typeof editItem.checklist === 'object') {
+    return { ...emptyHousekeepingChecklist(), ...editItem.checklist }
+  }
+  const legacy = (editItem?.cleaningChecklist || '').toLowerCase()
+  if (!legacy) return emptyHousekeepingChecklist()
+  return {
+    towelsPlaced: legacy.includes('towel'),
+    washroomClean: legacy.includes('bathroom') || legacy.includes('washroom'),
+    bedMade: legacy.includes('bed'),
+    floorMopped: legacy.includes('floor') || legacy.includes('mopped'),
+    trashEmptied: legacy.includes('trash'),
+    amenitiesReplenished: legacy.includes('amenit'),
+    mirrorsCleaned: legacy.includes('mirror'),
+  }
+}
+
+export function roomMaxOccupancy(roomLabel) {
+  const type = roomLabel.split(' ')[0]
+  return ROOM_MAX_OCCUPANCY[type] || 2
+}
+
+export function roomTypeFromRoom(room) {
+  if (!room) return ROOM_TYPES[0]
+  const type = room.split(' ')[0]
+  return ROOM_TYPES.includes(type) ? type : ROOM_TYPES[0]
+}
+
 export const BOOKING_SOURCES = [
   'Walk-in', 'OTA', 'Corporate', 'Phone', 'Email', 'Travel Agent', 'Customer Portal',
 ]

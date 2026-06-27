@@ -3,6 +3,10 @@ export const reservations = [
     id: 'RES-1042', guest: 'Rajesh Kumar', source: 'OTA', room: 'Deluxe 302',
     rooms: ['Deluxe 302', 'Deluxe 305'], checkIn: '25 Jun', checkOut: '28 Jun',
     checkInIso: '2026-06-25', checkOutIso: '2026-06-28', status: 'Confirmed',
+    guestType: 'VIP', paymentStatus: 'Pending', folioBalance: 45000,
+    nationality: 'Indian', passportNumber: 'Z1234567', mobile: '+91 98765 43210', email: 'rajesh@corp.com',
+    adults: 2, children: 0,
+    deposit: { amount: '15000', method: 'Card', status: 'Collected', collectedOn: '2026-06-25' },
     notes: 'Corporate group — airport pickup at 6 PM. VIP welcome amenity.',
     history: [
       { time: '20 Jun, 10:00', action: 'Created', detail: 'Multi-room booking — 2 rooms' },
@@ -13,6 +17,10 @@ export const reservations = [
     id: 'RES-1041', guest: 'Sarah Mitchell', source: 'Corporate', room: 'Suite 501',
     rooms: ['Suite 501'], checkIn: '25 Jun', checkOut: '27 Jun',
     checkInIso: '2026-06-25', checkOutIso: '2026-06-27', status: 'Checked In',
+    paymentStatus: 'Completed', folioBalance: 28500,
+    nationality: 'American', passportNumber: 'US8821456', mobile: '+1 555 010 2200', email: 'sarah@corp.com',
+    adults: 1, children: 0,
+    deposit: { amount: '10000', method: 'Corporate Credit', status: 'Collected', collectedOn: '2026-06-24' },
     notes: 'Late checkout requested. Extra bed in room.',
     history: [
       { time: '18 Jun, 09:15', action: 'Created', detail: 'Booking confirmed — 1 room' },
@@ -24,14 +32,51 @@ export const reservations = [
     id: 'RES-1040', guest: 'Amit Shah', source: 'Walk-in', room: 'Standard 204',
     rooms: ['Standard 204'], checkIn: '25 Jun', checkOut: '26 Jun',
     checkInIso: '2026-06-25', checkOutIso: '2026-06-26', status: 'Checked In', notes: '',
+    paymentStatus: 'Completed', folioBalance: 4200,
+    deposit: { amount: '4200', method: 'UPI', status: 'Collected', collectedOn: '2026-06-25' },
     history: [{ time: '25 Jun, 08:30', action: 'Created', detail: 'Walk-in booking' }],
   },
   {
     id: 'RES-1039', guest: 'Priya Nair', source: 'Phone', room: 'Deluxe 305',
     rooms: ['Deluxe 305'], checkIn: '26 Jun', checkOut: '29 Jun',
     checkInIso: '2026-06-26', checkOutIso: '2026-06-29', status: 'Confirmed',
+    paymentStatus: 'Pending', folioBalance: 18000,
+    deposit: { amount: '5000', method: 'Card', status: 'Pending' },
     notes: 'Anniversary stay — decorate room with flowers.',
     history: [{ time: '23 Jun, 16:45', action: 'Created', detail: 'Phone booking confirmed' }],
+  },
+  {
+    id: 'RES-1038', guest: 'John Williams', source: 'Email', room: 'Standard 201',
+    rooms: ['Standard 201'], checkIn: '28 Jun', checkOut: '30 Jun',
+    checkInIso: '2026-06-28', checkOutIso: '2026-06-30', status: 'Tentative',
+    paymentStatus: 'Pending', folioBalance: 9600,
+    deposit: { amount: '', method: 'Card', status: 'Pending' },
+    notes: 'Awaiting corporate approval.',
+    history: [{ time: '24 Jun, 11:20', action: 'Created', detail: 'Tentative hold' }],
+  },
+  {
+    id: 'RES-1037', guest: 'Meera Desai', source: 'OTA', room: 'Deluxe 302',
+    rooms: ['Deluxe 302'], checkIn: '24 Jun', checkOut: '25 Jun',
+    checkInIso: '2026-06-24', checkOutIso: '2026-06-25', status: 'Cancelled',
+    paymentStatus: 'Refunded', folioBalance: 0,
+    history: [{ time: '20 Jun, 09:00', action: 'Cancelled', detail: 'Guest cancelled via OTA' }],
+  },
+  {
+    id: 'RES-1036', guest: 'David Chen', source: 'OTA', room: 'Suite 502',
+    rooms: ['Suite 502'], checkIn: '24 Jun', checkOut: '25 Jun',
+    checkInIso: '2026-06-24', checkOutIso: '2026-06-25', status: 'No Show',
+    paymentStatus: 'Pending', folioBalance: 12000,
+    deposit: { amount: '3000', method: 'Card', status: 'Collected', collectedOn: '2026-06-23' },
+    history: [{ time: '24 Jun, 18:00', action: 'No Show', detail: 'Guest did not arrive' }],
+  },
+  {
+    id: 'RES-1035', guest: 'Thomas Wright', source: 'Corporate', room: 'Suite 502',
+    rooms: ['Suite 502'], checkIn: '20 Jun', checkOut: '30 Jun',
+    checkInIso: '2026-06-20', checkOutIso: '2026-06-30', status: 'Checked In',
+    paymentStatus: 'Partial', folioBalance: 85000,
+    deposit: { amount: '20000', method: 'Corporate Credit', status: 'Collected', collectedOn: '2026-06-20' },
+    notes: 'Long-stay corporate guest.',
+    history: [{ time: '20 Jun, 12:00', action: 'Check-in', detail: '10-night corporate stay' }],
   },
 ]
 
@@ -41,21 +86,31 @@ export const rooms = [
   { id: 'RM-302', number: '302', type: 'Deluxe', status: 'Vacant', floor: 3 },
   { id: 'RM-305', number: '305', type: 'Deluxe', status: 'Vacant', floor: 3 },
   { id: 'RM-501', number: '501', type: 'Suite', status: 'Occupied', floor: 5 },
-  { id: 'RM-502', number: '502', type: 'Suite', status: 'Vacant', floor: 5 },
+  { id: 'RM-502', number: '502', type: 'Suite', status: 'Occupied', floor: 5 },
 ]
 
 export const housekeepingTasks = [
   {
-    id: 'HK-101', room: 'Standard 204', task: 'Daily cleaning', assignee: 'Sneha Patel', status: 'In Progress', priority: 'Normal',
+    id: 'HK-101', floor: 2, room: 'Standard 204', guestName: 'Amit Shah', checkInDate: '25 Jun',
+    task: 'Daily cleaning', assignee: 'Sneha Patel', status: 'In Progress', priority: 'Normal',
     shift: 'Morning', scheduledDate: '2026-06-25', scheduledTime: '09:00',
+    checklist: {
+      towelsPlaced: true, washroomClean: true, bedMade: true, floorMopped: true,
+      trashEmptied: true, amenitiesReplenished: false, mirrorsCleaned: false,
+    },
     cleaningChecklist: 'Bed made, Bathroom cleaned, Floors mopped, Trash emptied',
     amenitiesReplenish: 'Towels, Soap, Toilet paper',
     deepCleanRequired: false, deepCleanType: 'None', deepCleanDate: '',
     inspector: 'HK Supervisor', qualityScore: '9', performanceNote: 'Room ready before 10 AM',
   },
   {
-    id: 'HK-102', room: 'Suite 501', task: 'Turndown service', assignee: 'Ravi Menon', status: 'Pending', priority: 'Normal',
+    id: 'HK-102', floor: 5, room: 'Suite 501', guestName: 'Sarah Mitchell', checkInDate: '25 Jun',
+    task: 'Turndown service', assignee: 'Ravi Menon', status: 'Pending', priority: 'Normal',
     shift: 'Evening', scheduledDate: '2026-06-25', scheduledTime: '18:00',
+    checklist: {
+      towelsPlaced: false, washroomClean: false, bedMade: true, floorMopped: false,
+      trashEmptied: false, amenitiesReplenished: false, mirrorsCleaned: false,
+    },
     cleaningChecklist: 'Bed made, Bathroom cleaned',
     amenitiesReplenish: 'Tea/coffee, Water bottles',
     deepCleanRequired: true, deepCleanType: 'Weekly', deepCleanDate: '2026-06-26',
@@ -66,6 +121,7 @@ export const housekeepingTasks = [
 export const laundryOrders = [
   {
     id: 'LD-301', guest: 'Sarah Mitchell', room: '501', items: 'Shirts x3, Trousers x2', service: 'Wash & Iron', status: 'In Progress', amount: '₹850',
+    collectedBy: 'Vikram Joshi', employeeId: 'EMP-104',
     trackingStatus: 'Ironing', pickupTime: '2026-06-25T08:00', deliveryTime: '',
     itemTag: 'TAG-458921', garmentCount: '5', expressService: false, expressDeadline: '',
     inspectionStatus: 'Pending', inspectionNote: '', inspectedBy: '',
@@ -73,6 +129,7 @@ export const laundryOrders = [
   },
   {
     id: 'LD-302', guest: 'Amit Shah', room: '204', items: 'Suits x1', service: 'Dry Clean', status: 'Pickup Scheduled', amount: '₹600',
+    collectedBy: 'Kavita Rao', employeeId: 'EMP-105',
     trackingStatus: 'Received', pickupTime: '', deliveryTime: '',
     itemTag: 'TAG-458930', garmentCount: '1', expressService: true, expressDeadline: '2026-06-25T14:00',
     inspectionStatus: 'Pending', inspectionNote: '', inspectedBy: '',
@@ -114,14 +171,20 @@ export const inventoryItems = [
   {
     id: 'INV-101', name: 'Basmati Rice', category: 'Food', stock: 45, unit: 'kg', status: 'OK',
     skuCode: 'RICE-BAS-01', storageLocation: 'Main Store — Shelf A2', itemDescription: 'Premium long-grain basmati',
+    quantityIssued: 10, issuedTo: 'Ravi Menon (F&B)', issuedToKey: 'emp:EMP-102',
+    issueDate: '2026-06-24', approvedBy: 'Store Manager', purposeRemarks: 'Kitchen daily prep requisition',
   },
   {
     id: 'INV-102', name: 'Bath Towels', category: 'Linen', stock: 12, unit: 'pcs', status: 'Low Stock',
     skuCode: 'LIN-TOW-01', storageLocation: 'Linen Room', itemDescription: 'White cotton bath towels',
+    quantityIssued: 6, issuedTo: 'Housekeeping Department', issuedToKey: 'dept:Housekeeping',
+    issueDate: '2026-06-25', approvedBy: 'Ravi Menon', purposeRemarks: 'Floor 2 room replenishment',
   },
   {
     id: 'INV-103', name: 'Cleaning Solution', category: 'Housekeeping', stock: 8, unit: 'L', status: 'Low Stock',
     skuCode: 'HK-CLN-01', storageLocation: 'HK Store', itemDescription: 'Multi-surface cleaning concentrate',
+    quantityIssued: 2, issuedTo: 'Sneha Patel (Housekeeping)', issuedToKey: 'emp:EMP-103',
+    issueDate: '2026-06-25', approvedBy: 'Store Manager', purposeRemarks: 'HK supervisor floor stock',
   },
 ]
 
@@ -157,6 +220,26 @@ export const employees = [
     id: 'EMP-103', name: 'Sneha Patel', dept: 'Housekeeping', attendance: 'On Leave', leave: 'Approved',
     email: 'sneha@hotel.com', shift: 'Morning', leaveBalance: '8', salary: '28000',
     systemRole: 'Staff',
+  },
+  {
+    id: 'EMP-104', name: 'Vikram Joshi', dept: 'Laundry', attendance: 'Present', leave: '0 pending',
+    email: 'vikram@hotel.com', shift: 'Morning', leaveBalance: '14', salary: '26000',
+    systemRole: 'Staff', jobTitle: 'Laundry Attendant',
+  },
+  {
+    id: 'EMP-105', name: 'Kavita Rao', dept: 'Laundry', attendance: 'Present', leave: '0 pending',
+    email: 'kavita@hotel.com', shift: 'Evening', leaveBalance: '11', salary: '25500',
+    systemRole: 'Staff', jobTitle: 'Laundry Attendant',
+  },
+  {
+    id: 'EMP-106', name: 'Karan Singh', dept: 'Maintenance', attendance: 'Present', leave: '0 pending',
+    email: 'karan@hotel.com', shift: 'Morning', leaveBalance: '13', salary: '30000',
+    systemRole: 'Technician', jobTitle: 'Maintenance Technician',
+  },
+  {
+    id: 'EMP-107', name: 'Ramesh Kumar', dept: 'Maintenance', attendance: 'Present', leave: '0 pending',
+    email: 'ramesh@hotel.com', shift: 'Evening', leaveBalance: '10', salary: '29500',
+    systemRole: 'Technician', jobTitle: 'HVAC Technician',
   },
 ]
 
@@ -206,8 +289,14 @@ export const fnbEvents = [
 ]
 
 export const addonServices = [
-  { id: 'ADD-501', service: 'Spa - Aromatherapy', guest: 'Sarah Mitchell', room: 'Suite 501', time: '3:00 PM', amount: '₹3,500', status: 'Booked', date: '25 Jun', dateIso: '2026-06-25' },
-  { id: 'ADD-502', service: 'Gym - Personal Trainer', guest: 'Amit Shah', room: 'Standard 204', time: '6:00 AM', amount: '₹1,200', status: 'Completed', date: '24 Jun', dateIso: '2026-06-24' },
+  {
+    id: 'ADD-501', guestType: 'inhouse', service: 'Spa - Aromatherapy', membership: 'Monthly Membership', membershipId: 'monthly',
+    guest: 'Sarah Mitchell', room: 'Suite 501', time: '3:00 PM', amount: '₹8,500', status: 'Booked', date: '25 Jun', dateIso: '2026-06-25',
+  },
+  {
+    id: 'ADD-502', guestType: 'inhouse', service: 'Gym - Personal Trainer', membership: '',
+    guest: 'Amit Shah', room: 'Standard 204', time: '6:00 AM', amount: '₹1,200', status: 'Completed', date: '24 Jun', dateIso: '2026-06-24',
+  },
 ]
 
 export const feedbackEntries = [
@@ -217,15 +306,17 @@ export const feedbackEntries = [
 
 export const maintenanceTickets = [
   {
-    id: 'WO-601', room: 'Deluxe 305', asset: 'AC Unit — Deluxe 305', complaint: 'Not cooling properly', priority: 'High', status: 'Open', assignee: 'Maintenance Team',
-    maintenanceType: 'Corrective', scheduledDate: '2026-06-26', scheduledTime: '10:00',
+    id: 'WO-601', room: 'Deluxe 305', asset: 'AC Unit — Deluxe 305', complaint: 'Not cooling properly', priority: 'High', status: 'Open',
+    assignee: 'Ramesh Kumar', employeeId: 'EMP-107', scheduledDate: '2026-06-26', scheduledTime: '10:00',
+    maintenanceType: 'Corrective',
     assetHistory: '20 Jun — Preventive: Filter cleaned\n10 May — Corrective: Gas refill',
     spareParts: 'AC filter x1', partsCost: '450', technicianPhone: '+91 98765 43210',
     trackingStatus: 'Assigned', laborCost: '800', totalCost: '1250', costCategory: 'HVAC',
   },
   {
-    id: 'WO-602', room: 'Common Area', asset: 'Elevator B', complaint: 'Unusual noise', priority: 'Medium', status: 'In Progress', assignee: 'Karan Singh',
-    maintenanceType: 'Inspection', scheduledDate: '2026-06-25', scheduledTime: '14:00',
+    id: 'WO-602', room: 'Common Area', asset: 'Elevator B', complaint: 'Unusual noise', priority: 'Medium', status: 'In Progress',
+    assignee: 'Karan Singh', employeeId: 'EMP-106', scheduledDate: '2026-06-25', scheduledTime: '14:00',
+    maintenanceType: 'Inspection',
     assetHistory: '1 Jun — Inspection: Annual safety check passed',
     spareParts: '', partsCost: '', technicianPhone: '+91 98765 43211',
     trackingStatus: 'On Site', laborCost: '1200', totalCost: '1200', costCategory: 'Elevator',

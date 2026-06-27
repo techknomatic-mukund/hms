@@ -6,7 +6,10 @@ import { Badge } from '../components/UI'
 
 const viewFields = [
   { key: 'id', label: 'Ref' },
+  { key: 'floor', label: 'Floor', render: (r) => r.floor ? `Floor ${r.floor}` : '—' },
   { key: 'room', label: 'Room' },
+  { key: 'guestName', label: 'Guest' },
+  { key: 'checkInDate', label: 'Check-In' },
   { key: 'task', label: 'Task' },
   { key: 'assignee', label: 'Assignee' },
   { key: 'shift', label: 'Shift' },
@@ -34,7 +37,9 @@ export default function Housekeeping() {
       moduleName="Housekeeping Task"
       columns={[
         { key: 'id', label: 'Ref' },
+        { key: 'floor', label: 'Floor', render: (r) => r.floor ? `F${r.floor}` : '—' },
         { key: 'room', label: 'Room' },
+        { key: 'guestName', label: 'Guest', render: (r) => r.guestName || '—' },
         { key: 'task', label: 'Task' },
         { key: 'assignee', label: 'Assignee' },
         { key: 'shift', label: 'Shift', render: (r) => r.shift || '—' },
@@ -45,7 +50,14 @@ export default function Housekeeping() {
       onCreate={(f) => store.create(key, 'HK-', 'Housekeeping', f)}
       onUpdate={(id, f) => store.update(key, 'Housekeeping', id, f)}
       onDelete={(id) => store.remove(key, 'Housekeeping', id)}
-      customModal={(props) => <HousekeepingTaskModal {...props} staff={staff} />}
+      customModal={(props) => (
+        <HousekeepingTaskModal
+          {...props}
+          staff={staff}
+          reservations={store.reservations}
+          rooms={store.rooms}
+        />
+      )}
     />
   )
 }

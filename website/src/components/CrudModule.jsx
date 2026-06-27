@@ -8,7 +8,7 @@ export default function CrudModule({
   title, description, features, sectionTitle, createLabel,
   data, columns, viewFields, formFields,
   storeKey, prefix, moduleName, onCreate, onUpdate, onDelete,
-  keyField = 'id', extra, customModal,
+  keyField = 'id', extra, customModal, headerActions,
 }) {
   const crud = useCrudModal()
 
@@ -37,7 +37,15 @@ export default function CrudModule({
       <section className="panel">
         <SectionHeader
           title={sectionTitle || title}
-          action={<button type="button" className="btn btn-primary" onClick={crud.openCreate}>{createLabel || '+ Create'}</button>}
+          action={
+            typeof headerActions === 'function'
+              ? headerActions(crud.openCreate)
+              : headerActions || (
+                <button type="button" className="btn btn-primary" onClick={crud.openCreate}>
+                  {createLabel || '+ Create'}
+                </button>
+              )
+          }
         />
         <CrudTable
           columns={columns}

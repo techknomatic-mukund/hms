@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Modal } from './UI'
 import { FormActions, FormField } from './FormFields'
+import FormSection from './FormSection'
 import { formatINR } from '../utils/helpers'
-import { ROOM_OPTIONS } from '../utils/reservationHelpers'
+import { ROOM_OPTIONS, findGuestForRoom } from '../utils/reservationHelpers'
 
 const STATUSES = ['Pickup Scheduled', 'In Progress', 'Ready', 'Delivered']
 
@@ -33,14 +34,6 @@ function parseItemsToLines(itemsStr) {
   return lines.length ? lines : [emptyLine()]
 }
 
-const getEmpty = () => ({
-  guest: '',
-  room: ROOM_OPTIONS[0],
-  serviceType: 'normal',
-  lineItems: [emptyLine()],
-  status: 'Pickup Scheduled',
-})
-
 function resolveRoomValue(room) {
   if (!room) return ROOM_OPTIONS[0]
   if (ROOM_OPTIONS.includes(room)) return room
@@ -48,14 +41,43 @@ function resolveRoomValue(room) {
   return byNumber || room
 }
 
-function itemToForm(editItem) {
-  if (!editItem) return getEmpty()
+function resolveStaffId(staff, editItem) {
+  if (!editItem?.employeeId) return ''
+  return staff.some((s) => s.id === editItem.employeeId) ? editItem.employeeId : ''
+}
+
+const getEmpty = (reservations = [], staff = []) => {
+  const room = ROOM_OPTIONS[0]
+  const guest = findGuestForRoom(reservations, room)
+  const defaultStaff = staff[0]
   return {
-    guest: editItem.guest || '',
-    room: resolveRoomValue(editItem.room),
+    guest: guest.guestName || '',
+    room,
+    serviceType: 'normal',
+    lineItems: [emptyLine()],
+    status: 'Pickup Scheduled',
+    staffId: defaultStaff?.id || '',
+    collectedBy: defaultStaff?.name || '',
+    employeeId: defaultStaff?.id || '',
+  }
+}
+
+function itemToForm(editItem, reservations, staff) {
+  if (!editItem) return getEmpty(reservations, staff)
+
+  const room = resolveRoomValue(editItem.room)
+  const guest = findGuestForRoom(reservations, room)
+  const staffId = resolveStaffId(staff, editItem)
+
+  return {
+    guest: editItem.guest || guest.guestName || '',
+    room,
     serviceType: editItem.expressService || editItem.serviceType === 'express' ? 'express' : 'normal',
     lineItems: parseItemsToLines(editItem.items),
     status: editItem.status || 'Pickup Scheduled',
+    staffId,
+    collectedBy: editItem.collectedBy || '',
+    employeeId: editItem.employeeId || staffId,
   }
 }
 
@@ -65,16 +87,18 @@ function lineUnitPrice(itemId, serviceType) {
   return serviceType === 'express' ? item.expressPrice : item.normalPrice
 }
 
-export default function LaundryOrderModal({ open, onClose, onSubmit, editItem = null }) {
+export default function LaundryOrderModal({
+  open, onClose, onSubmit, editItem = null, reservations = [], staff = [],
+}) {
   const [form, setForm] = useState(getEmpty())
   const [errors, setErrors] = useState({})
   const isEdit = !!editItem
 
   useEffect(() => {
     if (!open) return
-    setForm(itemToForm(editItem))
+    setForm(itemToForm(editItem, reservations, staff))
     setErrors({})
-  }, [open, editItem])
+  }, [open, editItem, reservations, staff])
 
   const totalAmount = useMemo(
     () => form.lineItems.reduce((sum, line) => {
@@ -88,6 +112,27 @@ export default function LaundryOrderModal({ open, onClose, onSubmit, editItem = 
   const update = (field, value) => {
     setForm((prev) => ({ ...prev, [field]: value }))
     setErrors((prev) => ({ ...prev, [field]: '' }))
+  }
+
+  const handleRoomChange = (room) => {
+    const guest = findGuestForRoom(reservations, room)
+    setForm((prev) => ({
+      ...prev,
+      room,
+      guest: guest.guestName || '',
+    }))
+    setErrors((prev) => ({ ...prev, room: '', guest: '' }))
+  }
+
+  const handleStaffChange = (staffId) => {
+    const emp = staff.find((s) => s.id === staffId)
+    setForm((prev) => ({
+      ...prev,
+      staffId,
+      collectedBy: emp?.name || '',
+      employeeId: emp?.id || '',
+    }))
+    setErrors((prev) => ({ ...prev, staffId: '' }))
   }
 
   const updateLine = (index, field, value) => {
@@ -111,8 +156,9 @@ export default function LaundryOrderModal({ open, onClose, onSubmit, editItem = 
 
   const validate = () => {
     const next = {}
-    if (!form.guest.trim()) next.guest = 'Guest is required'
     if (!form.room.trim()) next.room = 'Room is required'
+    if (!form.guest.trim()) next.guest = 'No checked-in guest for this room'
+    if (!form.staffId) next.staffId = 'Select laundry attendant'
     const validLines = form.lineItems.filter((l) => l.itemId && Number(l.quantity) > 0)
     if (!validLines.length) next.lineItems = 'Add at least one item with quantity'
     if (totalAmount <= 0) next.lineItems = next.lineItems || 'Total amount must be greater than zero'
@@ -139,6 +185,8 @@ export default function LaundryOrderModal({ open, onClose, onSubmit, editItem = 
       lineItems: validLines,
       amount: totalAmount,
       status: form.status,
+      collectedBy: form.collectedBy,
+      employeeId: form.employeeId,
     })
   }
 
@@ -162,24 +210,48 @@ export default function LaundryOrderModal({ open, onClose, onSubmit, editItem = 
           </button>
         </div>
 
-        <div className="form-grid">
-          <FormField label="Guest" required error={errors.guest}>
-            <input type="text" value={form.guest} onChange={(e) => update('guest', e.target.value)} />
-          </FormField>
-          <FormField label="Room" required error={errors.room}>
-            <select value={form.room} onChange={(e) => update('room', e.target.value)}>
-              {ROOM_OPTIONS.map((r) => <option key={r} value={r}>{r}</option>)}
-              {!ROOM_OPTIONS.includes(form.room) && form.room && (
-                <option value={form.room}>{form.room}</option>
-              )}
-            </select>
-          </FormField>
-          <FormField label="Status">
-            <select value={form.status} onChange={(e) => update('status', e.target.value)}>
-              {STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
-            </select>
-          </FormField>
-        </div>
+        <FormSection title="Guest & Room" subtitle="Guest name auto-fills from active reservation">
+          <div className="form-grid">
+            <FormField label="Room" required error={errors.room}>
+              <select value={form.room} onChange={(e) => handleRoomChange(e.target.value)}>
+                {ROOM_OPTIONS.map((r) => <option key={r} value={r}>{r}</option>)}
+                {!ROOM_OPTIONS.includes(form.room) && form.room && (
+                  <option value={form.room}>{form.room}</option>
+                )}
+              </select>
+            </FormField>
+            <FormField label="Guest Name" required error={errors.guest}>
+              <input
+                type="text"
+                value={form.guest || '—'}
+                readOnly
+                className="readonly-field"
+                placeholder="Select a room with checked-in guest"
+              />
+            </FormField>
+            <FormField label="Status">
+              <select value={form.status} onChange={(e) => update('status', e.target.value)}>
+                {STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
+              </select>
+            </FormField>
+          </div>
+        </FormSection>
+
+        <FormSection title="Collected By" subtitle="Laundry attendant who collected the garments">
+          <div className="form-grid">
+            <FormField label="Staff Name (Laundry Attendant)" required error={errors.staffId}>
+              <select value={form.staffId} onChange={(e) => handleStaffChange(e.target.value)}>
+                <option value="">— Select attendant —</option>
+                {staff.map((s) => (
+                  <option key={s.id} value={s.id}>{s.name}</option>
+                ))}
+              </select>
+            </FormField>
+            <FormField label="Employee ID">
+              <input type="text" value={form.employeeId || '—'} readOnly className="readonly-field" />
+            </FormField>
+          </div>
+        </FormSection>
 
         <div className="laundry-lines-section">
           <div className="laundry-lines-head">

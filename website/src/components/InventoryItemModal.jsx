@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Modal } from './UI'
 import { FormActions, FormField } from './FormFields'
 import FormSection from './FormSection'
+import { todayISO } from '../utils/helpers'
 
 const CATEGORIES = ['Food', 'Linen', 'Housekeeping', 'Beverage', 'General', 'Kitchen', 'Maintenance']
 const UNITS = ['kg', 'L', 'pcs', 'boxes', 'litres', 'units']
@@ -19,16 +20,50 @@ export const STORAGE_LOCATIONS = [
   'Beverage Cellar',
 ]
 
-const getEmpty = () => ({
-  name: '',
-  skuCode: '',
-  category: 'Food',
-  unit: 'kg',
-  storageLocation: STORAGE_LOCATIONS[0],
-  itemDescription: '',
-  stock: '',
-  status: 'OK',
-})
+function buildIssuedToOptions(employees = []) {
+  const empOptions = employees.map((e) => ({
+    value: `emp:${e.id}`,
+    label: `${e.name} (${e.dept})`,
+  }))
+  const departments = [...new Set(employees.map((e) => e.dept).filter(Boolean))]
+  const deptOptions = departments.map((d) => ({
+    value: `dept:${d}`,
+    label: `${d} Department`,
+  }))
+  return [...empOptions, ...deptOptions]
+}
+
+function issuedToLabel(value, employees) {
+  const options = buildIssuedToOptions(employees)
+  return options.find((o) => o.value === value)?.label || value || ''
+}
+
+function resolveIssuedToValue(editItem, employees) {
+  if (editItem?.issuedToKey) return editItem.issuedToKey
+  if (!editItem?.issuedTo) return ''
+  const match = buildIssuedToOptions(employees).find((o) => o.label === editItem.issuedTo)
+  return match?.value || editItem.issuedTo
+}
+
+const getEmpty = (employees = []) => {
+  const issuedToOptions = buildIssuedToOptions(employees)
+  const approvers = employees.filter((e) => ['Supervisor', 'Technician'].includes(e.systemRole))
+  return {
+    name: '',
+    skuCode: '',
+    category: 'Food',
+    unit: 'kg',
+    storageLocation: STORAGE_LOCATIONS[0],
+    itemDescription: '',
+    stock: '',
+    status: 'OK',
+    quantityIssued: '',
+    issuedToKey: issuedToOptions[0]?.value || '',
+    issueDate: todayISO(),
+    approvedBy: approvers[0]?.name || employees[0]?.name || '',
+    purposeRemarks: '',
+  }
+}
 
 function resolveLocation(location) {
   if (!location) return STORAGE_LOCATIONS[0]
@@ -36,8 +71,8 @@ function resolveLocation(location) {
   return location
 }
 
-function itemToForm(editItem) {
-  if (!editItem) return getEmpty()
+function itemToForm(editItem, employees) {
+  if (!editItem) return getEmpty(employees)
   return {
     name: editItem.name || '',
     skuCode: editItem.skuCode || editItem.id || '',
@@ -47,19 +82,33 @@ function itemToForm(editItem) {
     itemDescription: editItem.itemDescription || '',
     stock: editItem.stock ?? '',
     status: editItem.status || 'OK',
+    quantityIssued: editItem.quantityIssued ?? '',
+    issuedToKey: resolveIssuedToValue(editItem, employees),
+    issueDate: editItem.issueDate || todayISO(),
+    approvedBy: editItem.approvedBy || '',
+    purposeRemarks: editItem.purposeRemarks || '',
   }
 }
 
-export default function InventoryItemModal({ open, onClose, onSubmit, editItem = null }) {
+export default function InventoryItemModal({
+  open, onClose, onSubmit, editItem = null, employees = [],
+}) {
   const [form, setForm] = useState(getEmpty())
   const [errors, setErrors] = useState({})
   const isEdit = !!editItem
 
+  const issuedToOptions = useMemo(() => buildIssuedToOptions(employees), [employees])
+  const approverOptions = useMemo(() => {
+    const supervisors = employees.filter((e) => ['Supervisor', 'Technician'].includes(e.systemRole))
+    const list = supervisors.length ? supervisors : employees
+    return ['Store Manager', ...list.map((e) => e.name)]
+  }, [employees])
+
   useEffect(() => {
     if (!open) return
-    setForm(itemToForm(editItem))
+    setForm(itemToForm(editItem, employees))
     setErrors({})
-  }, [open, editItem])
+  }, [open, editItem, employees])
 
   const update = (field, value) => {
     setForm((prev) => ({ ...prev, [field]: value }))
@@ -70,6 +119,14 @@ export default function InventoryItemModal({ open, onClose, onSubmit, editItem =
     const next = {}
     if (!form.name.trim()) next.name = 'Item name is required'
     if (form.stock === '' || Number(form.stock) < 0) next.stock = 'Valid stock quantity is required'
+    if (form.quantityIssued === '' || Number(form.quantityIssued) <= 0) {
+      next.quantityIssued = 'Quantity issued is required'
+    } else if (Number(form.quantityIssued) > Number(form.stock)) {
+      next.quantityIssued = 'Cannot issue more than current stock'
+    }
+    if (!form.issuedToKey) next.issuedToKey = 'Issued to is required'
+    if (!form.issueDate) next.issueDate = 'Issue date is required'
+    if (!form.approvedBy) next.approvedBy = 'Approver is required'
     setErrors(next)
     return Object.keys(next).length === 0
   }
@@ -80,6 +137,8 @@ export default function InventoryItemModal({ open, onClose, onSubmit, editItem =
     const stock = Number(form.stock)
     let status = form.status
     if (stock === 0) status = 'Out of Stock'
+    else if (stock <= 15) status = 'Low Stock'
+
     onSubmit({
       name: form.name.trim(),
       skuCode: form.skuCode.trim(),
@@ -89,11 +148,17 @@ export default function InventoryItemModal({ open, onClose, onSubmit, editItem =
       itemDescription: form.itemDescription.trim(),
       stock,
       status,
+      quantityIssued: Number(form.quantityIssued),
+      issuedTo: issuedToLabel(form.issuedToKey, employees),
+      issuedToKey: form.issuedToKey,
+      issueDate: form.issueDate,
+      approvedBy: form.approvedBy,
+      purposeRemarks: form.purposeRemarks.trim(),
     })
   }
 
   return (
-    <Modal open={open} onClose={onClose} title={isEdit ? 'Edit Inventory Item' : 'New Inventory Item'}>
+    <Modal open={open} onClose={onClose} title={isEdit ? 'Edit Inventory Item' : 'New Inventory Item'} wide>
       <form className="entity-form" onSubmit={handleSubmit}>
         <FormSection title="Item Master Management" subtitle="Define item details, SKU and storage location">
           <div className="form-grid">
@@ -134,6 +199,47 @@ export default function InventoryItemModal({ open, onClose, onSubmit, editItem =
             </FormField>
           </div>
         </FormSection>
+
+        <FormSection title="Issue Details" subtitle="Record stock issued to employee or department">
+          <div className="form-grid">
+            <FormField label="Quantity Issued" required error={errors.quantityIssued}>
+              <input
+                type="number"
+                min="1"
+                value={form.quantityIssued}
+                onChange={(e) => update('quantityIssued', e.target.value)}
+              />
+            </FormField>
+            <FormField label="Issued To (Employee/Department)" required error={errors.issuedToKey}>
+              <select value={form.issuedToKey} onChange={(e) => update('issuedToKey', e.target.value)}>
+                <option value="">— Select employee or department —</option>
+                {issuedToOptions.map((opt) => (
+                  <option key={opt.value} value={opt.value}>{opt.label}</option>
+                ))}
+              </select>
+            </FormField>
+            <FormField label="Issue Date" required error={errors.issueDate}>
+              <input type="date" value={form.issueDate} onChange={(e) => update('issueDate', e.target.value)} />
+            </FormField>
+            <FormField label="Approved By" required error={errors.approvedBy}>
+              <select value={form.approvedBy} onChange={(e) => update('approvedBy', e.target.value)}>
+                <option value="">— Select approver —</option>
+                {approverOptions.map((name) => (
+                  <option key={name} value={name}>{name}</option>
+                ))}
+              </select>
+            </FormField>
+            <FormField label="Purpose / Remarks" full>
+              <textarea
+                rows={2}
+                value={form.purposeRemarks}
+                placeholder="Reason for issue, requisition ref, etc."
+                onChange={(e) => update('purposeRemarks', e.target.value)}
+              />
+            </FormField>
+          </div>
+        </FormSection>
+
         <FormActions onCancel={onClose} submitLabel={isEdit ? 'Update Item' : 'Create Item'} />
       </form>
     </Modal>

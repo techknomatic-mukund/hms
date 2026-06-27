@@ -4,21 +4,12 @@ import LaundryOrderModal from '../components/LaundryOrderModal'
 import { Badge } from '../components/UI'
 import { formatINR } from '../utils/helpers'
 
-const features = [
-  'Laundry Tracking', 'Item Inventory & Tagging', 'Express Laundry Service',
-  'Quality Inspection', 'Laundry Service History',
-]
-
 const viewFields = [
   { key: 'id', label: 'Ref' },
   { key: 'guest', label: 'Guest' },
   { key: 'room', label: 'Room' },
   { key: 'items', label: 'Items' },
-  { key: 'itemTag', label: 'Item Tag' },
-  { key: 'trackingStatus', label: 'Tracking' },
-  { key: 'expressService', label: 'Express', render: (r) => (r.expressService ? 'Yes' : 'No') },
-  { key: 'inspectionStatus', label: 'Inspection' },
-  { key: 'serviceHistory', label: 'History' },
+  { key: 'service', label: 'Service' },
   { key: 'amount', label: 'Amount' },
   { key: 'status', label: 'Status' },
 ]
@@ -31,7 +22,6 @@ export default function Laundry() {
     <CrudModule
       title="Laundry"
       description="Guest laundry services — billed to room folio"
-      features={features}
       createLabel="+ New Order"
       data={store.laundryOrders}
       moduleName="Laundry Order"
@@ -40,14 +30,21 @@ export default function Laundry() {
         { key: 'guest', label: 'Guest' },
         { key: 'room', label: 'Room' },
         { key: 'items', label: 'Items' },
-        { key: 'service', label: 'Service' },
-        { key: 'trackingStatus', label: 'Tracking', render: (r) => r.trackingStatus || '—' },
+        {
+          key: 'service',
+          label: 'Service',
+          render: (r) => (
+            <Badge variant={r.expressService || r.serviceType === 'express' ? 'warning' : 'info'}>
+              {r.service || (r.expressService ? 'Express Laundry' : 'Normal Laundry')}
+            </Badge>
+          ),
+        },
         { key: 'amount', label: 'Amount' },
         { key: 'status', label: 'Status', render: (r) => <Badge variant="info">{r.status}</Badge> },
       ]}
       viewFields={viewFields}
       onCreate={(f) => store.create(key, 'LD-', 'Laundry', { ...f, amount: formatINR(f.amount) })}
-      onUpdate={(id, f) => store.update(key, 'Laundry', id, { ...f, amount: f.amount.toString().includes('₹') ? f.amount : formatINR(f.amount) })}
+      onUpdate={(id, f) => store.update(key, 'Laundry', id, { ...f, amount: f.amount?.toString?.().includes?.('₹') ? f.amount : formatINR(f.amount) })}
       onDelete={(id) => store.remove(key, 'Laundry', id)}
       customModal={(props) => <LaundryOrderModal {...props} />}
     />

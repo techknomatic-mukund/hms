@@ -83,12 +83,15 @@ export function LifecycleFlow({ steps }) {
   )
 }
 
-export function PageShell({ title, description, children }) {
+export function PageShell({ title, description, children, headerAction }) {
   return (
     <div className="page-shell">
       <header className="page-header">
-        <h1>{title}</h1>
-        {description && <p>{description}</p>}
+        <div className="page-header-text">
+          <h1>{title}</h1>
+          {description && <p>{description}</p>}
+        </div>
+        {headerAction}
       </header>
       {children}
     </div>

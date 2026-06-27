@@ -7,9 +7,6 @@ import { ROOM_OPTIONS } from '../utils/reservationHelpers'
 const PRIORITIES = ['Low', 'Normal', 'High', 'Urgent']
 const STATUSES = ['Pending', 'In Progress', 'Completed', 'Scheduled']
 const SHIFTS = ['Morning', 'Afternoon', 'Evening', 'Night']
-const CHECKLIST_ITEMS = ['Bed made', 'Bathroom cleaned', 'Floors mopped', 'Dust surfaces', 'Trash emptied', 'Windows cleaned']
-const AMENITY_ITEMS = ['Towels', 'Soap', 'Shampoo', 'Toilet paper', 'Tea/coffee', 'Water bottles', 'Slippers']
-const DEEP_CLEAN_TYPES = ['None', 'Weekly', 'Monthly', 'Post-checkout', 'Special request']
 
 const getEmpty = () => ({
   room: 'Standard 201',
@@ -20,27 +17,20 @@ const getEmpty = () => ({
   scheduledDate: '',
   scheduledTime: '',
   shift: 'Morning',
-  cleaningChecklist: '',
-  amenitiesReplenish: '',
-  deepCleanRequired: false,
-  deepCleanDate: '',
-  deepCleanType: 'None',
-  inspector: '',
-  qualityScore: '',
-  performanceNote: '',
 })
-
-function toggleChip(field, value, setForm) {
-  setForm((prev) => {
-    const items = prev[field] ? prev[field].split(', ').filter(Boolean) : []
-    const next = items.includes(value) ? items.filter((i) => i !== value) : [...items, value]
-    return { ...prev, [field]: next.join(', ') }
-  })
-}
 
 function itemToForm(editItem) {
   if (!editItem) return getEmpty()
-  return { ...getEmpty(), ...editItem }
+  return {
+    room: editItem.room || 'Standard 201',
+    task: editItem.task || '',
+    assignee: editItem.assignee || 'Unassigned',
+    priority: editItem.priority || 'Normal',
+    status: editItem.status || 'Pending',
+    scheduledDate: editItem.scheduledDate || '',
+    scheduledTime: editItem.scheduledTime || '',
+    shift: editItem.shift || 'Morning',
+  }
 }
 
 export default function HousekeepingTaskModal({ open, onClose, onSubmit, editItem = null, staff = [] }) {
@@ -70,13 +60,13 @@ export default function HousekeepingTaskModal({ open, onClose, onSubmit, editIte
   const handleSubmit = (e) => {
     e.preventDefault()
     if (!validate()) return
-    onSubmit({ ...form, task: form.task.trim(), performanceNote: form.performanceNote.trim() })
+    onSubmit({ ...form, task: form.task.trim() })
   }
 
   const assignees = staff.length ? staff : ['Sneha Patel', 'Ravi Menon', 'Housekeeping Team']
 
   return (
-    <Modal open={open} onClose={onClose} title={isEdit ? 'Edit Housekeeping Task' : 'New Housekeeping Task'} wide>
+    <Modal open={open} onClose={onClose} title={isEdit ? 'Edit Housekeeping Task' : 'New Housekeeping Task'}>
       <form className="entity-form" onSubmit={handleSubmit}>
         <div className="form-grid">
           <FormField label="Room" required error={errors.room}>
@@ -116,65 +106,6 @@ export default function HousekeepingTaskModal({ open, onClose, onSubmit, editIte
               <select value={form.status} onChange={(e) => update('status', e.target.value)}>
                 {STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
               </select>
-            </FormField>
-          </div>
-        </FormSection>
-
-        <FormSection title="Cleaning Checklist" subtitle="Standard room cleaning checklist items">
-          <div className="service-request-chips">
-            {CHECKLIST_ITEMS.map((item) => {
-              const active = form.cleaningChecklist.split(', ').filter(Boolean).includes(item)
-              return (
-                <button key={item} type="button" className={`chip-btn${active ? ' active' : ''}`} onClick={() => toggleChip('cleaningChecklist', item, setForm)}>
-                  {item}
-                </button>
-              )
-            })}
-          </div>
-        </FormSection>
-
-        <FormSection title="Amenities Replenishment" subtitle="Track towels, toiletries and in-room supplies to restock">
-          <div className="service-request-chips">
-            {AMENITY_ITEMS.map((item) => {
-              const active = form.amenitiesReplenish.split(', ').filter(Boolean).includes(item)
-              return (
-                <button key={item} type="button" className={`chip-btn${active ? ' active' : ''}`} onClick={() => toggleChip('amenitiesReplenish', item, setForm)}>
-                  {item}
-                </button>
-              )
-            })}
-          </div>
-        </FormSection>
-
-        <FormSection title="Deep Cleaning Schedule" subtitle="Plan periodic or post-checkout deep cleaning">
-          <div className="form-grid">
-            <div className="form-field form-field-full">
-              <label className="tax-option">
-                <input type="checkbox" checked={form.deepCleanRequired} onChange={(e) => update('deepCleanRequired', e.target.checked)} />
-                Deep cleaning required for this task
-              </label>
-            </div>
-            <FormField label="Deep Clean Type">
-              <select value={form.deepCleanType} onChange={(e) => update('deepCleanType', e.target.value)}>
-                {DEEP_CLEAN_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
-              </select>
-            </FormField>
-            <FormField label="Deep Clean Date">
-              <input type="date" value={form.deepCleanDate} onChange={(e) => update('deepCleanDate', e.target.value)} />
-            </FormField>
-          </div>
-        </FormSection>
-
-        <FormSection title="Housekeeping Performance Dashboard" subtitle="Quality inspection scores and performance notes">
-          <div className="form-grid">
-            <FormField label="Inspector">
-              <input type="text" value={form.inspector} placeholder="Supervisor name" onChange={(e) => update('inspector', e.target.value)} />
-            </FormField>
-            <FormField label="Quality Score (1–10)">
-              <input type="number" min="1" max="10" value={form.qualityScore} onChange={(e) => update('qualityScore', e.target.value)} />
-            </FormField>
-            <FormField label="Performance Notes" full>
-              <textarea rows={2} value={form.performanceNote} placeholder="Inspection feedback, areas for improvement..." onChange={(e) => update('performanceNote', e.target.value)} />
             </FormField>
           </div>
         </FormSection>

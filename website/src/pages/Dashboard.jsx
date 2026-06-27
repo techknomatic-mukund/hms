@@ -1,18 +1,33 @@
-import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { useMemo, useState } from 'react'
 import {
-  dashboardStats, guestLifecycle as initialLifecycle, bookingSourcePerformance,
+  guestLifecycle as initialLifecycle, bookingSourcePerformance,
   implementationPhases, futureIntegrations, deploymentInfo,
 } from '../data/initialState'
 import { useStore } from '../context/StoreContext'
 import { StatCard, SectionHeader, LifecycleFlow, FeatureGrid, DataTable } from '../components/UI'
+import DateRangeFilter from '../components/DateRangeFilter'
+import { currentMonthRange } from '../utils/helpers'
+import { computeDashboardKpis } from '../utils/dashboardMetrics'
 
 const LIFECYCLE_STEPS = ['Reservation', 'Check-In', 'Room Stay', 'Consume Services', 'Billing', 'Check-Out']
 
 export default function Dashboard() {
-  const { activityLog, reservations, rooms } = useStore()
+  const store = useStore()
   const [lifecycle, setLifecycle] = useState(initialLifecycle)
   const [activeStep, setActiveStep] = useState(2)
+  const { start: defaultStart, end: defaultEnd } = currentMonthRange()
+  const [startDate, setStartDate] = useState(defaultStart)
+  const [endDate, setEndDate] = useState(defaultEnd)
+
+  const handleStartChange = (value) => {
+    setStartDate(value)
+    if (value > endDate) setEndDate(value)
+  }
+
+  const stats = useMemo(
+    () => computeDashboardKpis(store, startDate, endDate),
+    [store, startDate, endDate],
+  )
 
   const advanceLifecycle = () => {
     setActiveStep((prev) => {
@@ -26,24 +41,25 @@ export default function Dashboard() {
     })
   }
 
-  const occupied = rooms.filter((r) => r.status === 'Occupied').length
-
   return (
     <>
       <header className="page-header">
-        <div>
+        <div className="page-header-text">
           <h1>Hotel ERP Dashboard</h1>
           <p>Centralized database — all departments share one platform</p>
         </div>
-        <Link to="/erp/integration" className="demo-badge">View Integration Flow →</Link>
+        <DateRangeFilter
+          startDate={startDate}
+          endDate={endDate}
+          onStartChange={handleStartChange}
+          onEndChange={setEndDate}
+        />
       </header>
 
       <div className="stats-grid">
-        {dashboardStats.map((s) => (
+        {stats.map((s) => (
           <StatCard key={s.label} {...s} />
         ))}
-        <StatCard label="Rooms Occupied" value={String(occupied)} change={`${rooms.length} total`} />
-        <StatCard label="Active Reservations" value={String(reservations.length)} trend="neutral" />
       </div>
 
       <section className="panel">
@@ -70,7 +86,7 @@ export default function Dashboard() {
               { key: 'module', label: 'Module' },
               { key: 'detail', label: 'Detail' },
             ]}
-            rows={activityLog}
+            rows={store.activityLog}
           />
         </section>
 

@@ -21,11 +21,14 @@ This app is configured for project-site hosting at:
 
 1. Push this repo to GitHub (`techknomatic-mukund/hms`).
 2. Go to **Settings → Pages**.
-3. Under **Build and deployment**, set **Source** to **GitHub Actions** (not “Deploy from a branch”).
-4. Push to `main`, `master`, or `muknd` — the workflow builds `website/` and publishes automatically.
-5. Open the **Actions** tab and confirm **Deploy to GitHub Pages** completed successfully.
+3. Under **Build and deployment**, set **Source** to **Deploy from a branch**.
+4. Choose branch **`gh-pages`**, folder **`/ (root)`**, then **Save**.
+5. Push to `main`, `master`, or `muknd` — the workflow builds `website/` and pushes the output to `gh-pages`.
+6. Open **Actions** and confirm **Deploy to GitHub Pages** completes (green check).
 
-After the workflow finishes, the site is live at the URL above.
+After the first successful run, wait 1–2 minutes and open the live URL.
+
+**If a workflow run fails in ~2 seconds:** Pages was likely set to “GitHub Actions” instead of the `gh-pages` branch — switch to **Deploy from a branch** as above, then re-run the workflow from the Actions tab.
 
 ### Test production build locally
 

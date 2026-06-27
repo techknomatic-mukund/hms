@@ -5,10 +5,12 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && node scripts/spa-fallback.mjs",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "preview:pages": "npm run build && vite preview --base /hms/"
   },
+  "homepage": "https://techknomatic-mukund.github.io/hms/",
   "dependencies": {
     "react": "^19.2.7",
     "react-dom": "^19.2.7",

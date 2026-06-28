@@ -25,8 +25,8 @@ export default function AddFoodCostingModal({ open, onClose, onSubmit, editItem 
       <form className="entity-form" onSubmit={handleSubmit}>
         <div className="form-grid">
           <FormField label="Dish" required full><input type="text" value={form.name} onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))} /></FormField>
-          <FormField label="Cost (₹)"><input type="number" value={form.cost} onChange={(e) => setForm((p) => ({ ...p, cost: e.target.value }))} /></FormField>
-          <FormField label="Sell (₹)"><input type="number" value={form.sell} onChange={(e) => setForm((p) => ({ ...p, sell: e.target.value }))} /></FormField>
+          <FormField label="Cost (OMR)"><input type="number" value={form.cost} onChange={(e) => setForm((p) => ({ ...p, cost: e.target.value }))} /></FormField>
+          <FormField label="Sell (OMR)"><input type="number" value={form.sell} onChange={(e) => setForm((p) => ({ ...p, sell: e.target.value }))} /></FormField>
         </div>
         {form.cost && form.sell && <p className="form-preview">Margin: {calcMargin(form.cost, form.sell)}</p>}
         <FormActions onCancel={onClose} submitLabel={editItem ? 'Update' : 'Add'} />

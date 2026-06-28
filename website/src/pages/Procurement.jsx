@@ -2,7 +2,7 @@ import { useStore } from '../context/StoreContext'
 import CrudModule from '../components/CrudModule'
 import ProcurementOrderModal from '../components/ProcurementOrderModal'
 import { Badge } from '../components/UI'
-import { formatINR } from '../utils/helpers'
+import { formatOMR, isFormattedAmount } from '../utils/helpers'
 
 const features = [
   'Purchase Request Management', 'Approval Workflow', 'Vendor Management',
@@ -50,8 +50,8 @@ export default function Procurement() {
         { key: 'status', label: 'Status', render: (r) => <Badge variant={r.status.includes('Pending') ? 'warning' : 'success'}>{r.status}</Badge> },
       ]}
       viewFields={viewFields}
-      onCreate={(f) => store.create(key, 'PO-', 'Procurement', { ...f, amount: formatINR(f.amount) })}
-      onUpdate={(id, f) => store.update(key, 'Procurement', id, { ...f, amount: String(f.amount).includes('₹') ? f.amount : formatINR(f.amount) })}
+      onCreate={(f) => store.create(key, 'PO-', 'Procurement', { ...f, amount: formatOMR(f.amount) })}
+      onUpdate={(id, f) => store.update(key, 'Procurement', id, { ...f, amount: isFormattedAmount(f.amount) ? f.amount : formatOMR(f.amount) })}
       onDelete={(id) => store.remove(key, 'Procurement', id)}
       customModal={(props) => <ProcurementOrderModal {...props} />}
     />

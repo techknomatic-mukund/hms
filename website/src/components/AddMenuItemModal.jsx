@@ -47,7 +47,7 @@ export default function AddMenuItemModal({ open, onClose, onSubmit, editItem = n
               {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
             </select>
           </FormField>
-          <FormField label="Price (₹)" required error={errors.price}>
+          <FormField label="Price (OMR)" required error={errors.price}>
             <input type="number" min="1" value={form.price} onChange={(e) => update('price', e.target.value)} />
           </FormField>
           <FormField label="Tax">

@@ -19,9 +19,25 @@ export function getRangeLabel(start, end) {
   return 'Selected range'
 }
 
-export function parseAmountINR(value) {
+export function parseAmount(value) {
   return parseFloat(String(value).replace(/[^\d.]/g, '')) || 0
 }
+
+/** @deprecated use parseAmount */
+export const parseAmountINR = parseAmount
+
+export function isFormattedAmount(value) {
+  return /OMR|₹/i.test(String(value))
+}
+
+export function formatOMR(amount) {
+  const num = typeof amount === 'number' ? amount : parseAmount(amount)
+  if (Number.isNaN(num)) return 'OMR 0.00'
+  return `OMR ${num.toLocaleString('en-OM', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+}
+
+/** @deprecated use formatOMR */
+export const formatINR = formatOMR
 
 export function parseDisplayDateToISO(dateStr, fallbackYear = new Date().getFullYear()) {
   if (!dateStr) return null
@@ -73,12 +89,6 @@ export function nextId(prefix, items, idField = 'id') {
   })
   const max = nums.length ? Math.max(...nums) : 0
   return `${prefix}${max + 1}`
-}
-
-export function formatINR(amount) {
-  const num = typeof amount === 'number' ? amount : parseFloat(String(amount).replace(/[^\d.]/g, ''))
-  if (Number.isNaN(num)) return '₹0'
-  return `₹${num.toLocaleString('en-IN')}`
 }
 
 export function calcMargin(cost, sell) {

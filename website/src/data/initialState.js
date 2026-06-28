@@ -120,7 +120,7 @@ export const housekeepingTasks = [
 
 export const laundryOrders = [
   {
-    id: 'LD-301', guest: 'Sarah Mitchell', room: '501', items: 'Shirts x3, Trousers x2', service: 'Wash & Iron', status: 'In Progress', amount: '₹850',
+    id: 'LD-301', guest: 'Sarah Mitchell', room: '501', items: 'Shirts x3, Trousers x2', service: 'Wash & Iron', status: 'In Progress', amount: 'OMR 850',
     collectedBy: 'Vikram Joshi', employeeId: 'EMP-104',
     trackingStatus: 'Ironing', pickupTime: '2026-06-25T08:00', deliveryTime: '',
     itemTag: 'TAG-458921', garmentCount: '5', expressService: false, expressDeadline: '',
@@ -128,7 +128,7 @@ export const laundryOrders = [
     serviceHistory: '25 Jun — Received: Items collected from room 501\n25 Jun — Washing: Sent to wash section',
   },
   {
-    id: 'LD-302', guest: 'Amit Shah', room: '204', items: 'Suits x1', service: 'Dry Clean', status: 'Pickup Scheduled', amount: '₹600',
+    id: 'LD-302', guest: 'Amit Shah', room: '204', items: 'Suits x1', service: 'Dry Clean', status: 'Pickup Scheduled', amount: 'OMR 600',
     collectedBy: 'Kavita Rao', employeeId: 'EMP-105',
     trackingStatus: 'Received', pickupTime: '', deliveryTime: '',
     itemTag: 'TAG-458930', garmentCount: '1', expressService: true, expressDeadline: '2026-06-25T14:00',
@@ -139,17 +139,17 @@ export const laundryOrders = [
 
 export const posOrders = [
   {
-    id: 'POS-8821', table: 'T-12', waiter: 'Ravi Menon', items: 'Butter Chicken x1, Paneer Tikka x1', subtotal: 700, taxAmount: 35, amount: '₹735', payment: 'Bill to Deluxe 302', status: 'Served', date: '25 Jun', dateIso: '2026-06-25',
+    id: 'POS-8821', table: 'T-12', waiter: 'Ravi Menon', items: 'Butter Chicken x1, Paneer Tikka x1', subtotal: 700, taxAmount: 35, amount: 'OMR 735', payment: 'Bill to Deluxe 302', status: 'Served', date: '25 Jun', dateIso: '2026-06-25',
   },
   {
-    id: 'POS-8820', table: 'T-05', waiter: 'Anita Verma', items: 'Continental Breakfast x1', subtotal: 680, taxAmount: 34, amount: '₹714', payment: 'Direct - UPI', status: 'Paid', date: '25 Jun', dateIso: '2026-06-25',
+    id: 'POS-8820', table: 'T-05', waiter: 'Anita Verma', items: 'Continental Breakfast x1', subtotal: 680, taxAmount: 34, amount: 'OMR 714', payment: 'Direct - UPI', status: 'Paid', date: '25 Jun', dateIso: '2026-06-25',
   },
 ]
 
 export const menuItems = [
-  { id: 'MENU-1', name: 'Butter Chicken', category: 'Main Course', price: '₹420', tax: 'GST 5%' },
-  { id: 'MENU-2', name: 'Paneer Tikka', category: 'Starter', price: '₹280', tax: 'GST 5%' },
-  { id: 'MENU-3', name: 'Continental Breakfast', category: 'Breakfast', price: '₹680', tax: 'GST 5%' },
+  { id: 'MENU-1', name: 'Butter Chicken', category: 'Main Course', price: 'OMR 420', tax: 'GST 5%' },
+  { id: 'MENU-2', name: 'Paneer Tikka', category: 'Starter', price: 'OMR 280', tax: 'GST 5%' },
+  { id: 'MENU-3', name: 'Continental Breakfast', category: 'Breakfast', price: 'OMR 680', tax: 'GST 5%' },
 ]
 
 export const kitchenOrders = [
@@ -172,32 +172,80 @@ export const inventoryItems = [
     id: 'INV-101', name: 'Basmati Rice', category: 'Food', stock: 45, unit: 'kg', status: 'OK',
     skuCode: 'RICE-BAS-01', storageLocation: 'Main Store — Shelf A2', itemDescription: 'Premium long-grain basmati',
     quantityIssued: 10, issuedTo: 'Ravi Menon (F&B)', issuedToKey: 'emp:EMP-102',
-    issueDate: '2026-06-24', approvedBy: 'Store Manager', purposeRemarks: 'Kitchen daily prep requisition',
+    issueDate: '2026-06-24', approvedBy: 'Store Manager', approvalStatus: 'Approved',
+    returnApprovalStatus: 'Pending',
+    purposeRemarks: 'Kitchen daily prep requisition',
   },
   {
     id: 'INV-102', name: 'Bath Towels', category: 'Linen', stock: 12, unit: 'pcs', status: 'Low Stock',
     skuCode: 'LIN-TOW-01', storageLocation: 'Linen Room', itemDescription: 'White cotton bath towels',
-    quantityIssued: 6, issuedTo: 'Housekeeping Department', issuedToKey: 'dept:Housekeeping',
-    issueDate: '2026-06-25', approvedBy: 'Ravi Menon', purposeRemarks: 'Floor 2 room replenishment',
+    quantityIssued: 8, issuedTo: 'Housekeeping Department', issuedToKey: 'dept:Housekeeping',
+    issueDate: '2026-06-26', requestedBy: 'Sneha Patel', approvalStatus: 'Pending',
+    approvedBy: '', purposeRemarks: 'Urgent floor 3 linen replenishment',
   },
   {
     id: 'INV-103', name: 'Cleaning Solution', category: 'Housekeeping', stock: 8, unit: 'L', status: 'Low Stock',
     skuCode: 'HK-CLN-01', storageLocation: 'HK Store', itemDescription: 'Multi-surface cleaning concentrate',
-    quantityIssued: 2, issuedTo: 'Sneha Patel (Housekeeping)', issuedToKey: 'emp:EMP-103',
-    issueDate: '2026-06-25', approvedBy: 'Store Manager', purposeRemarks: 'HK supervisor floor stock',
+    quantityIssued: 4, issuedTo: 'Maintenance Department', issuedToKey: 'dept:Maintenance',
+    issueDate: '2026-06-26', requestedBy: 'Karan Singh', approvalStatus: 'Pending',
+    approvedBy: '', purposeRemarks: 'Common area deep cleaning supplies',
+  },
+  {
+    id: 'INV-104', name: 'Hand Soap Refill', category: 'Housekeeping', stock: 20, unit: 'L', status: 'OK',
+    skuCode: 'HK-SOP-01', storageLocation: 'HK Store', itemDescription: 'Liquid hand soap concentrate',
+    quantityIssued: 5, issuedTo: 'Front Office Department', issuedToKey: 'dept:Front Office',
+    issueDate: '2026-06-23', requestedBy: 'Anita Verma', approvalStatus: 'Rejected',
+    approvedBy: 'Store Manager', approvalDate: '2026-06-23',
+    purposeRemarks: 'Budget limit exceeded — use existing stock',
+  },
+]
+
+export const inventoryIssueRequests = [
+  {
+    id: 'ISR-001', itemId: 'INV-102', itemName: 'Bath Towels', quantityIssued: 8,
+    issuedTo: 'Housekeeping Department', issueDate: '2026-06-26', requestedBy: 'Sneha Patel',
+    purposeRemarks: 'Urgent floor 3 linen replenishment', approvalStatus: 'Pending',
+    approvedBy: '', approvalDate: '', managerRemarks: '',
+  },
+  {
+    id: 'ISR-002', itemId: 'INV-103', itemName: 'Cleaning Solution', quantityIssued: 4,
+    issuedTo: 'Maintenance Department', issueDate: '2026-06-26', requestedBy: 'Karan Singh',
+    purposeRemarks: 'Common area deep cleaning supplies', approvalStatus: 'Pending',
+    approvedBy: '', approvalDate: '', managerRemarks: '',
+  },
+  {
+    id: 'ISR-003', itemId: 'INV-101', itemName: 'Basmati Rice', quantityIssued: 10,
+    issuedTo: 'Ravi Menon (F&B)', issueDate: '2026-06-24', requestedBy: 'Chef Ravi',
+    purposeRemarks: 'Kitchen daily prep requisition', approvalStatus: 'Approved',
+    approvedBy: 'Store Manager', approvalDate: '2026-06-24', managerRemarks: 'Approved for kitchen use',
+  },
+  {
+    id: 'ISR-004', itemId: 'INV-104', itemName: 'Hand Soap Refill', quantityIssued: 5,
+    issuedTo: 'Front Office Department', issueDate: '2026-06-23', requestedBy: 'Anita Verma',
+    purposeRemarks: 'Budget limit exceeded — use existing stock', approvalStatus: 'Rejected',
+    approvedBy: 'Store Manager', approvalDate: '2026-06-23', managerRemarks: 'Rejected — sufficient stock on hand',
+  },
+]
+
+export const inventoryReturnRequests = [
+  {
+    id: 'RET-001', itemId: 'INV-101', itemName: 'Basmati Rice', returnQuantity: 5,
+    returnDate: '2026-06-26', returnedBy: 'Chef Ravi', previousStock: 45, unit: 'kg',
+    remarks: 'Damaged bag — return to vendor', approvalStatus: 'Pending',
+    approvedBy: '', approvalDate: '', managerRemarks: '',
   },
 ]
 
 export const purchaseOrders = [
   {
-    id: 'PO-201', vendor: 'Fresh Foods Pvt Ltd', items: 'Vegetables, Dairy', amount: '₹42,000', status: 'Pending Approval',
+    id: 'PO-201', vendor: 'Fresh Foods Pvt Ltd', items: 'Vegetables, Dairy', amount: 'OMR 42,000', status: 'Pending Approval',
     requestRef: 'PR-201', requestedBy: 'Chef Ravi', approvalStatus: 'Pending', department: 'Kitchen',
     quote1Vendor: 'Fresh Foods Pvt Ltd', quote1Amount: '42000', quote2Vendor: 'Metro Foods', quote2Amount: '44500',
     selectedQuote: '1', grnNumber: '', inspectionStatus: 'Pending', paymentStatus: 'Pending',
     syncToInventory: true, reportTag: 'Standard',
   },
   {
-    id: 'PO-202', vendor: 'Linen Supply Co', items: 'Towels, Bedsheets', amount: '₹28,500', status: 'Approved',
+    id: 'PO-202', vendor: 'Linen Supply Co', items: 'Towels, Bedsheets', amount: 'OMR 28,500', status: 'Approved',
     requestRef: 'PR-202', requestedBy: 'HK Supervisor', approvalStatus: 'Level 2 Approved', department: 'Housekeeping',
     grnNumber: 'GRN-202', grnDate: '2026-06-24', inspectionStatus: 'Passed', paymentStatus: 'Processing',
     replenishmentTrigger: true, reorderQty: '50', syncToInventory: true, stockUpdated: true, inventorySku: 'INV-102',
@@ -291,11 +339,11 @@ export const fnbEvents = [
 export const addonServices = [
   {
     id: 'ADD-501', guestType: 'inhouse', service: 'Spa - Aromatherapy', membership: 'Monthly Membership', membershipId: 'monthly',
-    guest: 'Sarah Mitchell', room: 'Suite 501', time: '3:00 PM', amount: '₹8,500', status: 'Booked', date: '25 Jun', dateIso: '2026-06-25',
+    guest: 'Sarah Mitchell', room: 'Suite 501', time: '3:00 PM', amount: 'OMR 8,500', status: 'Booked', date: '25 Jun', dateIso: '2026-06-25',
   },
   {
     id: 'ADD-502', guestType: 'inhouse', service: 'Gym - Personal Trainer', membership: '',
-    guest: 'Amit Shah', room: 'Standard 204', time: '6:00 AM', amount: '₹1,200', status: 'Completed', date: '24 Jun', dateIso: '2026-06-24',
+    guest: 'Amit Shah', room: 'Standard 204', time: '6:00 AM', amount: 'OMR 1,200', status: 'Completed', date: '24 Jun', dateIso: '2026-06-24',
   },
 ]
 
@@ -325,41 +373,41 @@ export const maintenanceTickets = [
 
 export const transactions = [
   {
-    id: 'TXN-301', type: 'Revenue', category: 'Room', description: 'Room revenue — Jun 24', amount: '₹82,000', date: '24 Jun', dateIso: '2026-06-24',
+    id: 'TXN-301', type: 'Revenue', category: 'Room', description: 'Room revenue — Jun 24', amount: 'OMR 82,000', date: '24 Jun', dateIso: '2026-06-24',
     invoiceNumber: 'INV-301', paymentStatus: 'Completed', gstRate: '18', accountCode: '4100-ROOM',
     sourceModule: 'Front Office', reportPeriod: 'Monthly',
   },
   {
-    id: 'TXN-302', type: 'Expense', category: 'Utilities', description: 'Electricity bill', amount: '₹18,500', date: '23 Jun', dateIso: '2026-06-23',
+    id: 'TXN-302', type: 'Expense', category: 'Utilities', description: 'Electricity bill', amount: 'OMR 18,500', date: '23 Jun', dateIso: '2026-06-23',
     expenseType: 'Utilities', expenseBucket: 'Miscellaneous', vendor: 'State Electricity Board', paymentStatus: 'Pending', gstRate: '18',
     sourceModule: 'Finance',
   },
   {
-    id: 'TXN-303', type: 'Revenue', category: 'Room', description: 'Room charges — Suite 501', amount: '₹28,500', date: '25 Jun', dateIso: '2026-06-25',
+    id: 'TXN-303', type: 'Revenue', category: 'Room', description: 'Room charges — Suite 501', amount: 'OMR 28,500', date: '25 Jun', dateIso: '2026-06-25',
     invoiceNumber: 'INV-303', paymentStatus: 'Completed', gstRate: '18', sourceModule: 'Front Office',
   },
   {
-    id: 'TXN-304', type: 'Revenue', category: 'F&B', description: 'Restaurant & banquet sales', amount: '₹42,000', date: '25 Jun', dateIso: '2026-06-25',
+    id: 'TXN-304', type: 'Revenue', category: 'F&B', description: 'Restaurant & banquet sales', amount: 'OMR 42,000', date: '25 Jun', dateIso: '2026-06-25',
     paymentStatus: 'Completed', sourceModule: 'POS',
   },
   {
-    id: 'TXN-305', type: 'Revenue', category: 'Add-on', description: 'Spa & gym bookings', amount: '₹12,500', date: '25 Jun', dateIso: '2026-06-25',
+    id: 'TXN-305', type: 'Revenue', category: 'Add-on', description: 'Spa & gym bookings', amount: 'OMR 12,500', date: '25 Jun', dateIso: '2026-06-25',
     paymentStatus: 'Completed', sourceModule: 'Add-ons',
   },
   {
-    id: 'TXN-306', type: 'Expense', category: 'Payroll', description: 'Daily staff payroll accrual', amount: '₹32,000', date: '25 Jun', dateIso: '2026-06-25',
+    id: 'TXN-306', type: 'Expense', category: 'Payroll', description: 'Daily staff payroll accrual', amount: 'OMR 32,000', date: '25 Jun', dateIso: '2026-06-25',
     expenseBucket: 'Staff Salary', paymentStatus: 'Pending', sourceModule: 'HRMS',
   },
   {
-    id: 'TXN-307', type: 'Expense', category: 'Kitchen', description: 'Kitchen inventory purchase', amount: '₹8,200', date: '25 Jun', dateIso: '2026-06-25',
+    id: 'TXN-307', type: 'Expense', category: 'Kitchen', description: 'Kitchen inventory purchase', amount: 'OMR 8,200', date: '25 Jun', dateIso: '2026-06-25',
     expenseBucket: 'Kitchen Inventory', paymentStatus: 'Completed', sourceModule: 'Inventory',
   },
   {
-    id: 'TXN-308', type: 'Expense', category: 'Housekeeping', description: 'Linen & cleaning supplies', amount: '₹4,800', date: '25 Jun', dateIso: '2026-06-25',
+    id: 'TXN-308', type: 'Expense', category: 'Housekeeping', description: 'Linen & cleaning supplies', amount: 'OMR 4,800', date: '25 Jun', dateIso: '2026-06-25',
     expenseBucket: 'Housekeeping Inventory', paymentStatus: 'Completed', sourceModule: 'Inventory',
   },
   {
-    id: 'TXN-309', type: 'Expense', category: 'Operations', description: 'Misc operational costs', amount: '₹2,500', date: '25 Jun', dateIso: '2026-06-25',
+    id: 'TXN-309', type: 'Expense', category: 'Operations', description: 'Misc operational costs', amount: 'OMR 2,500', date: '25 Jun', dateIso: '2026-06-25',
     expenseBucket: 'Miscellaneous', paymentStatus: 'Pending', sourceModule: 'Finance',
   },
 ]
@@ -381,7 +429,7 @@ export const systemUsers = [
 export const activityLog = [
   { id: 'LOG-1', time: '09:15', action: 'Check-in', module: 'Front Office', detail: 'Sarah Mitchell → Suite 501' },
   { id: 'LOG-2', time: '09:10', action: 'Sync', module: 'Housekeeping', detail: 'Room 501 status → Occupied' },
-  { id: 'LOG-3', time: '09:10', action: 'Folio', module: 'Finance', detail: 'Guest folio opened — ₹8,500' },
+  { id: 'LOG-3', time: '09:10', action: 'Folio', module: 'Finance', detail: 'Guest folio opened — OMR 8,500' },
 ]
 
 // Re-export dashboard helpers from mockData
@@ -389,8 +437,8 @@ export const dashboardStats = [
   { label: 'Occupancy Rate', value: '78%', change: '+5%', trend: 'up' },
   { label: 'Today Check-ins', value: '24', change: '6 pending', trend: 'neutral' },
   { label: 'Today Check-outs', value: '18', change: '2 late', trend: 'neutral' },
-  { label: 'Revenue Today', value: '₹4.2L', change: '+12%', trend: 'up' },
-  { label: 'POS Sales', value: '₹86K', change: '+8%', trend: 'up' },
+  { label: 'Revenue Today', value: 'OMR 4.2K', change: '+12%', trend: 'up' },
+  { label: 'POS Sales', value: 'OMR 86K', change: '+8%', trend: 'up' },
   { label: 'Active Guests', value: '142', change: '12 in-house', trend: 'neutral' },
 ]
 
@@ -404,10 +452,10 @@ export const guestLifecycle = [
 ]
 
 export const bookingSourcePerformance = [
-  { source: 'OTA', bookings: 145, revenue: '₹28.5L', share: '32%' },
-  { source: 'Corporate', bookings: 98, revenue: '₹22.1L', share: '25%' },
-  { source: 'Customer Portal', bookings: 64, revenue: '₹11.2L', share: '13%' },
-  { source: 'Walk-in', bookings: 76, revenue: '₹12.8L', share: '14%' },
+  { source: 'OTA', bookings: 145, revenue: 'OMR 28.5K', share: '32%' },
+  { source: 'Corporate', bookings: 98, revenue: 'OMR 22.1K', share: '25%' },
+  { source: 'Customer Portal', bookings: 64, revenue: 'OMR 11.2K', share: '13%' },
+  { source: 'Walk-in', bookings: 76, revenue: 'OMR 12.8K', share: '14%' },
 ]
 
 export const reportCategories = {
@@ -438,14 +486,14 @@ export const deploymentInfo = {
 }
 
 export const financeRevenueSummary = [
-  { label: 'Room Revenue', value: '₹82L', type: 'revenue' },
-  { label: 'F&B Revenue', value: '₹28L', type: 'revenue' },
-  { label: 'Add-on Revenue', value: '₹14L', type: 'revenue' },
+  { label: 'Room Revenue', value: 'OMR 82K', type: 'revenue' },
+  { label: 'F&B Revenue', value: 'OMR 28K', type: 'revenue' },
+  { label: 'Add-on Revenue', value: 'OMR 14K', type: 'revenue' },
 ]
 
 export const financeExpenseSummary = [
-  { label: 'Staff Salary', value: '₹32L', type: 'expense' },
-  { label: 'Kitchen Inventory', value: '₹8L', type: 'expense' },
-  { label: 'Housekeeping Inventory', value: '₹5L', type: 'expense' },
-  { label: 'Miscellaneous', value: '₹3L', type: 'expense' },
+  { label: 'Staff Salary', value: 'OMR 32K', type: 'expense' },
+  { label: 'Kitchen Inventory', value: 'OMR 8K', type: 'expense' },
+  { label: 'Housekeeping Inventory', value: 'OMR 5K', type: 'expense' },
+  { label: 'Miscellaneous', value: 'OMR 3K', type: 'expense' },
 ]

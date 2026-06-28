@@ -14,14 +14,14 @@ const SAMPLE_DATA = {
     { metric: 'Out of Order', value: '3' },
   ],
   'Item-wise Sales': [
-    { metric: 'Butter Chicken', value: '₹1.24L' },
-    { metric: 'Continental Breakfast', value: '₹86K' },
-    { metric: 'Paneer Tikka', value: '₹52K' },
+    { metric: 'Butter Chicken', value: 'OMR 1.24K' },
+    { metric: 'Continental Breakfast', value: 'OMR 86K' },
+    { metric: 'Paneer Tikka', value: 'OMR 52K' },
   ],
   'P&L Statement': [
-    { metric: 'Total Revenue', value: '₹1.24 Cr' },
-    { metric: 'Total Expenses', value: '₹68.5L' },
-    { metric: 'Net Profit', value: '₹55.5L' },
+    { metric: 'Total Revenue', value: 'OMR 1.24M' },
+    { metric: 'Total Expenses', value: 'OMR 68.5K' },
+    { metric: 'Net Profit', value: 'OMR 55.5K' },
     { metric: 'Profit Margin', value: '44.8%' },
   ],
 }
@@ -30,7 +30,7 @@ function getReportRows(title) {
   if (SAMPLE_DATA[title]) return SAMPLE_DATA[title]
   return [
     { metric: 'Records', value: `${Math.floor(Math.random() * 80) + 20}` },
-    { metric: 'Total Value', value: '₹4.2L' },
+    { metric: 'Total Value', value: 'OMR 4.2K' },
     { metric: 'Period', value: 'Current Month' },
     { metric: 'Trend', value: '+8.5%' },
   ]

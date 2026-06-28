@@ -158,7 +158,7 @@ export default function FinanceTransactionModal({ open, onClose, onSubmit, editI
                 {['0', '5', '12', '18', '28'].map((r) => <option key={r} value={r}>{r}%</option>)}
               </select>
             </FormField>
-            <FormField label="GST Amount (₹)">
+            <FormField label="GST Amount (OMR)">
               <input type="text" value={form.gstAmount} readOnly placeholder="Auto-calculated" />
             </FormField>
             <div className="form-field form-field-full">
@@ -191,7 +191,7 @@ export default function FinanceTransactionModal({ open, onClose, onSubmit, editI
             <FormField label="Description" required error={errors.description} full>
               <input type="text" value={form.description} onChange={(e) => update('description', e.target.value)} />
             </FormField>
-            <FormField label="Amount (₹)" required error={errors.amount}>
+            <FormField label="Amount (OMR)" required error={errors.amount}>
               <input type="number" min="1" value={form.amount} onChange={(e) => update('amount', e.target.value)} />
             </FormField>
             <FormField label="Recorded By">

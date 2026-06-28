@@ -127,7 +127,7 @@ export default function EmployeeModal({ open, onClose, onSubmit, editItem = null
 
         <FormSection title="Payroll Management" subtitle="Salary and payroll cycle configuration">
           <div className="form-grid">
-            <FormField label="Monthly Salary (₹)">
+            <FormField label="Monthly Salary (OMR)">
               <input type="number" min="0" value={form.salary} onChange={(e) => update('salary', e.target.value)} />
             </FormField>
             <FormField label="Payroll Cycle">

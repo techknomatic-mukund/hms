@@ -6,7 +6,7 @@ import AddMenuItemModal from '../components/AddMenuItemModal'
 import NewPosOrderModal from '../components/NewPosOrderModal'
 import DeleteConfirmModal, { ViewDetailModal } from '../components/DeleteConfirmModal'
 import { useCrudModal } from '../hooks/useCrudModal'
-import { nextId } from '../utils/helpers'
+import { nextId, formatOMR } from '../utils/helpers'
 
 const orderBadge = (s) => {
   if (s === 'Paid') return 'success'
@@ -40,8 +40,8 @@ export default function POS() {
 
   const orderViewFields = [
     ...orderCols,
-    { key: 'subtotal', label: 'Subtotal', render: (r) => (r.subtotal != null ? `₹${Number(r.subtotal).toLocaleString('en-IN')}` : '—') },
-    { key: 'taxAmount', label: 'Tax', render: (r) => (r.taxAmount != null ? `₹${Number(r.taxAmount).toLocaleString('en-IN')}` : '—') },
+    { key: 'subtotal', label: 'Subtotal', render: (r) => (r.subtotal != null ? formatOMR(r.subtotal) : '—') },
+    { key: 'taxAmount', label: 'Tax', render: (r) => (r.taxAmount != null ? formatOMR(r.taxAmount) : '—') },
   ]
 
   return (

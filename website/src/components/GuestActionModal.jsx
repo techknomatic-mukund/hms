@@ -97,10 +97,10 @@ export default function GuestActionModal({
             <div className="folio-preview form-field-full">
               <h3>Folio — {selected.guest}</h3>
               <ul className="folio-lines">
-                <li><span>Room charges ({selected.room})</span><span>₹8,500</span></li>
-                <li><span>Restaurant (POS)</span><span>₹2,150</span></li>
-                <li><span>Spa services</span><span>₹3,500</span></li>
-                <li className="folio-total"><span>Total</span><span>₹14,150</span></li>
+                <li><span>Room charges ({selected.room})</span><span>OMR 8,500</span></li>
+                <li><span>Restaurant (POS)</span><span>OMR 2,150</span></li>
+                <li><span>Spa services</span><span>OMR 3,500</span></li>
+                <li className="folio-total"><span>Total</span><span>OMR 14,150</span></li>
               </ul>
             </div>
           )}

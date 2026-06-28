@@ -156,12 +156,13 @@ export default function ReturnStockModal({
           </div>
           {selectedItem && maxReturn > 0 && returnQuantity && Number(returnQuantity) <= maxReturn && (
             <p className="field-hint">
-              Stock after return: {maxReturn - Number(returnQuantity)} {selectedItem.unit}
+              Stock after approved return: {maxReturn - Number(returnQuantity)} {selectedItem.unit}
             </p>
           )}
+          <p className="field-hint">Return requests are sent to the Manager Approval queue for review.</p>
         </FormSection>
 
-        <FormActions onCancel={onClose} submitLabel="Confirm Return" />
+        <FormActions onCancel={onClose} submitLabel="Submit for Approval" />
       </form>
     </Modal>
   )

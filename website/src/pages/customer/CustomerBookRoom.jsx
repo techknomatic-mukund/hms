@@ -6,7 +6,7 @@ import { FormActions, FormField } from '../../components/FormFields'
 import { formatDisplayDate } from '../../utils/helpers'
 import { getRoomBookingConflicts, roomConflictLabel } from '../../utils/reservationHelpers'
 
-const ROOMS = ['Standard 201 — ₹4,500/night', 'Deluxe 302 — ₹7,500/night', 'Suite 501 — ₹12,000/night']
+const ROOMS = ['Standard 201 — OMR 4,500/night', 'Deluxe 302 — OMR 7,500/night', 'Suite 501 — OMR 12,000/night']
 
 export default function CustomerBookRoom() {
   const { user } = useAuth()

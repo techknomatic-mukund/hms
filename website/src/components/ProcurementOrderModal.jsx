@@ -143,13 +143,13 @@ export default function ProcurementOrderModal({ open, onClose, onSubmit, editIte
             <FormField label="Quote 1 — Vendor">
               <input type="text" value={form.quote1Vendor} onChange={(e) => update('quote1Vendor', e.target.value)} />
             </FormField>
-            <FormField label="Quote 1 — Amount (₹)">
+            <FormField label="Quote 1 — Amount (OMR)">
               <input type="number" min="0" value={form.quote1Amount} onChange={(e) => update('quote1Amount', e.target.value)} />
             </FormField>
             <FormField label="Quote 2 — Vendor">
               <input type="text" value={form.quote2Vendor} onChange={(e) => update('quote2Vendor', e.target.value)} />
             </FormField>
-            <FormField label="Quote 2 — Amount (₹)">
+            <FormField label="Quote 2 — Amount (OMR)">
               <input type="number" min="0" value={form.quote2Amount} onChange={(e) => update('quote2Amount', e.target.value)} />
             </FormField>
             <FormField label="Selected Quote">
@@ -166,7 +166,7 @@ export default function ProcurementOrderModal({ open, onClose, onSubmit, editIte
             <FormField label="Items" required error={errors.items} full>
               <input type="text" value={form.items} placeholder="Vegetables, Dairy, Linen..." onChange={(e) => update('items', e.target.value)} />
             </FormField>
-            <FormField label="Amount (₹)" required error={errors.amount}>
+            <FormField label="Amount (OMR)" required error={errors.amount}>
               <input type="number" min="1" value={form.amount} onChange={(e) => update('amount', e.target.value)} />
             </FormField>
             <FormField label="PO Date">
@@ -231,7 +231,7 @@ export default function ProcurementOrderModal({ open, onClose, onSubmit, editIte
             <FormField label="Invoice Number">
               <input type="text" value={form.invoiceNumber} onChange={(e) => update('invoiceNumber', e.target.value)} />
             </FormField>
-            <FormField label="Invoice Amount (₹)">
+            <FormField label="Invoice Amount (OMR)">
               <input type="number" min="0" value={form.invoiceAmount} onChange={(e) => update('invoiceAmount', e.target.value)} />
             </FormField>
             <div className="form-field form-field-full">

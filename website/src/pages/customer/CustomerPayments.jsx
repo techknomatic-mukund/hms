@@ -1,8 +1,8 @@
 import { PageShell, SectionHeader } from '../../components/UI'
 
 const INVOICES = [
-  { id: 'INV-1001', desc: 'Room — Deluxe 302', amount: '₹22,500', status: 'Paid', date: '24 Jun' },
-  { id: 'INV-1002', desc: 'Spa Services', amount: '₹3,500', status: 'Pending', date: '25 Jun' },
+  { id: 'INV-1001', desc: 'Room — Deluxe 302', amount: 'OMR 22,500', status: 'Paid', date: '24 Jun' },
+  { id: 'INV-1002', desc: 'Spa Services', amount: 'OMR 3,500', status: 'Pending', date: '25 Jun' },
 ]
 
 export default function CustomerPayments() {

@@ -3,7 +3,7 @@ import { useStore } from '../context/StoreContext'
 import CrudModule from '../components/CrudModule'
 import LaundryOrderModal from '../components/LaundryOrderModal'
 import { Badge } from '../components/UI'
-import { formatINR } from '../utils/helpers'
+import { formatOMR, isFormattedAmount } from '../utils/helpers'
 
 const viewFields = [
   { key: 'id', label: 'Ref' },
@@ -52,8 +52,8 @@ export default function Laundry() {
         { key: 'status', label: 'Status', render: (r) => <Badge variant="info">{r.status}</Badge> },
       ]}
       viewFields={viewFields}
-      onCreate={(f) => store.create(key, 'LD-', 'Laundry', { ...f, amount: formatINR(f.amount) })}
-      onUpdate={(id, f) => store.update(key, 'Laundry', id, { ...f, amount: f.amount?.toString?.().includes?.('₹') ? f.amount : formatINR(f.amount) })}
+      onCreate={(f) => store.create(key, 'LD-', 'Laundry', { ...f, amount: formatOMR(f.amount) })}
+      onUpdate={(id, f) => store.update(key, 'Laundry', id, { ...f, amount: isFormattedAmount(f.amount) ? f.amount : formatOMR(f.amount) })}
       onDelete={(id) => store.remove(key, 'Laundry', id)}
       customModal={(props) => (
         <LaundryOrderModal

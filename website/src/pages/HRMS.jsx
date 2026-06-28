@@ -5,7 +5,7 @@ import { CrudTable } from '../components/CrudTable'
 import EmployeeModal from '../components/EmployeeModal'
 import DeleteConfirmModal, { ViewDetailModal } from '../components/DeleteConfirmModal'
 import { useCrudModal } from '../hooks/useCrudModal'
-import { formatINR } from '../utils/helpers'
+import { formatOMR } from '../utils/helpers'
 
 export default function HRMS() {
   const store = useStore()
@@ -24,7 +24,7 @@ export default function HRMS() {
   const viewFields = [
     ...cols,
     { key: 'email', label: 'Email' },
-    { key: 'salary', label: 'Salary', render: (r) => (r.salary ? `₹${r.salary}` : '—') },
+    { key: 'salary', label: 'Salary', render: (r) => (r.salary ? formatOMR(r.salary) : '—') },
     { key: 'performanceRating', label: 'Rating' },
     { key: 'systemRole', label: 'Role' },
   ]
@@ -46,7 +46,7 @@ export default function HRMS() {
       { label: 'Present Today', value: String(present), trend: 'up' },
       { label: 'On Leave', value: String(onLeave), trend: onLeave > 0 ? 'down' : 'neutral' },
       { label: 'Pending Leave', value: String(pendingLeave), trend: pendingLeave > 0 ? 'down' : 'neutral' },
-      { label: 'Monthly Payroll', value: formatINR(payroll), trend: 'neutral' },
+      { label: 'Monthly Payroll', value: formatOMR(payroll), trend: 'neutral' },
       { label: 'Departments', value: String(departments), trend: 'neutral' },
       { label: 'Avg Performance', value: avgRating === '—' ? avgRating : `${avgRating} / 5`, trend: 'up' },
     ]

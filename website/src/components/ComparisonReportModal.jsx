@@ -2,18 +2,18 @@ import { Modal } from './UI'
 
 const COMPARISON_DATA = {
   'Weekly Comparison': [
-    { period: 'This Week', occupancy: '78%', revenue: '₹28.5L', bookings: '142' },
-    { period: 'Last Week', occupancy: '72%', revenue: '₹25.1L', bookings: '128' },
+    { period: 'This Week', occupancy: '78%', revenue: 'OMR 28.5K', bookings: '142' },
+    { period: 'Last Week', occupancy: '72%', revenue: 'OMR 25.1K', bookings: '128' },
     { period: 'Change', occupancy: '+6%', revenue: '+13.5%', bookings: '+10.9%' },
   ],
   'Monthly Comparison': [
-    { period: 'This Month', occupancy: '75%', revenue: '₹1.24 Cr', bookings: '580' },
-    { period: 'Last Month', occupancy: '71%', revenue: '₹1.08 Cr', bookings: '542' },
+    { period: 'This Month', occupancy: '75%', revenue: 'OMR 1.24M', bookings: '580' },
+    { period: 'Last Month', occupancy: '71%', revenue: 'OMR 1.08M', bookings: '542' },
     { period: 'Change', occupancy: '+4%', revenue: '+14.8%', bookings: '+7%' },
   ],
   'Yearly Comparison': [
-    { period: 'This Year', occupancy: '73%', revenue: '₹14.2 Cr', bookings: '6,840' },
-    { period: 'Last Year', occupancy: '68%', revenue: '₹12.1 Cr', bookings: '6,120' },
+    { period: 'This Year', occupancy: '73%', revenue: 'OMR 14.2M', bookings: '6,840' },
+    { period: 'Last Year', occupancy: '68%', revenue: 'OMR 12.1M', bookings: '6,120' },
     { period: 'Change', occupancy: '+5%', revenue: '+17.4%', bookings: '+11.8%' },
   ],
 }

@@ -47,7 +47,6 @@ function resolveIssuedToValue(editItem, employees) {
 
 const getEmpty = (employees = []) => {
   const issuedToOptions = buildIssuedToOptions(employees)
-  const approvers = employees.filter((e) => ['Supervisor', 'Technician'].includes(e.systemRole))
   return {
     name: '',
     skuCode: '',
@@ -60,8 +59,9 @@ const getEmpty = (employees = []) => {
     quantityIssued: '',
     issuedToKey: issuedToOptions[0]?.value || '',
     issueDate: todayISO(),
-    approvedBy: approvers[0]?.name || employees[0]?.name || '',
+    requestedBy: employees[0]?.name || '',
     purposeRemarks: '',
+    approvalStatus: 'Pending',
   }
 }
 
@@ -85,8 +85,11 @@ function itemToForm(editItem, employees) {
     quantityIssued: editItem.quantityIssued ?? '',
     issuedToKey: resolveIssuedToValue(editItem, employees),
     issueDate: editItem.issueDate || todayISO(),
-    approvedBy: editItem.approvedBy || '',
+    requestedBy: editItem.requestedBy || employees[0]?.name || '',
     purposeRemarks: editItem.purposeRemarks || '',
+    approvalStatus: editItem.approvalStatus || 'Pending',
+    approvedBy: editItem.approvedBy || '',
+    approvalDate: editItem.approvalDate || '',
   }
 }
 
@@ -98,11 +101,7 @@ export default function InventoryItemModal({
   const isEdit = !!editItem
 
   const issuedToOptions = useMemo(() => buildIssuedToOptions(employees), [employees])
-  const approverOptions = useMemo(() => {
-    const supervisors = employees.filter((e) => ['Supervisor', 'Technician'].includes(e.systemRole))
-    const list = supervisors.length ? supervisors : employees
-    return ['Store Manager', ...list.map((e) => e.name)]
-  }, [employees])
+  const employeeNames = useMemo(() => employees.map((e) => e.name), [employees])
 
   useEffect(() => {
     if (!open) return
@@ -126,7 +125,7 @@ export default function InventoryItemModal({
     }
     if (!form.issuedToKey) next.issuedToKey = 'Issued to is required'
     if (!form.issueDate) next.issueDate = 'Issue date is required'
-    if (!form.approvedBy) next.approvedBy = 'Approver is required'
+    if (!form.requestedBy) next.requestedBy = 'Requested by is required'
     setErrors(next)
     return Object.keys(next).length === 0
   }
@@ -152,8 +151,11 @@ export default function InventoryItemModal({
       issuedTo: issuedToLabel(form.issuedToKey, employees),
       issuedToKey: form.issuedToKey,
       issueDate: form.issueDate,
-      approvedBy: form.approvedBy,
+      requestedBy: form.requestedBy,
       purposeRemarks: form.purposeRemarks.trim(),
+      approvalStatus: isEdit ? form.approvalStatus : 'Pending',
+      approvedBy: form.approvedBy || '',
+      approvalDate: form.approvalDate || '',
     })
   }
 
@@ -221,10 +223,10 @@ export default function InventoryItemModal({
             <FormField label="Issue Date" required error={errors.issueDate}>
               <input type="date" value={form.issueDate} onChange={(e) => update('issueDate', e.target.value)} />
             </FormField>
-            <FormField label="Approved By" required error={errors.approvedBy}>
-              <select value={form.approvedBy} onChange={(e) => update('approvedBy', e.target.value)}>
-                <option value="">— Select approver —</option>
-                {approverOptions.map((name) => (
+            <FormField label="Requested By" required error={errors.requestedBy}>
+              <select value={form.requestedBy} onChange={(e) => update('requestedBy', e.target.value)}>
+                <option value="">— Select requester —</option>
+                {employeeNames.map((name) => (
                   <option key={name} value={name}>{name}</option>
                 ))}
               </select>
@@ -238,9 +240,28 @@ export default function InventoryItemModal({
               />
             </FormField>
           </div>
+          {!isEdit && (
+            <p className="field-hint">Issue requests are sent to the Manager Approval queue for review.</p>
+          )}
         </FormSection>
 
-        <FormActions onCancel={onClose} submitLabel={isEdit ? 'Update Item' : 'Create Item'} />
+        {isEdit && form.approvalStatus && form.approvalStatus !== 'Pending' && (
+          <FormSection title="Manager Approval" subtitle="Approval decision by store manager">
+            <div className="form-grid">
+              <FormField label="Approval Status">
+                <input type="text" value={form.approvalStatus} readOnly className="readonly-field" />
+              </FormField>
+              <FormField label="Approved By">
+                <input type="text" value={form.approvedBy || '—'} readOnly className="readonly-field" />
+              </FormField>
+              <FormField label="Approval Date">
+                <input type="text" value={form.approvalDate || '—'} readOnly className="readonly-field" />
+              </FormField>
+            </div>
+          </FormSection>
+        )}
+
+        <FormActions onCancel={onClose} submitLabel={isEdit ? 'Update Item' : 'Submit for Approval'} />
       </form>
     </Modal>
   )

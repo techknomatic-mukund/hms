@@ -302,7 +302,7 @@ export default function NewReservationModal({
 
         <FormSection title="Deposit Management" subtitle="Advance deposit collection before or during booking">
           <div className="form-grid">
-            <FormField label="Deposit Amount (₹)" error={errors.depositAmount}>
+            <FormField label="Deposit Amount (OMR)" error={errors.depositAmount}>
               <input
                 type="number"
                 min="0"

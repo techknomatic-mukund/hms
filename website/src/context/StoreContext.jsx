@@ -1,7 +1,7 @@
 import { createContext, useContext, useMemo, useReducer } from 'react'
 import {
   reservations, rooms as initialRooms, housekeepingTasks, laundryOrders,
-  posOrders, menuItems, kitchenOrders, inventoryItems, purchaseOrders,
+  posOrders, menuItems, kitchenOrders, inventoryItems, inventoryIssueRequests, inventoryReturnRequests, purchaseOrders,
   employees, leaveRequests, crmCustomers, fnbEvents, addonServices,
   feedbackEntries, maintenanceTickets, transactions, systemUsers, activityLog,
 } from '../data/initialState'
@@ -106,7 +106,7 @@ function reducer(state, action) {
           type: 'Revenue',
           category: 'Room',
           description: `Check-in folio opened — ${res.guest}`,
-          amount: '₹8,500',
+          amount: 'OMR 8,500',
           date: new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }),
         }, ...state.transactions],
         crmCustomers: state.crmCustomers.map((c) => (
@@ -196,6 +196,8 @@ const initialState = {
   menuItems,
   kitchenOrders,
   inventoryItems,
+  inventoryIssueRequests,
+  inventoryReturnRequests,
   purchaseOrders,
   employees,
   leaveRequests,

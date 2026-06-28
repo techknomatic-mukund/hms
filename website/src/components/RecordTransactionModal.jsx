@@ -47,7 +47,7 @@ export default function RecordTransactionModal({ open, onClose, onSubmit, editIt
           <FormField label="Description" required error={errors.description} full>
             <input type="text" value={form.description} onChange={(e) => update('description', e.target.value)} />
           </FormField>
-          <FormField label="Amount (₹)" required error={errors.amount}>
+          <FormField label="Amount (OMR)" required error={errors.amount}>
             <input type="number" min="1" value={form.amount} onChange={(e) => update('amount', e.target.value)} />
           </FormField>
         </div>

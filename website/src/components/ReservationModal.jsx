@@ -223,7 +223,7 @@ export default function ReservationModal({ open, onClose, onSubmit, editItem = n
         <FormSection title="Payment">
           <div className="form-grid">
             <FormField label="Advance Amount">
-              <input type="number" min="0" value={form.advanceAmount} placeholder="₹" onChange={(e) => update('advanceAmount', e.target.value)} />
+              <input type="number" min="0" value={form.advanceAmount} placeholder="OMR" onChange={(e) => update('advanceAmount', e.target.value)} />
             </FormField>
             <FormField label="Payment Method">
               <select value={form.paymentMethod} onChange={(e) => update('paymentMethod', e.target.value)}>

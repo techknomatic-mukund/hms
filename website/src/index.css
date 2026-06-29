@@ -306,6 +306,14 @@ p { margin: 0; }
   color: var(--muted);
 }
 
+.maintenance-status-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+
 .content {
   padding: 24px;
   flex: 1;

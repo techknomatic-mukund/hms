@@ -6,7 +6,7 @@ import { todayISO } from '../utils/helpers'
 import { ROOM_OPTIONS } from '../utils/reservationHelpers'
 
 const PRIORITIES = ['Low', 'Medium', 'High', 'Urgent']
-const STATUSES = ['Open', 'In Progress', 'Resolved', 'Closed']
+const STATUSES = ['Pending', 'On-going', 'Completed']
 const COMMON_AREA = 'Common Area'
 const GENERIC_TEAM = 'Maintenance Team'
 
@@ -95,7 +95,7 @@ const getEmpty = (technicians = []) => {
     employeeId: defaultTech?.id || '',
     scheduledDate: todayISO(),
     scheduledTime: '09:00',
-    status: 'Open',
+    status: 'Pending',
   }
 }
 

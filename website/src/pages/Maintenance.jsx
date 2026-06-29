@@ -8,6 +8,8 @@ import DeleteConfirmModal, { ViewDetailModal } from '../components/DeleteConfirm
 import { useCrudModal } from '../hooks/useCrudModal'
 import { formatDisplayDate, todayISO } from '../utils/helpers'
 
+const WORK_STATUSES = ['Pending', 'On-going', 'Completed']
+
 const viewFields = [
   { key: 'id', label: 'Ref' },
   { key: 'room', label: 'Room', render: (r) => r.room || '—' },
@@ -16,8 +18,6 @@ const viewFields = [
   { key: 'priority', label: 'Priority' },
   { key: 'requestedBy', label: 'Requested By', render: (r) => r.requestedBy || '—' },
   { key: 'requestDate', label: 'Request Date', render: (r) => (r.requestDate ? formatDisplayDate(r.requestDate) : '—') },
-  { key: 'requestApprovalStatus', label: 'Approval', render: (r) => r.requestApprovalStatus || '—' },
-  { key: 'reviewedBy', label: 'Reviewed By', render: (r) => r.reviewedBy || '—' },
   { key: 'assignee', label: 'Assigned To', render: (r) => r.assignee || '—' },
   { key: 'employeeId', label: 'Employee ID', render: (r) => r.employeeId || '—' },
   { key: 'scheduledDate', label: 'Scheduled Date', render: (r) => r.scheduledDate || '—' },
@@ -30,9 +30,9 @@ function formatSchedule(r) {
   return [r.scheduledDate, r.scheduledTime].filter(Boolean).join(' ')
 }
 
-function approvalBadge(status) {
-  if (status === 'Approved') return 'success'
-  if (status === 'Rejected') return 'danger'
+function statusBadge(status) {
+  if (status === 'Completed') return 'success'
+  if (status === 'On-going') return 'info'
   if (status === 'Pending') return 'warning'
   return 'muted'
 }
@@ -51,8 +51,8 @@ export default function Maintenance() {
     [store.employees],
   )
 
-  const pendingRequests = useMemo(
-    () => store.maintenanceTickets.filter((t) => t.requestApprovalStatus === 'Pending'),
+  const operationRequests = useMemo(
+    () => store.maintenanceTickets.filter((t) => t.requestedBy && t.status !== 'Completed'),
     [store.maintenanceTickets],
   )
 
@@ -66,15 +66,6 @@ export default function Maintenance() {
       label: 'Priority',
       render: (r) => <Badge variant={r.priority === 'High' || r.priority === 'Urgent' ? 'warning' : 'default'}>{r.priority}</Badge>,
     },
-    {
-      key: 'requestApprovalStatus',
-      label: 'Approval',
-      render: (r) => (
-        <Badge variant={approvalBadge(r.requestApprovalStatus || 'Approved')}>
-          {r.requestApprovalStatus || 'Approved'}
-        </Badge>
-      ),
-    },
     ...(canMaintenanceApprove ? [
       { key: 'assignee', label: 'Assigned To', render: (r) => r.assignee || '—' },
       { key: 'scheduledTime', label: 'Schedule', render: (r) => formatSchedule(r) },
@@ -82,32 +73,23 @@ export default function Maintenance() {
     {
       key: 'status',
       label: 'Status',
-      render: (r) => <Badge variant={r.status === 'Open' || r.status === 'Pending Approval' ? 'warning' : 'info'}>{r.status}</Badge>,
+      render: (r) => <Badge variant={statusBadge(r.status)}>{r.status || 'Pending'}</Badge>,
     },
   ]
 
-  const handleApprove = (ticket) => {
+  const handleSetStatus = (ticket, status) => {
     const defaultTech = technicians[0]
     store.update(key, 'Maintenance', ticket.id, {
       ...ticket,
-      requestApprovalStatus: 'Approved',
-      status: 'Open',
-      reviewedBy: user?.name || 'Maintenance',
-      reviewDate: todayISO(),
-      assignee: defaultTech?.name || GENERIC_TEAM,
-      employeeId: defaultTech?.id || '',
-      scheduledDate: ticket.scheduledDate || todayISO(),
-      scheduledTime: ticket.scheduledTime || '09:00',
-    })
-  }
-
-  const handleReject = (ticket) => {
-    store.update(key, 'Maintenance', ticket.id, {
-      ...ticket,
-      requestApprovalStatus: 'Rejected',
-      status: 'Rejected',
-      reviewedBy: user?.name || 'Maintenance',
-      reviewDate: todayISO(),
+      status,
+      statusUpdatedBy: user?.name || 'Maintenance',
+      statusUpdatedDate: todayISO(),
+      ...(status === 'On-going' && !ticket.assignee ? {
+        assignee: defaultTech?.name || GENERIC_TEAM,
+        employeeId: defaultTech?.id || '',
+        scheduledDate: ticket.scheduledDate || todayISO(),
+        scheduledTime: ticket.scheduledTime || '09:00',
+      } : {}),
     })
   }
 
@@ -115,8 +97,7 @@ export default function Maintenance() {
     if (isOperationsRequester) {
       store.create(key, 'WO-', 'Maintenance', {
         ...f,
-        status: 'Pending Approval',
-        requestApprovalStatus: 'Pending',
+        status: 'Pending',
         requestedBy: user?.name,
         requestDate: todayISO(),
         assignee: '',
@@ -125,18 +106,13 @@ export default function Maintenance() {
         scheduledTime: '',
       })
     } else if (modal.item) {
-      store.update(key, 'Maintenance', modal.item.id, {
-        ...modal.item,
-        ...f,
-        requestApprovalStatus: modal.item.requestApprovalStatus || 'Approved',
-      })
+      store.update(key, 'Maintenance', modal.item.id, { ...modal.item, ...f })
     } else {
       store.create(key, 'WO-', 'Maintenance', {
         ...f,
-        requestApprovalStatus: 'Approved',
+        status: f.status || 'Pending',
         requestedBy: user?.name,
         requestDate: todayISO(),
-        reviewedBy: user?.name,
       })
     }
     setModal({ open: false, item: null })
@@ -147,70 +123,66 @@ export default function Maintenance() {
       <PageShell
         title={isOperationsRequester ? 'Maintenance Requests' : 'Maintenance'}
         description={isOperationsRequester
-          ? 'Raise maintenance requests for the Maintenance team to review'
-          : 'Asset maintenance, work orders & request approvals'}
+          ? 'Raise maintenance requests for the Maintenance team'
+          : 'Asset maintenance & work order status tracking'}
       >
         {canMaintenanceApprove && (
           <section className="panel">
             <SectionHeader
-              title="Request Approval"
-              subtitle="Review maintenance requests raised by Operations"
+              title="Operations Requests"
+              subtitle="Set status for each maintenance request"
             />
-            {pendingRequests.length === 0 ? (
+            {operationRequests.length === 0 ? (
               <div className="approval-queue-empty">
                 <span className="approval-queue-empty-icon" aria-hidden>✓</span>
-                <p>All caught up — no pending requests.</p>
+                <p>No requests yet.</p>
               </div>
             ) : (
-              <>
-                <div className="approval-queue-summary">
-                  <div className="approval-queue-total">
-                    <span className="approval-queue-count">{pendingRequests.length}</span>
-                    <span className="approval-queue-label">pending request{pendingRequests.length === 1 ? '' : 's'}</span>
-                  </div>
-                </div>
-                <div className="approval-queue">
-                  {pendingRequests.map((ticket) => (
-                    <article key={ticket.id} className="approval-card approval-card--return">
-                      <div className="approval-card-header">
-                        <div className="approval-card-heading">
-                          <h3 className="approval-card-title">{ticket.asset}</h3>
-                          <span className="approval-card-id">{ticket.id}</span>
-                        </div>
-                        <div className="approval-card-badges">
-                          <Badge variant={ticket.priority === 'High' || ticket.priority === 'Urgent' ? 'warning' : 'info'}>
-                            {ticket.priority}
-                          </Badge>
-                          <Badge variant="warning">Pending</Badge>
-                        </div>
+              <div className="approval-queue">
+                {operationRequests.map((ticket) => (
+                  <article key={ticket.id} className="approval-card approval-card--return">
+                    <div className="approval-card-header">
+                      <div className="approval-card-heading">
+                        <h3 className="approval-card-title">{ticket.asset}</h3>
+                        <span className="approval-card-id">{ticket.id}</span>
                       </div>
-                      <dl className="approval-card-meta">
-                        <div className="approval-card-meta-item">
-                          <dt>Room</dt>
-                          <dd>{ticket.room || '—'}</dd>
-                        </div>
-                        <div className="approval-card-meta-item">
-                          <dt>Requested by</dt>
-                          <dd>{ticket.requestedBy || '—'}</dd>
-                        </div>
-                        <div className="approval-card-meta-item">
-                          <dt>Request date</dt>
-                          <dd>{ticket.requestDate ? formatDisplayDate(ticket.requestDate) : '—'}</dd>
-                        </div>
-                      </dl>
-                      <blockquote className="approval-card-remarks">{ticket.complaint}</blockquote>
-                      <div className="approval-card-actions">
-                        <button type="button" className="btn btn-success btn-sm" onClick={() => handleApprove(ticket)}>
-                          Approve
-                        </button>
-                        <button type="button" className="btn btn-danger-outline btn-sm" onClick={() => handleReject(ticket)}>
-                          Reject
-                        </button>
+                      <div className="approval-card-badges">
+                        <Badge variant={ticket.priority === 'High' || ticket.priority === 'Urgent' ? 'warning' : 'info'}>
+                          {ticket.priority}
+                        </Badge>
+                        <Badge variant={statusBadge(ticket.status)}>{ticket.status || 'Pending'}</Badge>
                       </div>
-                    </article>
-                  ))}
-                </div>
-              </>
+                    </div>
+                    <dl className="approval-card-meta">
+                      <div className="approval-card-meta-item">
+                        <dt>Room</dt>
+                        <dd>{ticket.room || '—'}</dd>
+                      </div>
+                      <div className="approval-card-meta-item">
+                        <dt>Requested by</dt>
+                        <dd>{ticket.requestedBy || '—'}</dd>
+                      </div>
+                      <div className="approval-card-meta-item">
+                        <dt>Request date</dt>
+                        <dd>{ticket.requestDate ? formatDisplayDate(ticket.requestDate) : '—'}</dd>
+                      </div>
+                    </dl>
+                    <blockquote className="approval-card-remarks">{ticket.complaint}</blockquote>
+                    <div className="maintenance-status-actions">
+                      {WORK_STATUSES.map((s) => (
+                        <button
+                          key={s}
+                          type="button"
+                          className={`btn btn-sm ${ticket.status === s ? 'btn-primary' : 'btn-secondary'}`}
+                          onClick={() => handleSetStatus(ticket, s)}
+                        >
+                          {s}
+                        </button>
+                      ))}
+                    </div>
+                  </article>
+                ))}
+              </div>
             )}
           </section>
         )}

@@ -371,8 +371,8 @@ export const feedbackEntries = [
 
 export const maintenanceTickets = [
   {
-    id: 'WO-601', room: 'Deluxe 305', asset: 'AC Unit — Deluxe 305', complaint: 'Not cooling properly', priority: 'High', status: 'Open',
-    requestApprovalStatus: 'Approved', requestedBy: 'Housekeeping', requestDate: '2026-06-24', reviewedBy: 'Karan Singh',
+    id: 'WO-601', room: 'Deluxe 305', asset: 'AC Unit — Deluxe 305', complaint: 'Not cooling properly', priority: 'High', status: 'On-going',
+    requestedBy: 'Housekeeping', requestDate: '2026-06-24',
     assignee: 'Ramesh Kumar', employeeId: 'EMP-107', scheduledDate: '2026-06-26', scheduledTime: '10:00',
     maintenanceType: 'Corrective',
     assetHistory: '20 Jun — Preventive: Filter cleaned\n10 May — Corrective: Gas refill',
@@ -380,8 +380,8 @@ export const maintenanceTickets = [
     trackingStatus: 'Assigned', laborCost: '800', totalCost: '1250', costCategory: 'HVAC',
   },
   {
-    id: 'WO-602', room: 'Common Area', asset: 'Elevator B', complaint: 'Unusual noise', priority: 'Medium', status: 'In Progress',
-    requestApprovalStatus: 'Approved', requestedBy: 'Front Office', requestDate: '2026-06-23', reviewedBy: 'Karan Singh',
+    id: 'WO-602', room: 'Common Area', asset: 'Elevator B', complaint: 'Unusual noise', priority: 'Medium', status: 'On-going',
+    requestedBy: 'Front Office', requestDate: '2026-06-23',
     assignee: 'Karan Singh', employeeId: 'EMP-106', scheduledDate: '2026-06-25', scheduledTime: '14:00',
     maintenanceType: 'Inspection',
     assetHistory: '1 Jun — Inspection: Annual safety check passed',
@@ -390,12 +390,12 @@ export const maintenanceTickets = [
   },
   {
     id: 'WO-603', room: 'Deluxe 302', asset: 'Plumbing — Deluxe 302', complaint: 'Bathroom tap leaking continuously', priority: 'Medium',
-    status: 'Pending Approval', requestApprovalStatus: 'Pending', requestedBy: 'Sneha Patel', requestDate: '2026-06-26',
+    status: 'Pending', requestedBy: 'Sneha Patel', requestDate: '2026-06-26',
     assignee: '', employeeId: '', scheduledDate: '', scheduledTime: '',
   },
   {
     id: 'WO-604', room: 'Common Area', asset: 'Pool Pump', complaint: 'Low water pressure in pool area', priority: 'High',
-    status: 'Pending Approval', requestApprovalStatus: 'Pending', requestedBy: 'Sneha Patel', requestDate: '2026-06-26',
+    status: 'Pending', requestedBy: 'Sneha Patel', requestDate: '2026-06-26',
     assignee: '', employeeId: '', scheduledDate: '', scheduledTime: '',
   },
 ]

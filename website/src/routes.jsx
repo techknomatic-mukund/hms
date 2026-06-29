@@ -5,6 +5,7 @@ import FrontOffice from './pages/FrontOffice'
 import Housekeeping from './pages/Housekeeping'
 import Laundry from './pages/Laundry'
 import Maintenance from './pages/Maintenance'
+import MaintenanceInventory from './pages/MaintenanceInventory'
 import POS from './pages/POS'
 import Kitchen from './pages/Kitchen'
 import FnB from './pages/FnB'
@@ -32,6 +33,7 @@ export const erpRoutes = [
   { path: 'housekeeping', Component: Housekeeping },
   { path: 'laundry', Component: Laundry },
   { path: 'maintenance', Component: Maintenance },
+  { path: 'maintenance-inventory', Component: MaintenanceInventory },
   { path: 'pos', Component: POS },
   { path: 'kitchen', Component: Kitchen },
   { path: 'fnb', Component: FnB },

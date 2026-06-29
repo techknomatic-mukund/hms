@@ -1,7 +1,7 @@
 /** All ERP module ids used for RBAC */
 export const ALL_ERP_MODULES = [
   'dashboard', 'integration', 'reservations', 'front-office', 'housekeeping', 'laundry',
-  'maintenance', 'addons', 'pos', 'kitchen', 'fnb', 'inventory', 'procurement',
+  'maintenance', 'maintenance-inventory', 'addons', 'pos', 'kitchen', 'fnb', 'inventory', 'procurement',
   'finance', 'hrms', 'crm', 'feedback', 'reports', 'admin',
 ]
 
@@ -12,6 +12,7 @@ const ROUTE_SEGMENT_MODULE = {
   housekeeping: 'housekeeping',
   laundry: 'laundry',
   maintenance: 'maintenance',
+  'maintenance-inventory': 'maintenance-inventory',
   addons: 'addons',
   pos: 'pos',
   kitchen: 'kitchen',
@@ -30,8 +31,8 @@ const ROUTE_SEGMENT_MODULE = {
 const ROLE_MODULES = {
   admin: '*',
   manager: ['dashboard', 'finance', 'hrms', 'reports', 'inventory', 'procurement'],
-  maintenance: ['dashboard', 'maintenance', 'inventory'],
-  operations: ['dashboard', 'reservations', 'housekeeping', 'laundry', 'maintenance', 'addons', 'pos', 'fnb'],
+  maintenance: ['dashboard', 'maintenance', 'maintenance-inventory'],
+  operations: ['dashboard', 'reservations', 'housekeeping', 'laundry', 'maintenance', 'maintenance-inventory', 'addons', 'pos', 'fnb'],
   backoffice: ['dashboard', 'finance', 'hrms', 'inventory', 'procurement', 'reports'],
   customer: [],
 }

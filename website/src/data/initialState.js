@@ -400,6 +400,28 @@ export const maintenanceTickets = [
   },
 ]
 
+export const maintenanceInventoryItems = [
+  {
+    id: 'MINV-001', skuCode: 'MNT-AC-01', name: 'AC Filter — Standard', category: 'HVAC',
+    quantity: 24, stock: 24, unit: 'pcs', storageLocation: 'Maintenance Store — Shelf A',
+    itemDescription: 'Universal split AC filter', approvalStatus: 'Approved',
+    requestedBy: 'Karan Singh', requestDate: '2026-06-20', approvedBy: 'Sneha Patel', approvalDate: '2026-06-20',
+    remarks: 'Regular stock replenishment',
+  },
+  {
+    id: 'MINV-002', skuCode: 'MNT-PLB-02', name: 'Pipe Sealant', category: 'Plumbing',
+    quantity: 6, stock: 6, unit: 'L', storageLocation: 'Maintenance Workshop',
+    itemDescription: 'Waterproof pipe joint sealant', approvalStatus: 'Pending',
+    requestedBy: 'Karan Singh', requestDate: '2026-06-26', approvedBy: '', remarks: 'Urgent plumbing repairs',
+  },
+  {
+    id: 'MINV-003', skuCode: 'MNT-ELC-03', name: 'Circuit Breaker 32A', category: 'Electrical',
+    quantity: 10, stock: 10, unit: 'pcs', storageLocation: 'Basement Store',
+    itemDescription: '32A MCB for guest floor panels', approvalStatus: 'Pending',
+    requestedBy: 'Ramesh Kumar', requestDate: '2026-06-26', approvedBy: '', remarks: 'Floor 3 electrical panel upgrade',
+  },
+]
+
 export const transactions = [
   {
     id: 'TXN-301', type: 'Revenue', category: 'Room', description: 'Room revenue — Jun 24', amount: 'OMR 82,000', date: '24 Jun', dateIso: '2026-06-24',

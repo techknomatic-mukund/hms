@@ -3,7 +3,7 @@ import {
   reservations, rooms as initialRooms, housekeepingTasks, laundryOrders,
   posOrders, menuItems, kitchenOrders, inventoryItems, inventoryIssueRequests, inventoryReturnRequests, purchaseOrders,
   employees, leaveRequests, crmCustomers, fnbEvents, addonServices,
-  feedbackEntries, maintenanceTickets, transactions, systemUsers, activityLog, notifications,
+  feedbackEntries, maintenanceTickets, maintenanceInventoryItems, transactions, systemUsers, activityLog, notifications,
 } from '../data/initialState'
 import { nextId } from '../utils/helpers'
 import { historyEntry } from '../utils/reservationHelpers'
@@ -206,6 +206,7 @@ const initialState = {
   addonBookings: addonServices,
   feedback: feedbackEntries,
   maintenanceTickets,
+  maintenanceInventoryItems,
   transactions,
   systemUsers,
   activityLog,

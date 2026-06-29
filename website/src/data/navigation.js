@@ -19,6 +19,7 @@ export const erpModuleGroups = [
       { id: 'housekeeping', path: '/erp/housekeeping', label: 'Housekeeping', icon: '🧹' },
       { id: 'laundry', path: '/erp/laundry', label: 'Laundry', icon: '👔' },
       { id: 'maintenance', path: '/erp/maintenance', label: 'Maintenance', icon: '🔧' },
+      { id: 'maintenance-inventory', path: '/erp/maintenance-inventory', label: 'Maintenance Inventory', icon: '🧰' },
       { id: 'addons', path: '/erp/addons', label: 'Membership & Add-ons', icon: '💆' },
     ],
   },

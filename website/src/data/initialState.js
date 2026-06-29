@@ -481,6 +481,29 @@ export const systemUsers = [
   },
 ]
 
+export const notifications = [
+  {
+    id: 'NOTIF-001',
+    title: 'VIP arrival — Suite 501',
+    message: 'Sarah Mitchell (Platinum) checking in at 3 PM. Ensure welcome amenity and priority housekeeping.',
+    priority: 'High',
+    createdBy: 'Sneha Patel',
+    createdByRole: 'Operations',
+    createdAt: '2026-06-26',
+    createdTime: '08:30',
+  },
+  {
+    id: 'NOTIF-002',
+    title: 'Floor 3 deep cleaning',
+    message: 'Housekeeping to complete deep cleaning on floor 3 before 2 PM today.',
+    priority: 'Normal',
+    createdBy: 'Sneha Patel',
+    createdByRole: 'Operations',
+    createdAt: '2026-06-26',
+    createdTime: '07:15',
+  },
+]
+
 export const activityLog = [
   { id: 'LOG-1', time: '09:15', action: 'Check-in', module: 'Front Office', detail: 'Sarah Mitchell → Suite 501' },
   { id: 'LOG-2', time: '09:10', action: 'Sync', module: 'Housekeeping', detail: 'Room 501 status → Occupied' },

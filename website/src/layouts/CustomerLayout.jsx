@@ -2,6 +2,7 @@ import { Navigate, NavLink, Outlet, useLocation } from 'react-router-dom'
 import { useState } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { customerModules } from '../data/navigation'
+import NotificationPanel from '../components/NotificationPanel'
 
 export default function CustomerLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
@@ -56,6 +57,7 @@ export default function CustomerLayout() {
           <button type="button" className="menu-toggle" aria-label="Toggle menu" onClick={() => setSidebarOpen(!sidebarOpen)}>☰</button>
           <span className="topbar-title">{currentLabel}</span>
           <div className="topbar-actions">
+            <NotificationPanel />
             <NavLink to="/erp" className="btn btn-secondary btn-sm">ERP Portal</NavLink>
             <button type="button" className="btn btn-secondary btn-sm" onClick={logout}>Logout</button>
           </div>

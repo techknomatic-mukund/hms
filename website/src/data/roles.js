@@ -118,3 +118,7 @@ export function canMaintenanceApprove(role) {
 export function isOperationsRequester(role) {
   return role === 'operations'
 }
+
+export function canAddNotification(role) {
+  return role === 'operations'
+}

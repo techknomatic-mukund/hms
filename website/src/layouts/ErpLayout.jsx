@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext'
 import { getNavGroupsForRole } from '../data/navigation'
 import { getDefaultErpPath, getModuleForPath, roleHasModule, ROLES } from '../data/roles'
 import ErpRouteGuard from '../components/ErpRouteGuard'
+import NotificationPanel from '../components/NotificationPanel'
 
 export default function ErpLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
@@ -75,6 +76,7 @@ export default function ErpLayout() {
           <button type="button" className="menu-toggle" aria-label="Toggle menu" onClick={() => setSidebarOpen(!sidebarOpen)}>☰</button>
           <span className="topbar-title">{currentLabel}</span>
           <div className="topbar-actions">
+            <NotificationPanel />
             <span className="sync-status">● Central DB — Synced</span>
             {user.role === 'admin' && (
               <NavLink to="/customer" className="btn btn-secondary btn-sm">Customer Portal</NavLink>

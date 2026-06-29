@@ -1,5 +1,5 @@
 import { createContext, useContext, useMemo, useState } from 'react'
-import { DEMO_USERS, getDefaultErpPath, getModulesForRole, roleCan, roleHasModule, canGmApprove, canMaintenanceApprove, isOperationsRequester } from '../data/roles'
+import { DEMO_USERS, getDefaultErpPath, getModulesForRole, roleCan, roleHasModule, canGmApprove, canMaintenanceApprove, isOperationsRequester, canAddNotification } from '../data/roles'
 
 const AuthContext = createContext(null)
 
@@ -47,6 +47,7 @@ export function AuthProvider({ children }) {
     canGmApprove: canGmApprove(user?.role),
     canMaintenanceApprove: canMaintenanceApprove(user?.role),
     isOperationsRequester: isOperationsRequester(user?.role),
+    canAddNotification: canAddNotification(user?.role),
   }), [user])
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

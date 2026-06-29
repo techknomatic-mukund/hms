@@ -1,5 +1,5 @@
 import { createContext, useContext, useMemo, useState } from 'react'
-import { DEMO_USERS } from '../data/roles'
+import { DEMO_USERS, getDefaultErpPath, getModulesForRole, roleCan, roleHasModule } from '../data/roles'
 
 const AuthContext = createContext(null)
 
@@ -34,7 +34,17 @@ export function AuthProvider({ children }) {
     localStorage.removeItem('hms_user')
   }
 
-  const value = useMemo(() => ({ user, login, register, logout, isAuthenticated: !!user }), [user])
+  const value = useMemo(() => ({
+    user,
+    login,
+    register,
+    logout,
+    isAuthenticated: !!user,
+    hasModule: (moduleId) => roleHasModule(user?.role, moduleId),
+    can: (action) => roleCan(user?.role, action),
+    modules: getModulesForRole(user?.role),
+    defaultErpPath: getDefaultErpPath(user?.role),
+  }), [user])
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }

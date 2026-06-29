@@ -4,7 +4,7 @@ import { FormActions, FormField } from './FormFields'
 import FormSection from './FormSection'
 import { formatDisplayDate, formatINR } from '../utils/helpers'
 
-const CATEGORIES = ['Room', 'F&B', 'Add-on', 'Operations', 'Payroll', 'Utilities', 'GST', 'Maintenance']
+const CATEGORIES = ['Room', 'F&B', 'Add-on', 'Operations', 'Payroll', 'Utilities', 'VAT', 'Maintenance']
 const PAYMENT_METHODS = ['Cash', 'Card', 'UPI', 'Bank Transfer', 'Room Folio', 'Corporate']
 const PAYMENT_STATUSES = ['Pending', 'Completed', 'Partial', 'Refunded']
 const INVOICE_STATUSES = ['Draft', 'Issued', 'Paid', 'Cancelled']
@@ -17,7 +17,7 @@ const getEmpty = () => ({
   invoiceNumber: '', invoiceDate: '', invoiceStatus: 'Draft',
   folioRef: '', guestName: '', roomNumber: '',
   revenueSource: '', expenseType: '', vendor: '',
-  gstRate: '18', gstAmount: '', taxInclusive: true,
+  vatRate: '18', vatAmount: '', taxInclusive: true,
   accountCode: '', accountName: '', ledgerType: 'Expense',
   paymentMethod: 'Bank Transfer', paymentStatus: 'Pending', paymentDate: '',
   reportPeriod: 'Monthly', reportTag: '',
@@ -28,9 +28,13 @@ const getEmpty = () => ({
 
 function itemToForm(editItem) {
   if (!editItem) return getEmpty()
+  const vatRate = editItem.vatRate ?? editItem.gstRate ?? '18'
+  const vatAmount = editItem.vatAmount ?? editItem.gstAmount ?? ''
   return {
     ...getEmpty(),
     ...editItem,
+    vatRate,
+    vatAmount,
     amount: parseFloat(String(editItem.amount).replace(/[^\d.]/g, '')) || '',
   }
 }
@@ -60,10 +64,10 @@ export default function FinanceTransactionModal({ open, onClose, onSubmit, editI
   const update = (field, value) => {
     setForm((prev) => {
       const next = { ...prev, [field]: value }
-      if (field === 'amount' || field === 'gstRate') {
+      if (field === 'amount' || field === 'vatRate') {
         const amt = parseFloat(field === 'amount' ? value : prev.amount) || 0
-        const rate = parseFloat(field === 'gstRate' ? value : prev.gstRate) || 0
-        if (amt && rate) next.gstAmount = ((amt * rate) / (100 + (prev.taxInclusive ? rate : 0))).toFixed(2)
+        const rate = parseFloat(field === 'vatRate' ? value : prev.vatRate) || 0
+        if (amt && rate) next.vatAmount = ((amt * rate) / (100 + (prev.taxInclusive ? rate : 0))).toFixed(2)
       }
       return next
     })
@@ -151,15 +155,15 @@ export default function FinanceTransactionModal({ open, onClose, onSubmit, editI
           </div>
         </FormSection>
 
-        <FormSection title="GST & Tax Management" subtitle="Apply GST rates and tax calculations">
+        <FormSection title="VAT & Tax Management" subtitle="Apply VAT rates and tax calculations">
           <div className="form-grid">
-            <FormField label="GST Rate (%)">
-              <select value={form.gstRate} onChange={(e) => update('gstRate', e.target.value)}>
+            <FormField label="VAT Rate (%)">
+              <select value={form.vatRate} onChange={(e) => update('vatRate', e.target.value)}>
                 {['0', '5', '12', '18', '28'].map((r) => <option key={r} value={r}>{r}%</option>)}
               </select>
             </FormField>
-            <FormField label="GST Amount (OMR)">
-              <input type="text" value={form.gstAmount} readOnly placeholder="Auto-calculated" />
+            <FormField label="VAT Amount (OMR)">
+              <input type="text" value={form.vatAmount} readOnly placeholder="Auto-calculated" />
             </FormField>
             <div className="form-field form-field-full">
               <label className="tax-option">

@@ -229,14 +229,14 @@ export default function NewPosOrderModal({ open, onClose, onSubmit, editItem = n
           })}
         </div>
 
-        <FormSection title="Billing" subtitle="Auto-calculated from menu with GST">
+        <FormSection title="Billing" subtitle="Auto-calculated from menu with VAT">
           <div className="pos-billing-summary">
             <div className="laundry-total-row">
               <span>Subtotal</span>
               <span>{formatINR(billing.subtotal)}</span>
             </div>
             <div className="laundry-total-row">
-              <span>Tax (GST)</span>
+              <span>Tax (VAT)</span>
               <span>{formatINR(billing.taxTotal)}</span>
             </div>
             <div className="laundry-total-row">

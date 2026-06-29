@@ -109,7 +109,7 @@ export default function Dashboard() {
         <SectionHeader title="Platform Capabilities" />
         <FeatureGrid features={[
           'Customer + ERP dual portals', 'RBAC permissions', 'Approval workflows',
-          'Centralized master & transaction data', 'GST & finance integration', 'CRM & loyalty',
+          'Centralized master & transaction data', 'VAT & finance integration', 'CRM & loyalty',
           'Inventory & procurement', 'Export PDF/Excel/CSV', 'Audit logs & backup',
         ]} />
       </section>

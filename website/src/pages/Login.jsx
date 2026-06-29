@@ -1,19 +1,31 @@
 import { useState } from 'react'
-import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom'
+import { Link, Navigate, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { DEMO_USERS, ROLES } from '../data/roles'
+
+const QUICK_LOGINS = [
+  { email: 'admin@demo.com', label: 'Admin' },
+  { email: 'manager@demo.com', label: 'GM / Finance' },
+  { email: 'operations@demo.com', label: 'Operations' },
+  { email: 'maintenance@demo.com', label: 'Maintenance' },
+  { email: 'backoffice@demo.com', label: 'Back Office' },
+  { email: 'vendor@demo.com', label: 'Vendor' },
+  { email: 'customer@demo.com', label: 'Customer' },
+]
+
+function portalHome(role) {
+  return ROLES[role]?.portal === 'customer' ? '/customer' : '/erp'
+}
 
 export default function Login() {
   const { user, login, register } = useAuth()
   const navigate = useNavigate()
-  const location = useLocation()
   const [tab, setTab] = useState('login')
   const [error, setError] = useState('')
   const [form, setForm] = useState({ name: '', email: '', password: '' })
 
   if (user) {
-    const dest = ROLES[user.role]?.portal === 'customer' ? '/customer' : '/erp'
-    return <Navigate to={location.state?.from || dest} replace />
+    return <Navigate to={portalHome(user.role)} replace />
   }
 
   const update = (k, v) => setForm((p) => ({ ...p, [k]: v }))
@@ -22,8 +34,7 @@ export default function Login() {
     e.preventDefault()
     const res = login(form.email, form.password)
     if (!res.ok) { setError(res.error); return }
-    const dest = ROLES[res.user.role]?.portal === 'customer' ? '/customer' : '/erp'
-    navigate(location.state?.from || dest)
+    navigate(portalHome(res.user.role))
   }
 
   const handleRegister = (e) => {
@@ -36,8 +47,8 @@ export default function Login() {
   const quickLogin = (email) => {
     const u = DEMO_USERS.find((d) => d.email === email)
     if (u) {
-      login(u.email, u.password)
-      navigate(ROLES[u.role].portal === 'customer' ? '/customer' : '/erp')
+      const res = login(u.email, u.password)
+      if (res.ok) navigate(portalHome(res.user.role))
     }
   }
 
@@ -61,7 +72,7 @@ export default function Login() {
           <form className="entity-form" onSubmit={handleLogin}>
             <label className="form-field form-field-full">
               <span>Email</span>
-              <input type="email" required value={form.email} onChange={(e) => update('email', e.target.value)} placeholder="reception@demo.com" />
+              <input type="email" required value={form.email} onChange={(e) => update('email', e.target.value)} placeholder="admin@demo.com" />
             </label>
             <label className="form-field form-field-full">
               <span>Password</span>
@@ -90,14 +101,16 @@ export default function Login() {
         <div className="demo-logins">
           <p>Demo accounts (password: <code>demo</code>)</p>
           <div className="demo-login-btns">
-            <button type="button" className="btn btn-secondary btn-sm" onClick={() => quickLogin('customer@demo.com')}>Customer</button>
-            <button type="button" className="btn btn-secondary btn-sm" onClick={() => quickLogin('reception@demo.com')}>Receptionist</button>
-            <button type="button" className="btn btn-secondary btn-sm" onClick={() => quickLogin('admin@demo.com')}>Admin</button>
+            {QUICK_LOGINS.map(({ email, label }) => (
+              <button key={email} type="button" className="btn btn-secondary btn-sm" onClick={() => quickLogin(email)}>
+                {label}
+              </button>
+            ))}
           </div>
         </div>
 
         <p className="login-footer">
-          <Link to="/erp">Browse ERP demo</Link> (requires staff login)
+          <Link to="/login">Role-based access — each account sees different modules</Link>
         </p>
       </div>
     </div>

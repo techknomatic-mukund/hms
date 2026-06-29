@@ -147,9 +147,9 @@ export const posOrders = [
 ]
 
 export const menuItems = [
-  { id: 'MENU-1', name: 'Butter Chicken', category: 'Main Course', price: 'OMR 420', tax: 'GST 5%' },
-  { id: 'MENU-2', name: 'Paneer Tikka', category: 'Starter', price: 'OMR 280', tax: 'GST 5%' },
-  { id: 'MENU-3', name: 'Continental Breakfast', category: 'Breakfast', price: 'OMR 680', tax: 'GST 5%' },
+  { id: 'MENU-1', name: 'Butter Chicken', category: 'Main Course', price: 'OMR 420', tax: 'VAT 5%' },
+  { id: 'MENU-2', name: 'Paneer Tikka', category: 'Starter', price: 'OMR 280', tax: 'VAT 5%' },
+  { id: 'MENU-3', name: 'Continental Breakfast', category: 'Breakfast', price: 'OMR 680', tax: 'VAT 5%' },
 ]
 
 export const kitchenOrders = [
@@ -374,17 +374,17 @@ export const maintenanceTickets = [
 export const transactions = [
   {
     id: 'TXN-301', type: 'Revenue', category: 'Room', description: 'Room revenue — Jun 24', amount: 'OMR 82,000', date: '24 Jun', dateIso: '2026-06-24',
-    invoiceNumber: 'INV-301', paymentStatus: 'Completed', gstRate: '18', accountCode: '4100-ROOM',
+    invoiceNumber: 'INV-301', paymentStatus: 'Completed', vatRate: '18', accountCode: '4100-ROOM',
     sourceModule: 'Front Office', reportPeriod: 'Monthly',
   },
   {
     id: 'TXN-302', type: 'Expense', category: 'Utilities', description: 'Electricity bill', amount: 'OMR 18,500', date: '23 Jun', dateIso: '2026-06-23',
-    expenseType: 'Utilities', expenseBucket: 'Miscellaneous', vendor: 'State Electricity Board', paymentStatus: 'Pending', gstRate: '18',
+    expenseType: 'Utilities', expenseBucket: 'Miscellaneous', vendor: 'State Electricity Board', paymentStatus: 'Pending', vatRate: '18',
     sourceModule: 'Finance',
   },
   {
     id: 'TXN-303', type: 'Revenue', category: 'Room', description: 'Room charges — Suite 501', amount: 'OMR 28,500', date: '25 Jun', dateIso: '2026-06-25',
-    invoiceNumber: 'INV-303', paymentStatus: 'Completed', gstRate: '18', sourceModule: 'Front Office',
+    invoiceNumber: 'INV-303', paymentStatus: 'Completed', vatRate: '18', sourceModule: 'Front Office',
   },
   {
     id: 'TXN-304', type: 'Revenue', category: 'F&B', description: 'Restaurant & banquet sales', amount: 'OMR 42,000', date: '25 Jun', dateIso: '2026-06-25',
@@ -414,15 +414,35 @@ export const transactions = [
 
 export const systemUsers = [
   {
-    id: 'USR-01', name: 'Anita Verma', email: 'reception@demo.com', role: 'Receptionist', status: 'Active',
-    accessLevel: 'Standard', moduleAccess: 'Front Office, POS, Reservations',
+    id: 'USR-01', name: 'Sneha Patel', email: 'operations@demo.com', role: 'Operations', status: 'Active',
+    accessLevel: 'Standard', moduleAccess: 'Front Office, Housekeeping, Laundry, Add-ons, POS, F&B',
     assignedPermissions: 'View, Create, Update, Export', authMethod: 'Email/Password', mfaEnabled: false,
   },
   {
-    id: 'USR-02', name: 'System Admin', email: 'admin@demo.com', role: 'Administrator', status: 'Active',
-    accessLevel: 'Full Access', moduleAccess: 'Front Office, Housekeeping, POS, Finance, HRMS, CRM, Admin, Reports',
+    id: 'USR-02', name: 'Director Admin', email: 'admin@demo.com', role: 'Administrator', status: 'Active',
+    accessLevel: 'Full Access', moduleAccess: 'All Modules',
     assignedPermissions: 'View, Create, Update, Delete, Approve, Export', authMethod: 'Email/Password', mfaEnabled: true,
     passwordPolicy: 'Enterprise',
+  },
+  {
+    id: 'USR-03', name: 'General Manager', email: 'manager@demo.com', role: 'General Manager', status: 'Active',
+    accessLevel: 'Executive', moduleAccess: 'Finance, HRMS, Reports',
+    assignedPermissions: 'View, Approve, Export', authMethod: 'Email/Password', mfaEnabled: true,
+  },
+  {
+    id: 'USR-04', name: 'Karan Singh', email: 'maintenance@demo.com', role: 'Maintenance', status: 'Active',
+    accessLevel: 'Standard', moduleAccess: 'Maintenance, Inventory',
+    assignedPermissions: 'View, Create, Update', authMethod: 'Email/Password', mfaEnabled: false,
+  },
+  {
+    id: 'USR-05', name: 'Finance Executive', email: 'backoffice@demo.com', role: 'Back Office', status: 'Active',
+    accessLevel: 'Standard', moduleAccess: 'Finance, HRMS, Inventory, Procurement, Reports',
+    assignedPermissions: 'View, Create, Update, Approve, Export', authMethod: 'Email/Password', mfaEnabled: false,
+  },
+  {
+    id: 'USR-06', name: 'Supply Vendor Co.', email: 'vendor@demo.com', role: 'Vendor', status: 'Active',
+    accessLevel: 'External', moduleAccess: 'Procurement',
+    assignedPermissions: 'View, Create', authMethod: 'Email/Password', mfaEnabled: false,
   },
 ]
 
@@ -447,7 +467,7 @@ export const guestLifecycle = [
   { step: 'Check-In', status: 'done', detail: 'Registration card & guest profile' },
   { step: 'Room Stay', status: 'active', detail: 'Room charges & folio tracking' },
   { step: 'Consume Services', status: 'pending', detail: 'Restaurant, Spa, Laundry, Gym' },
-  { step: 'Billing', status: 'pending', detail: 'GST, tax-inclusive/exclusive' },
+  { step: 'Billing', status: 'pending', detail: 'VAT, tax-inclusive/exclusive' },
   { step: 'Check-Out', status: 'pending', detail: 'Final settlement & invoice' },
 ]
 
@@ -462,7 +482,7 @@ export const reportCategories = {
   'Front Office': ["Today's Arrival", "Today's Departure", 'Occupancy', 'Vacant Rooms', 'No Show', 'Reservation Reports'],
   Restaurant: ['Daily Sales', 'Food Sales', 'Waiter Performance', 'Item-wise Sales'],
   Inventory: ['Current Stock', 'Low Stock', 'Vendor Performance'],
-  Finance: ['Revenue', 'P&L', 'Cash Flow', 'GST'],
+  Finance: ['Revenue', 'P&L', 'Cash Flow', 'VAT'],
   HR: ['Attendance', 'Payroll', 'Leave'],
   CRM: ['Customer History', 'Loyalty', 'Complaints'],
 }

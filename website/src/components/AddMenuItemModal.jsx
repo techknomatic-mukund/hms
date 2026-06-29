@@ -11,7 +11,7 @@ function parsePrice(price) {
 }
 
 export default function AddMenuItemModal({ open, onClose, onSubmit, editItem = null }) {
-  const [form, setForm] = useState({ name: '', category: 'Main Course', price: '', tax: 'GST 5%' })
+  const [form, setForm] = useState({ name: '', category: 'Main Course', price: '', tax: 'VAT 5%' })
   const [errors, setErrors] = useState({})
 
   useEffect(() => {
@@ -19,7 +19,7 @@ export default function AddMenuItemModal({ open, onClose, onSubmit, editItem = n
     if (editItem) {
       setForm({ name: editItem.name, category: editItem.category, price: parsePrice(editItem.price), tax: editItem.tax })
     } else {
-      setForm({ name: '', category: 'Main Course', price: '', tax: 'GST 5%' })
+      setForm({ name: '', category: 'Main Course', price: '', tax: 'VAT 5%' })
     }
     setErrors({})
   }, [open, editItem])
@@ -52,7 +52,7 @@ export default function AddMenuItemModal({ open, onClose, onSubmit, editItem = n
           </FormField>
           <FormField label="Tax">
             <select value={form.tax} onChange={(e) => update('tax', e.target.value)}>
-              <option>GST 5%</option><option>GST 12%</option><option>GST 18%</option>
+              <option>VAT 5%</option><option>VAT 12%</option><option>VAT 18%</option>
             </select>
           </FormField>
         </div>

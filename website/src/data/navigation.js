@@ -1,17 +1,16 @@
+import { roleHasModule } from './roles'
+
 export const erpModuleGroups = [
   {
     label: 'Overview',
     modules: [
       { id: 'dashboard', path: '/erp', label: 'Dashboard', icon: '📊', end: true },
-      // { id: 'integration', path: '/erp/integration', label: 'Integration Flow', icon: '🔗' },
     ],
   },
   {
     label: 'Guest Operations',
     modules: [
       { id: 'reservations', path: '/erp/reservations', label: 'Front Office', icon: '📅' },
-      // { id: 'front-office', path: '/erp/front-office', label: 'Front Office', icon: '🏨' },
-      // { id: 'crm', path: '/erp/crm', label: 'CRM', icon: '🤝' },
     ],
   },
   {
@@ -27,7 +26,6 @@ export const erpModuleGroups = [
     label: 'F&B',
     modules: [
       { id: 'pos', path: '/erp/pos', label: 'Restaurant & POS', icon: '🍽️' },
-      // { id: 'kitchen', path: '/erp/kitchen', label: 'Kitchen', icon: '👨‍🍳' },
       { id: 'fnb', path: '/erp/fnb', label: 'Events & Banquet', icon: '🥂' },
     ],
   },
@@ -35,7 +33,7 @@ export const erpModuleGroups = [
     label: 'Supply Chain',
     modules: [
       { id: 'inventory', path: '/erp/inventory', label: 'Inventory', icon: '📦' },
-      // { id: 'procurement', path: '/erp/procurement', label: 'Procurement', icon: '🛒' },
+      { id: 'procurement', path: '/erp/procurement', label: 'Procurement', icon: '🛒' },
     ],
   },
   {
@@ -43,7 +41,6 @@ export const erpModuleGroups = [
     modules: [
       { id: 'finance', path: '/erp/finance', label: 'Finance', icon: '💰' },
       { id: 'hrms', path: '/erp/hrms', label: 'HRMS', icon: '👥' },
-      // { id: 'feedback', path: '/erp/feedback', label: 'Feedback', icon: '⭐' },
       // { id: 'reports', path: '/erp/reports', label: 'Reports', icon: '📈' },
       // { id: 'admin', path: '/erp/admin', label: 'Administration', icon: '⚙️' },
     ],
@@ -60,3 +57,12 @@ export const customerModules = [
 ]
 
 export const flatErpModules = erpModuleGroups.flatMap((g) => g.modules)
+
+export function getNavGroupsForRole(role) {
+  return erpModuleGroups
+    .map((group) => ({
+      ...group,
+      modules: group.modules.filter((mod) => roleHasModule(role, mod.id)),
+    }))
+    .filter((group) => group.modules.length > 0)
+}

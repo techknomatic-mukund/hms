@@ -10,7 +10,7 @@ const EXPENSE_BUCKETS = {
   'Staff Salary': ['Payroll'],
   'Kitchen Inventory': ['Kitchen', 'Food'],
   'Housekeeping Inventory': ['Housekeeping', 'Linen'],
-  Miscellaneous: ['Utilities', 'Operations', 'Maintenance', 'GST'],
+  Miscellaneous: ['Utilities', 'Operations', 'Maintenance', 'VAT'],
 }
 
 function resolveExpenseBucket(txn) {

@@ -56,7 +56,7 @@ export default function Finance() {
     ...cols,
     { key: 'invoiceNumber', label: 'Invoice' },
     { key: 'folioRef', label: 'Folio' },
-    { key: 'gstRate', label: 'GST Rate', render: (r) => (r.gstRate ? `${r.gstRate}%` : '—') },
+    { key: 'vatRate', label: 'VAT Rate', render: (r) => ((r.vatRate ?? r.gstRate) ? `${r.vatRate ?? r.gstRate}%` : '—') },
     { key: 'accountCode', label: 'Account' },
     { key: 'sourceModule', label: 'Source Module' },
   ]
@@ -89,7 +89,7 @@ export default function Finance() {
   return (
     <PageShell
       title="Finance"
-      description="Billing, GST, revenue, expenses — integrated with all operations"
+      description="Billing, VAT, revenue, expenses — integrated with all operations"
       headerAction={(
         <DateRangeFilter
           startDate={startDate}

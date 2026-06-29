@@ -9,7 +9,7 @@ export default function CustomerLayout() {
   const location = useLocation()
 
   if (!user) {
-    return <Navigate to="/login" replace state={{ from: location.pathname }} />
+    return <Navigate to="/login" replace />
   }
 
   const currentLabel = customerModules.find((m) =>

@@ -1,19 +1,30 @@
 import { Navigate, NavLink, Outlet, useLocation } from 'react-router-dom'
 import { useState } from 'react'
 import { useAuth } from '../context/AuthContext'
-import { erpModuleGroups } from '../data/navigation'
-import { ROLES } from '../data/roles'
+import { getNavGroupsForRole } from '../data/navigation'
+import { getDefaultErpPath, getModuleForPath, roleHasModule, ROLES } from '../data/roles'
+import ErpRouteGuard from '../components/ErpRouteGuard'
 
 export default function ErpLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const { user, logout } = useAuth()
   const location = useLocation()
 
-  if (!user || ROLES[user.role]?.portal !== 'erp') {
-    return <Navigate to="/login" replace state={{ from: location.pathname }} />
+  if (!user) {
+    return <Navigate to="/login" replace />
   }
 
-  const currentLabel = erpModuleGroups
+  if (ROLES[user.role]?.portal !== 'erp') {
+    return <Navigate to="/customer" replace />
+  }
+
+  const navGroups = getNavGroupsForRole(user.role)
+  const moduleId = getModuleForPath(location.pathname)
+  if (moduleId && !roleHasModule(user.role, moduleId)) {
+    return <Navigate to={getDefaultErpPath(user.role)} replace />
+  }
+
+  const currentLabel = navGroups
     .flatMap((g) => g.modules)
     .find((m) => location.pathname === m.path || (m.end && location.pathname === m.path))?.label
     ?? 'Hotel ERP'
@@ -21,7 +32,7 @@ export default function ErpLayout() {
   return (
     <div className="app">
       <aside className={`sidebar ${sidebarOpen ? 'open' : ''}`}>
-        <NavLink to="/erp" className="sidebar-brand" onClick={() => setSidebarOpen(false)}>
+        <NavLink to={getDefaultErpPath(user.role)} className="sidebar-brand" onClick={() => setSidebarOpen(false)}>
           <span className="brand-icon">🏨</span>
           <div>
             <strong>Hotel ERP</strong>
@@ -30,7 +41,7 @@ export default function ErpLayout() {
         </NavLink>
 
         <nav className="sidebar-nav">
-          {erpModuleGroups.map((group) => (
+          {navGroups.map((group) => (
             <div key={group.label} className="nav-group">
               <span className="nav-group-label">{group.label}</span>
               {group.modules.map((mod) => (
@@ -65,11 +76,17 @@ export default function ErpLayout() {
           <span className="topbar-title">{currentLabel}</span>
           <div className="topbar-actions">
             <span className="sync-status">● Central DB — Synced</span>
-            <NavLink to="/customer" className="btn btn-secondary btn-sm">Customer Portal</NavLink>
+            {user.role === 'admin' && (
+              <NavLink to="/customer" className="btn btn-secondary btn-sm">Customer Portal</NavLink>
+            )}
             <button type="button" className="btn btn-secondary btn-sm" onClick={logout}>Logout</button>
           </div>
         </header>
-        <main className="content"><Outlet /></main>
+        <main className="content">
+          <ErpRouteGuard>
+            <Outlet />
+          </ErpRouteGuard>
+        </main>
       </div>
     </div>
   )

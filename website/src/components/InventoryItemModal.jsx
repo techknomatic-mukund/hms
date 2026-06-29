@@ -241,12 +241,12 @@ export default function InventoryItemModal({
             </FormField>
           </div>
           {!isEdit && (
-            <p className="field-hint">Issue requests are sent to the Manager Approval queue for review.</p>
+            <p className="field-hint">Issue requests are sent to the General Manager for approval.</p>
           )}
         </FormSection>
 
         {isEdit && form.approvalStatus && form.approvalStatus !== 'Pending' && (
-          <FormSection title="Manager Approval" subtitle="Approval decision by store manager">
+          <FormSection title="GM Approval" subtitle="Approval decision by General Manager">
             <div className="form-grid">
               <FormField label="Approval Status">
                 <input type="text" value={form.approvalStatus} readOnly className="readonly-field" />

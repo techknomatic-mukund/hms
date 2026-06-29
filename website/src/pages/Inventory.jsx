@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useStore } from '../context/StoreContext'
+import { useAuth } from '../context/AuthContext'
 import { PageShell, SectionHeader, Badge } from '../components/UI'
 import { CrudTable } from '../components/CrudTable'
 import InventoryItemModal from '../components/InventoryItemModal'
@@ -58,6 +59,7 @@ function resolveItemApprovalStatus(item, issueRequests, returnRequests) {
 
 export default function Inventory() {
   const store = useStore()
+  const { canGmApprove } = useAuth()
   const crud = useCrudModal()
   const key = 'inventoryItems'
   const issueKey = 'inventoryIssueRequests'
@@ -119,7 +121,7 @@ export default function Inventory() {
         requestedBy: req.requestedBy,
         purposeRemarks: req.purposeRemarks,
         approvalStatus: 'Approved',
-        approvedBy: 'Store Manager',
+        approvedBy: 'General Manager',
         approvalDate: todayISO(),
         stock: newStock,
         status: stockStatus(newStock),
@@ -128,7 +130,7 @@ export default function Inventory() {
     store.update(issueKey, 'Inventory', req.id, {
       ...req,
       approvalStatus: 'Approved',
-      approvedBy: 'Store Manager',
+      approvedBy: 'General Manager',
       approvalDate: todayISO(),
     })
   }
@@ -137,7 +139,7 @@ export default function Inventory() {
     store.update(issueKey, 'Inventory', req.id, {
       ...req,
       approvalStatus: 'Rejected',
-      approvedBy: 'Store Manager',
+      approvedBy: 'General Manager',
       approvalDate: todayISO(),
     })
     const item = store.inventoryItems.find((i) => i.id === req.itemId)
@@ -165,7 +167,7 @@ export default function Inventory() {
     store.update(returnKey, 'Inventory', req.id, {
       ...req,
       approvalStatus: 'Approved',
-      approvedBy: 'Store Manager',
+      approvedBy: 'General Manager',
       approvalDate: todayISO(),
     })
   }
@@ -174,7 +176,7 @@ export default function Inventory() {
     store.update(returnKey, 'Inventory', req.id, {
       ...req,
       approvalStatus: 'Rejected',
-      approvedBy: 'Store Manager',
+      approvedBy: 'General Manager',
       approvalDate: todayISO(),
     })
     const item = store.inventoryItems.find((i) => i.id === req.itemId)
@@ -251,17 +253,19 @@ export default function Inventory() {
   return (
     <>
       <PageShell title="Inventory" description="Stock management across kitchen, housekeeping & F&B">
-        <section className="panel">
-          <SectionHeader
-            title="Manager Approval"
-            subtitle="Review issue and return requests before stock is updated"
-          />
-          <InventoryApprovalQueue
-            requests={pendingApprovals}
-            onApprove={handleApprove}
-            onReject={handleReject}
-          />
-        </section>
+        {canGmApprove && (
+          <section className="panel">
+            <SectionHeader
+              title="GM Approval"
+              subtitle="Review inventory issue and return requests before stock is updated"
+            />
+            <InventoryApprovalQueue
+              requests={pendingApprovals}
+              onApprove={handleApprove}
+              onReject={handleReject}
+            />
+          </section>
+        )}
 
         <section className="panel">
           <SectionHeader

@@ -159,7 +159,7 @@ export default function ReturnStockModal({
               Stock after approved return: {maxReturn - Number(returnQuantity)} {selectedItem.unit}
             </p>
           )}
-          <p className="field-hint">Return requests are sent to the Manager Approval queue for review.</p>
+          <p className="field-hint">Return requests are sent to the General Manager for approval.</p>
         </FormSection>
 
         <FormActions onCancel={onClose} submitLabel="Submit for Approval" />

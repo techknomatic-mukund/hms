@@ -119,7 +119,7 @@ function itemToForm(editItem, technicians) {
 }
 
 export default function MaintenanceWorkOrderModal({
-  open, onClose, onSubmit, editItem = null, technicians = [],
+  open, onClose, onSubmit, editItem = null, technicians = [], requestOnly = false,
 }) {
   const [form, setForm] = useState(getEmpty())
   const [errors, setErrors] = useState({})
@@ -175,9 +175,11 @@ export default function MaintenanceWorkOrderModal({
     if (!form.room) next.room = 'Room is required'
     if (!form.assetType) next.assetType = 'Asset is required'
     if (!form.complaint.trim()) next.complaint = 'Complaint description is required'
-    if (!form.staffId) next.staffId = 'Select assigned person'
-    if (!form.scheduledDate) next.scheduledDate = 'Scheduled date is required'
-    if (!form.scheduledTime) next.scheduledTime = 'Time is required'
+    if (!requestOnly) {
+      if (!form.staffId) next.staffId = 'Select assigned person'
+      if (!form.scheduledDate) next.scheduledDate = 'Scheduled date is required'
+      if (!form.scheduledTime) next.scheduledTime = 'Time is required'
+    }
     setErrors(next)
     return Object.keys(next).length === 0
   }
@@ -185,11 +187,18 @@ export default function MaintenanceWorkOrderModal({
   const handleSubmit = (e) => {
     e.preventDefault()
     if (!validate()) return
-    onSubmit({
+    const payload = {
       room: form.room,
       asset: buildAssetLabel(form.room, form.assetType),
       complaint: form.complaint.trim(),
       priority: form.priority,
+    }
+    if (requestOnly) {
+      onSubmit(payload)
+      return
+    }
+    onSubmit({
+      ...payload,
       assignee: form.assignee,
       employeeId: form.employeeId || '',
       scheduledDate: form.scheduledDate,
@@ -199,9 +208,9 @@ export default function MaintenanceWorkOrderModal({
   }
 
   return (
-    <Modal open={open} onClose={onClose} title={isEdit ? 'Edit Work Order' : 'New Work Order'}>
+    <Modal open={open} onClose={onClose} title={isEdit ? 'Edit Work Order' : (requestOnly ? 'Raise Maintenance Request' : 'New Work Order')}>
       <form className="entity-form" onSubmit={handleSubmit}>
-        <FormSection title="Work Order Details">
+        <FormSection title={requestOnly ? 'Maintenance Request' : 'Work Order Details'} subtitle={requestOnly ? 'Describe the issue — Maintenance team will review' : undefined}>
           <div className="form-grid">
             <FormField label="Room" required error={errors.room}>
               <select value={form.room} onChange={(e) => update('room', e.target.value)}>
@@ -225,37 +234,48 @@ export default function MaintenanceWorkOrderModal({
                 {PRIORITIES.map((p) => <option key={p} value={p}>{p}</option>)}
               </select>
             </FormField>
-            <FormField label="Status">
-              <select value={form.status} onChange={(e) => update('status', e.target.value)}>
-                {STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
-              </select>
-            </FormField>
+            {!requestOnly && (
+              <FormField label="Status">
+                <select value={form.status} onChange={(e) => update('status', e.target.value)}>
+                  {STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
+                </select>
+              </FormField>
+            )}
           </div>
         </FormSection>
 
-        <FormSection title="Task Assignment" subtitle="Schedule time and assign technician">
-          <div className="form-grid">
-            <FormField label="Assigned To" required error={errors.staffId}>
-              <select value={form.staffId} onChange={(e) => handleStaffChange(e.target.value)}>
-                <option value={GENERIC_TEAM}>{GENERIC_TEAM}</option>
-                {technicians.map((t) => (
-                  <option key={t.id} value={t.id}>{t.name}</option>
-                ))}
-              </select>
-            </FormField>
-            <FormField label="Employee ID">
-              <input type="text" value={form.employeeId || '—'} readOnly className="readonly-field" />
-            </FormField>
-            <FormField label="Scheduled Date" required error={errors.scheduledDate}>
-              <input type="date" value={form.scheduledDate} onChange={(e) => update('scheduledDate', e.target.value)} />
-            </FormField>
-            <FormField label="Time" required error={errors.scheduledTime}>
-              <input type="time" value={form.scheduledTime} onChange={(e) => update('scheduledTime', e.target.value)} />
-            </FormField>
-          </div>
-        </FormSection>
+        {!requestOnly && (
+          <FormSection title="Task Assignment" subtitle="Schedule time and assign technician">
+            <div className="form-grid">
+              <FormField label="Assigned To" required error={errors.staffId}>
+                <select value={form.staffId} onChange={(e) => handleStaffChange(e.target.value)}>
+                  <option value={GENERIC_TEAM}>{GENERIC_TEAM}</option>
+                  {technicians.map((t) => (
+                    <option key={t.id} value={t.id}>{t.name}</option>
+                  ))}
+                </select>
+              </FormField>
+              <FormField label="Employee ID">
+                <input type="text" value={form.employeeId || '—'} readOnly className="readonly-field" />
+              </FormField>
+              <FormField label="Scheduled Date" required error={errors.scheduledDate}>
+                <input type="date" value={form.scheduledDate} onChange={(e) => update('scheduledDate', e.target.value)} />
+              </FormField>
+              <FormField label="Time" required error={errors.scheduledTime}>
+                <input type="time" value={form.scheduledTime} onChange={(e) => update('scheduledTime', e.target.value)} />
+              </FormField>
+            </div>
+          </FormSection>
+        )}
 
-        <FormActions onCancel={onClose} submitLabel={isEdit ? 'Update Work Order' : 'Create Work Order'} />
+        {requestOnly && (
+          <p className="field-hint">Your request will be sent to the Maintenance team for approval.</p>
+        )}
+
+        <FormActions
+          onCancel={onClose}
+          submitLabel={isEdit ? 'Update Work Order' : (requestOnly ? 'Submit Request' : 'Create Work Order')}
+        />
       </form>
     </Modal>
   )

@@ -29,11 +29,10 @@ const ROUTE_SEGMENT_MODULE = {
 /** Role → allowed module ids. Admin gets all via '*'. */
 const ROLE_MODULES = {
   admin: '*',
-  manager: ['dashboard', 'finance', 'hrms', 'reports'],
+  manager: ['dashboard', 'finance', 'hrms', 'reports', 'inventory', 'procurement'],
   maintenance: ['dashboard', 'maintenance', 'inventory'],
-  operations: ['dashboard', 'reservations', 'housekeeping', 'laundry', 'addons', 'pos', 'fnb'],
+  operations: ['dashboard', 'reservations', 'housekeeping', 'laundry', 'maintenance', 'addons', 'pos', 'fnb'],
   backoffice: ['dashboard', 'finance', 'hrms', 'inventory', 'procurement', 'reports'],
-  vendor: ['dashboard', 'procurement'],
   customer: [],
 }
 
@@ -44,7 +43,6 @@ export const ROLES = {
   maintenance: { label: 'Maintenance', portal: 'erp', tier: 'Operations' },
   operations: { label: 'Operations', portal: 'erp', tier: 'Operations' },
   backoffice: { label: 'Back Office', portal: 'erp', tier: 'Support' },
-  vendor: { label: 'Vendor', portal: 'erp', tier: 'External' },
 }
 
 export const DEMO_USERS = [
@@ -54,7 +52,6 @@ export const DEMO_USERS = [
   { email: 'maintenance@demo.com', password: 'demo', role: 'maintenance', name: 'Karan Singh' },
   { email: 'operations@demo.com', password: 'demo', role: 'operations', name: 'Sneha Patel' },
   { email: 'backoffice@demo.com', password: 'demo', role: 'backoffice', name: 'Finance Executive' },
-  { email: 'vendor@demo.com', password: 'demo', role: 'vendor', name: 'Supply Vendor Co.' },
 ]
 
 export const PERMISSIONS = ['View', 'Create', 'Update', 'Delete', 'Approve', 'Export']
@@ -86,7 +83,6 @@ export function getDefaultErpPath(role) {
     maintenance: '/erp/maintenance',
     operations: '/erp/reservations',
     backoffice: '/erp/finance',
-    vendor: '/erp/procurement',
   }
   const path = map[role]
   if (path && roleHasModule(role, getModuleForPath(path))) return path
@@ -102,10 +98,23 @@ export function getDefaultErpPath(role) {
 export function roleCan(role, action) {
   if (role === 'admin') return true
   if (role === 'manager') return ['View', 'Approve', 'Export'].includes(action)
-  if (role === 'maintenance') return ['View', 'Create', 'Update'].includes(action)
+  if (role === 'maintenance') return ['View', 'Create', 'Update', 'Approve'].includes(action)
   if (role === 'operations') return ['View', 'Create', 'Update', 'Export'].includes(action)
-  if (role === 'backoffice') return ['View', 'Create', 'Update', 'Approve', 'Export'].includes(action)
-  if (role === 'vendor') return ['View', 'Create'].includes(action)
+  if (role === 'backoffice') return ['View', 'Create', 'Update', 'Export'].includes(action)
   if (role === 'customer') return ['View', 'Create'].includes(action)
   return action === 'View'
+}
+
+/** GM (General Manager) is the sole approver for inventory, finance, HRMS leave & procurement. */
+export function canGmApprove(role) {
+  return role === 'manager'
+}
+
+/** Maintenance team approves or rejects requests raised by Operations. */
+export function canMaintenanceApprove(role) {
+  return role === 'maintenance' || role === 'admin'
+}
+
+export function isOperationsRequester(role) {
+  return role === 'operations'
 }

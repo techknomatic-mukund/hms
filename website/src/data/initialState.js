@@ -246,10 +246,18 @@ export const purchaseOrders = [
   },
   {
     id: 'PO-202', vendor: 'Linen Supply Co', items: 'Towels, Bedsheets', amount: 'OMR 28,500', status: 'Approved',
-    requestRef: 'PR-202', requestedBy: 'HK Supervisor', approvalStatus: 'Level 2 Approved', department: 'Housekeeping',
+    requestRef: 'PR-202', requestedBy: 'HK Supervisor', approvalStatus: 'Approved', department: 'Housekeeping',
+    poApprovedBy: 'General Manager', approvalDate: '2026-06-24',
     grnNumber: 'GRN-202', grnDate: '2026-06-24', inspectionStatus: 'Passed', paymentStatus: 'Processing',
     replenishmentTrigger: true, reorderQty: '50', syncToInventory: true, stockUpdated: true, inventorySku: 'INV-102',
     reportTag: 'Low Stock Replenishment',
+  },
+  {
+    id: 'PO-203', vendor: 'CleanPro Supplies', items: 'Cleaning chemicals, Mops', amount: 'OMR 9,600', status: 'Pending Approval',
+    requestRef: 'PR-203', requestedBy: 'Finance Executive', approvalStatus: 'Pending', department: 'Housekeeping',
+    quote1Vendor: 'CleanPro Supplies', quote1Amount: '9600', quote2Vendor: 'HK Wholesale', quote2Amount: '10200',
+    selectedQuote: '1', grnNumber: '', inspectionStatus: 'Pending', paymentStatus: 'Pending',
+    syncToInventory: true, reportTag: 'Urgent',
   },
 ]
 
@@ -292,7 +300,16 @@ export const employees = [
 ]
 
 export const leaveRequests = [
-  { id: 'LV-01', name: 'Ravi Menon', detail: 'Casual Leave — 27-28 Jun', status: 'pending' },
+  {
+    id: 'LV-01', employeeId: 'EMP-102', name: 'Ravi Menon', leaveType: 'Casual Leave',
+    fromDate: '2026-06-27', toDate: '2026-06-28', detail: 'Casual Leave — 27-28 Jun',
+    status: 'pending', requestedBy: 'Ravi Menon', department: 'F&B',
+  },
+  {
+    id: 'LV-02', employeeId: 'EMP-101', name: 'Sneha Patel', leaveType: 'Annual Leave',
+    fromDate: '2026-07-01', toDate: '2026-07-05', detail: 'Annual Leave — 1-5 Jul',
+    status: 'pending', requestedBy: 'Sneha Patel', department: 'Housekeeping',
+  },
 ]
 
 export const crmCustomers = [
@@ -355,6 +372,7 @@ export const feedbackEntries = [
 export const maintenanceTickets = [
   {
     id: 'WO-601', room: 'Deluxe 305', asset: 'AC Unit — Deluxe 305', complaint: 'Not cooling properly', priority: 'High', status: 'Open',
+    requestApprovalStatus: 'Approved', requestedBy: 'Housekeeping', requestDate: '2026-06-24', reviewedBy: 'Karan Singh',
     assignee: 'Ramesh Kumar', employeeId: 'EMP-107', scheduledDate: '2026-06-26', scheduledTime: '10:00',
     maintenanceType: 'Corrective',
     assetHistory: '20 Jun — Preventive: Filter cleaned\n10 May — Corrective: Gas refill',
@@ -363,11 +381,22 @@ export const maintenanceTickets = [
   },
   {
     id: 'WO-602', room: 'Common Area', asset: 'Elevator B', complaint: 'Unusual noise', priority: 'Medium', status: 'In Progress',
+    requestApprovalStatus: 'Approved', requestedBy: 'Front Office', requestDate: '2026-06-23', reviewedBy: 'Karan Singh',
     assignee: 'Karan Singh', employeeId: 'EMP-106', scheduledDate: '2026-06-25', scheduledTime: '14:00',
     maintenanceType: 'Inspection',
     assetHistory: '1 Jun — Inspection: Annual safety check passed',
     spareParts: '', partsCost: '', technicianPhone: '+91 98765 43211',
     trackingStatus: 'On Site', laborCost: '1200', totalCost: '1200', costCategory: 'Elevator',
+  },
+  {
+    id: 'WO-603', room: 'Deluxe 302', asset: 'Plumbing — Deluxe 302', complaint: 'Bathroom tap leaking continuously', priority: 'Medium',
+    status: 'Pending Approval', requestApprovalStatus: 'Pending', requestedBy: 'Sneha Patel', requestDate: '2026-06-26',
+    assignee: '', employeeId: '', scheduledDate: '', scheduledTime: '',
+  },
+  {
+    id: 'WO-604', room: 'Common Area', asset: 'Pool Pump', complaint: 'Low water pressure in pool area', priority: 'High',
+    status: 'Pending Approval', requestApprovalStatus: 'Pending', requestedBy: 'Sneha Patel', requestDate: '2026-06-26',
+    assignee: '', employeeId: '', scheduledDate: '', scheduledTime: '',
   },
 ]
 
@@ -409,6 +438,17 @@ export const transactions = [
   {
     id: 'TXN-309', type: 'Expense', category: 'Operations', description: 'Misc operational costs', amount: 'OMR 2,500', date: '25 Jun', dateIso: '2026-06-25',
     expenseBucket: 'Miscellaneous', paymentStatus: 'Pending', sourceModule: 'Finance',
+    gmApprovalStatus: 'Approved', approvedBy: 'General Manager',
+  },
+  {
+    id: 'TXN-310', type: 'Expense', category: 'Maintenance', description: 'HVAC spare parts — emergency purchase', amount: 'OMR 6,800', date: '26 Jun', dateIso: '2026-06-26',
+    expenseBucket: 'Miscellaneous', paymentStatus: 'Pending', sourceModule: 'Finance',
+    recordedBy: 'Finance Executive', gmApprovalStatus: 'Pending',
+  },
+  {
+    id: 'TXN-311', type: 'Expense', category: 'Utilities', description: 'Generator diesel refill', amount: 'OMR 3,200', date: '26 Jun', dateIso: '2026-06-26',
+    expenseBucket: 'Miscellaneous', paymentStatus: 'Pending', sourceModule: 'Finance',
+    recordedBy: 'Finance Executive', gmApprovalStatus: 'Pending',
   },
 ]
 
@@ -426,7 +466,7 @@ export const systemUsers = [
   },
   {
     id: 'USR-03', name: 'General Manager', email: 'manager@demo.com', role: 'General Manager', status: 'Active',
-    accessLevel: 'Executive', moduleAccess: 'Finance, HRMS, Reports',
+    accessLevel: 'Executive', moduleAccess: 'Finance, HRMS, Reports, Inventory, Procurement',
     assignedPermissions: 'View, Approve, Export', authMethod: 'Email/Password', mfaEnabled: true,
   },
   {
@@ -437,12 +477,7 @@ export const systemUsers = [
   {
     id: 'USR-05', name: 'Finance Executive', email: 'backoffice@demo.com', role: 'Back Office', status: 'Active',
     accessLevel: 'Standard', moduleAccess: 'Finance, HRMS, Inventory, Procurement, Reports',
-    assignedPermissions: 'View, Create, Update, Approve, Export', authMethod: 'Email/Password', mfaEnabled: false,
-  },
-  {
-    id: 'USR-06', name: 'Supply Vendor Co.', email: 'vendor@demo.com', role: 'Vendor', status: 'Active',
-    accessLevel: 'External', moduleAccess: 'Procurement',
-    assignedPermissions: 'View, Create', authMethod: 'Email/Password', mfaEnabled: false,
+    assignedPermissions: 'View, Create, Update, Export', authMethod: 'Email/Password', mfaEnabled: false,
   },
 ]
 

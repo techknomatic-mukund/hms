@@ -25,6 +25,15 @@ export function filterFinanceTransactions(transactions, start, end) {
   return filterByDateRange(transactions, start, end, (t) => getRecordDateISO(t))
 }
 
+/** Only GM-approved (or legacy) transactions count toward financial totals. */
+export function isFinanceApproved(txn) {
+  return !txn.gmApprovalStatus || txn.gmApprovalStatus === 'Approved'
+}
+
+export function filterApprovedFinanceTransactions(transactions, start, end) {
+  return filterFinanceTransactions(transactions, start, end).filter(isFinanceApproved)
+}
+
 export function computeFinanceTotals(transactions) {
   let revenue = 0
   let expense = 0

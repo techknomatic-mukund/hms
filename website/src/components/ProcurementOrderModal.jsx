@@ -39,7 +39,7 @@ function itemToForm(editItem) {
   }
 }
 
-export default function ProcurementOrderModal({ open, onClose, onSubmit, editItem = null }) {
+export default function ProcurementOrderModal({ open, onClose, onSubmit, editItem = null, requiresGmApproval = false }) {
   const [form, setForm] = useState(getEmpty())
   const [errors, setErrors] = useState({})
   const isEdit = !!editItem
@@ -106,23 +106,25 @@ export default function ProcurementOrderModal({ open, onClose, onSubmit, editIte
           </div>
         </FormSection>
 
-        <FormSection title="Approval Workflow" subtitle="Multi-level approval before procurement proceeds">
-          <div className="form-grid">
-            <FormField label="Approver">
-              <input type="text" value={form.approver} placeholder="Department head / Manager" onChange={(e) => update('approver', e.target.value)} />
-            </FormField>
-            <FormField label="Approval Level">
-              <select value={form.approvalLevel} onChange={(e) => update('approvalLevel', e.target.value)}>
-                {['Level 1', 'Level 2', 'Level 3', 'Finance'].map((l) => <option key={l} value={l}>{l}</option>)}
-              </select>
-            </FormField>
-            <FormField label="Workflow Status">
-              <select value={form.approvalStatus} onChange={(e) => update('approvalStatus', e.target.value)}>
-                {APPROVAL_STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
-              </select>
-            </FormField>
-          </div>
-        </FormSection>
+        {!requiresGmApproval && (
+          <FormSection title="Approval Workflow" subtitle="Multi-level approval before procurement proceeds">
+            <div className="form-grid">
+              <FormField label="Approver">
+                <input type="text" value={form.approver} placeholder="Department head / Manager" onChange={(e) => update('approver', e.target.value)} />
+              </FormField>
+              <FormField label="Approval Level">
+                <select value={form.approvalLevel} onChange={(e) => update('approvalLevel', e.target.value)}>
+                  {['Level 1', 'Level 2', 'Level 3', 'Finance'].map((l) => <option key={l} value={l}>{l}</option>)}
+                </select>
+              </FormField>
+              <FormField label="Workflow Status">
+                <select value={form.approvalStatus} onChange={(e) => update('approvalStatus', e.target.value)}>
+                  {APPROVAL_STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
+                </select>
+              </FormField>
+            </div>
+          </FormSection>
+        )}
 
         <FormSection title="Vendor Management" subtitle="Vendor details and performance rating">
           <div className="form-grid">
@@ -183,18 +185,20 @@ export default function ProcurementOrderModal({ open, onClose, onSubmit, editIte
           </div>
         </FormSection>
 
-        <FormSection title="Purchase Order Approval" subtitle="Final PO sign-off before sending to vendor">
-          <div className="form-grid">
-            <FormField label="PO Approval Status">
-              <select value={form.poApprovalStatus} onChange={(e) => update('poApprovalStatus', e.target.value)}>
-                {APPROVAL_STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
-              </select>
-            </FormField>
-            <FormField label="Approved By">
-              <input type="text" value={form.poApprovedBy} onChange={(e) => update('poApprovedBy', e.target.value)} />
-            </FormField>
-          </div>
-        </FormSection>
+        {!requiresGmApproval && (
+          <FormSection title="Purchase Order Approval" subtitle="Final PO sign-off before sending to supplier">
+            <div className="form-grid">
+              <FormField label="PO Approval Status">
+                <select value={form.poApprovalStatus} onChange={(e) => update('poApprovalStatus', e.target.value)}>
+                  {APPROVAL_STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
+                </select>
+              </FormField>
+              <FormField label="Approved By">
+                <input type="text" value={form.poApprovedBy} onChange={(e) => update('poApprovedBy', e.target.value)} />
+              </FormField>
+            </div>
+          </FormSection>
+        )}
 
         <FormSection title="Goods Receipt Note (GRN) Management" subtitle="Record goods received against purchase order">
           <div className="form-grid">
@@ -334,7 +338,14 @@ export default function ProcurementOrderModal({ open, onClose, onSubmit, editIte
           </div>
         </FormSection>
 
-        <FormActions onCancel={onClose} submitLabel={isEdit ? 'Update PO' : 'Create PO'} />
+        {requiresGmApproval && !isEdit && (
+          <p className="field-hint">Purchase orders are sent to the General Manager for approval before proceeding.</p>
+        )}
+
+        <FormActions
+          onCancel={onClose}
+          submitLabel={isEdit ? 'Update PO' : (requiresGmApproval ? 'Submit for GM Approval' : 'Create PO')}
+        />
       </form>
     </Modal>
   )

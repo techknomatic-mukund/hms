@@ -50,7 +50,7 @@ export function formatTransactionRow(txn, id, date) {
   }
 }
 
-export default function FinanceTransactionModal({ open, onClose, onSubmit, editItem = null }) {
+export default function FinanceTransactionModal({ open, onClose, onSubmit, editItem = null, requiresGmApproval = false }) {
   const [form, setForm] = useState(getEmpty())
   const [errors, setErrors] = useState({})
   const isEdit = !!editItem
@@ -269,7 +269,14 @@ export default function FinanceTransactionModal({ open, onClose, onSubmit, editI
           </div>
         </FormSection>
 
-        <FormActions onCancel={onClose} submitLabel={isEdit ? 'Update Transaction' : 'Record Transaction'} />
+        {requiresGmApproval && !isEdit && (
+          <p className="field-hint">Transactions are sent to the General Manager for approval before posting.</p>
+        )}
+
+        <FormActions
+          onCancel={onClose}
+          submitLabel={isEdit ? 'Update Transaction' : (requiresGmApproval ? 'Submit for GM Approval' : 'Record Transaction')}
+        />
       </form>
     </Modal>
   )

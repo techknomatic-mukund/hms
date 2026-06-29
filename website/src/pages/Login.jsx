@@ -9,7 +9,6 @@ const QUICK_LOGINS = [
   { email: 'operations@demo.com', label: 'Operations' },
   { email: 'maintenance@demo.com', label: 'Maintenance' },
   { email: 'backoffice@demo.com', label: 'Back Office' },
-  { email: 'vendor@demo.com', label: 'Vendor' },
   { email: 'customer@demo.com', label: 'Customer' },
 ]
 

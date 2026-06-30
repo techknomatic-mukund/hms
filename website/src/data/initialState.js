@@ -200,6 +200,33 @@ export const inventoryItems = [
   },
 ]
 
+export const externalInventoryItems = [
+  {
+    id: 'EINV-001', skuCode: 'EXT-OIL-01', name: 'Imported Olive Oil', category: 'Food',
+    vendor: 'Mediterranean Foods Ltd', quantity: 50, stock: 50, unit: 'L',
+    storageLocation: 'Kitchen Store', purchaseDate: '2026-06-20', purchaseAmount: '4200',
+    invoiceRef: 'INV-EXT-201', itemDescription: 'Extra virgin olive oil — bulk import',
+    approvalStatus: 'Approved', requestedBy: 'Finance Executive', approvedBy: 'General Manager',
+    approvalDate: '2026-06-20', remarks: 'Monthly kitchen supply',
+  },
+  {
+    id: 'EINV-002', skuCode: 'EXT-LIN-02', name: 'Premium Bed Sheets', category: 'Linen',
+    vendor: 'Linen Supply Co', quantity: 100, stock: 100, unit: 'pcs',
+    storageLocation: 'Linen Room', purchaseDate: '2026-06-26', purchaseAmount: '18500',
+    invoiceRef: 'INV-EXT-202', itemDescription: 'Egyptian cotton bedsheets — external purchase',
+    approvalStatus: 'Pending', requestedBy: 'Finance Executive', approvedBy: '',
+    remarks: 'Urgent linen replenishment from vendor',
+  },
+  {
+    id: 'EINV-003', skuCode: 'EXT-BEV-03', name: 'Sparkling Water Cases', category: 'Beverage',
+    vendor: 'Gulf Beverages', quantity: 200, stock: 200, unit: 'pcs',
+    storageLocation: 'Beverage Cellar', purchaseDate: '2026-06-26', purchaseAmount: '3200',
+    invoiceRef: 'INV-EXT-203', itemDescription: 'Imported sparkling water for events',
+    approvalStatus: 'Pending', requestedBy: 'Finance Executive', approvedBy: '',
+    remarks: 'Banquet event stock',
+  },
+]
+
 export const inventoryIssueRequests = [
   {
     id: 'ISR-001', itemId: 'INV-102', itemName: 'Bath Towels', quantityIssued: 8,
@@ -239,14 +266,14 @@ export const inventoryReturnRequests = [
 export const purchaseOrders = [
   {
     id: 'PO-201', vendor: 'Fresh Foods Pvt Ltd', items: 'Vegetables, Dairy', amount: 'OMR 42,000', status: 'Pending Approval',
-    requestRef: 'PR-201', requestedBy: 'Chef Ravi', approvalStatus: 'Pending', department: 'Kitchen',
+    requestRef: 'PR-201', requestedBy: 'Chef Ravi', requestDate: '2026-06-26', approvalStatus: 'Pending', department: 'Kitchen',
     quote1Vendor: 'Fresh Foods Pvt Ltd', quote1Amount: '42000', quote2Vendor: 'Metro Foods', quote2Amount: '44500',
     selectedQuote: '1', grnNumber: '', inspectionStatus: 'Pending', paymentStatus: 'Pending',
     syncToInventory: true, reportTag: 'Standard',
   },
   {
     id: 'PO-202', vendor: 'Linen Supply Co', items: 'Towels, Bedsheets', amount: 'OMR 28,500', status: 'Approved',
-    requestRef: 'PR-202', requestedBy: 'HK Supervisor', approvalStatus: 'Approved', department: 'Housekeeping',
+    requestRef: 'PR-202', requestedBy: 'HK Supervisor', requestDate: '2026-06-24', approvalStatus: 'Approved', department: 'Housekeeping',
     poApprovedBy: 'General Manager', approvalDate: '2026-06-24',
     grnNumber: 'GRN-202', grnDate: '2026-06-24', inspectionStatus: 'Passed', paymentStatus: 'Processing',
     replenishmentTrigger: true, reorderQty: '50', syncToInventory: true, stockUpdated: true, inventorySku: 'INV-102',
@@ -254,7 +281,7 @@ export const purchaseOrders = [
   },
   {
     id: 'PO-203', vendor: 'CleanPro Supplies', items: 'Cleaning chemicals, Mops', amount: 'OMR 9,600', status: 'Pending Approval',
-    requestRef: 'PR-203', requestedBy: 'Finance Executive', approvalStatus: 'Pending', department: 'Housekeeping',
+    requestRef: 'PR-203', requestedBy: 'Finance Executive', requestDate: '2026-06-25', approvalStatus: 'Pending', department: 'Housekeeping',
     quote1Vendor: 'CleanPro Supplies', quote1Amount: '9600', quote2Vendor: 'HK Wholesale', quote2Amount: '10200',
     selectedQuote: '1', grnNumber: '', inspectionStatus: 'Pending', paymentStatus: 'Pending',
     syncToInventory: true, reportTag: 'Urgent',
@@ -464,12 +491,12 @@ export const transactions = [
   },
   {
     id: 'TXN-310', type: 'Expense', category: 'Maintenance', description: 'HVAC spare parts — emergency purchase', amount: 'OMR 6,800', date: '26 Jun', dateIso: '2026-06-26',
-    expenseBucket: 'Miscellaneous', paymentStatus: 'Pending', sourceModule: 'Finance',
+    expenseBucket: 'Miscellaneous', paymentStatus: 'Pending', sourceModule: 'Finance', vendor: 'Arabian Supplies Co',
     recordedBy: 'Finance Executive', gmApprovalStatus: 'Pending',
   },
   {
     id: 'TXN-311', type: 'Expense', category: 'Utilities', description: 'Generator diesel refill', amount: 'OMR 3,200', date: '26 Jun', dateIso: '2026-06-26',
-    expenseBucket: 'Miscellaneous', paymentStatus: 'Pending', sourceModule: 'Finance',
+    expenseBucket: 'Miscellaneous', paymentStatus: 'Pending', sourceModule: 'Finance', vendor: 'Oman Traders LLC',
     recordedBy: 'Finance Executive', gmApprovalStatus: 'Pending',
   },
 ]

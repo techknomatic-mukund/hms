@@ -6,6 +6,7 @@ import {
 import { useStore } from '../context/StoreContext'
 import { StatCard, SectionHeader, LifecycleFlow, FeatureGrid, DataTable } from '../components/UI'
 import DateRangeFilter from '../components/DateRangeFilter'
+import FinanceKpiPanels from '../components/FinanceKpiPanels'
 import { currentMonthRange } from '../utils/helpers'
 import { computeDashboardKpis } from '../utils/dashboardMetrics'
 
@@ -62,7 +63,13 @@ export default function Dashboard() {
         ))}
       </div>
 
-      <section className="panel">
+      <FinanceKpiPanels
+        transactions={store.transactions}
+        startDate={startDate}
+        endDate={endDate}
+      />
+
+      {/* <section className="panel">
         <SectionHeader
           title="Guest Lifecycle"
           subtitle="Check-in cascades to Housekeeping, Finance, CRM & Reports"
@@ -74,7 +81,7 @@ export default function Dashboard() {
           )}
         />
         <LifecycleFlow steps={lifecycle} />
-      </section>
+      </section> */}
 
       <div className="two-col">
         <section className="panel">
@@ -105,16 +112,16 @@ export default function Dashboard() {
         </section>
       </div>
 
-      <section className="panel">
+      {/* <section className="panel">
         <SectionHeader title="Platform Capabilities" />
         <FeatureGrid features={[
           'Customer + ERP dual portals', 'RBAC permissions', 'Approval workflows',
           'Centralized master & transaction data', 'VAT & finance integration', 'CRM & loyalty',
           'Inventory & procurement', 'Export PDF/Excel/CSV', 'Audit logs & backup',
         ]} />
-      </section>
+      </section> */}
 
-      <section className="panel">
+      {/* <section className="panel">
         <SectionHeader title="Implementation Roadmap" />
         <div className="phases-grid">
           {implementationPhases.map((p) => (
@@ -125,14 +132,14 @@ export default function Dashboard() {
             </div>
           ))}
         </div>
-      </section>
+      </section> */}
 
       <div className="two-col">
-        <section className="panel">
+        {/* <section className="panel">
           <SectionHeader title="Architecture" />
           <p className="info-text"><strong>{deploymentInfo.architecture}</strong></p>
           <ul className="info-list">{deploymentInfo.benefits.map((b) => <li key={b}>{b}</li>)}</ul>
-        </section>
+        </section> */}
         <section className="panel">
           <SectionHeader title="Future Enhancements" />
           <DataTable

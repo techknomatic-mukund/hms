@@ -1,7 +1,7 @@
 import { createContext, useContext, useMemo, useReducer } from 'react'
 import {
   reservations, rooms as initialRooms, housekeepingTasks, laundryOrders,
-  posOrders, menuItems, kitchenOrders, inventoryItems, inventoryIssueRequests, inventoryReturnRequests, purchaseOrders,
+  posOrders, menuItems, kitchenOrders, inventoryItems, inventoryIssueRequests, inventoryReturnRequests, externalInventoryItems, purchaseOrders,
   employees, leaveRequests, crmCustomers, fnbEvents, addonServices,
   feedbackEntries, maintenanceTickets, maintenanceInventoryItems, transactions, systemUsers, activityLog, notifications,
 } from '../data/initialState'
@@ -198,6 +198,7 @@ const initialState = {
   inventoryItems,
   inventoryIssueRequests,
   inventoryReturnRequests,
+  externalInventoryItems,
   purchaseOrders,
   employees,
   leaveRequests,

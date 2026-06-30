@@ -6,7 +6,7 @@ import { CrudTable } from '../components/CrudTable'
 import ProcurementOrderModal from '../components/ProcurementOrderModal'
 import DeleteConfirmModal, { ViewDetailModal } from '../components/DeleteConfirmModal'
 import { useCrudModal } from '../hooks/useCrudModal'
-import { formatOMR, isFormattedAmount, todayISO } from '../utils/helpers'
+import { formatOMR, formatDisplayDate, isFormattedAmount, todayISO } from '../utils/helpers'
 
 const features = [
   'Purchase Request Management', 'GM Approval Workflow', 'Supplier Management',
@@ -20,6 +20,7 @@ const viewFields = [
   { key: 'vendor', label: 'Supplier' },
   { key: 'items', label: 'Items' },
   { key: 'amount', label: 'Amount' },
+  { key: 'requestDate', label: 'Date', render: (r) => formatDisplayDate(r.requestDate || r.poDate) },
   { key: 'requestRef', label: 'Request Ref' },
   { key: 'approvalStatus', label: 'GM Approval' },
   { key: 'poApprovedBy', label: 'Approved By', render: (r) => r.poApprovedBy || '—' },
@@ -55,6 +56,11 @@ export default function Procurement() {
     { key: 'vendor', label: 'Supplier' },
     { key: 'items', label: 'Items' },
     { key: 'amount', label: 'Amount' },
+    {
+      key: 'requestDate',
+      label: 'Date',
+      render: (r) => formatDisplayDate(r.requestDate || r.poDate),
+    },
     { key: 'department', label: 'Dept', render: (r) => r.department || '—' },
     {
       key: 'approvalStatus',
@@ -103,6 +109,7 @@ export default function Procurement() {
     const payload = {
       ...f,
       amount,
+      requestDate: f.requestDate || todayISO(),
       approvalStatus,
       poApprovalStatus: approvalStatus,
       status,
@@ -154,6 +161,10 @@ export default function Procurement() {
                     </div>
                     <dl className="approval-card-meta">
                       <div className="approval-card-meta-item">
+                        <dt>Vendor</dt>
+                        <dd>{po.vendor}</dd>
+                      </div>
+                      <div className="approval-card-meta-item">
                         <dt>Items</dt>
                         <dd>{po.items}</dd>
                       </div>
@@ -189,12 +200,12 @@ export default function Procurement() {
         </section>
       )}
 
-      <section className="panel">
+      {/* <section className="panel">
         <SectionHeader title="Module Features" />
         <div className="feature-grid">
           {features.map((f) => <div key={f} className="feature-chip">{f}</div>)}
         </div>
-      </section>
+      </section> */}
 
       <section className="panel">
         <SectionHeader

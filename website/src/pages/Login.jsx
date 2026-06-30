@@ -5,7 +5,7 @@ import { DEMO_USERS, ROLES } from '../data/roles'
 
 const QUICK_LOGINS = [
   { email: 'admin@demo.com', label: 'Admin' },
-  { email: 'manager@demo.com', label: 'GM / Finance' },
+  { email: 'manager@demo.com', label: 'GM / VP' },
   { email: 'operations@demo.com', label: 'Operations' },
   { email: 'maintenance@demo.com', label: 'Maintenance' },
   { email: 'backoffice@demo.com', label: 'Back Office' },

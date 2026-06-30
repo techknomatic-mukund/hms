@@ -842,6 +842,12 @@ p { margin: 0; }
 
 .approval-card--issue::before { background: var(--info); }
 .approval-card--return::before { background: var(--gold); }
+.approval-card--external::before { background: var(--navy); }
+
+.approval-queue-pill--external {
+  background: var(--muted-bg);
+  color: var(--navy);
+}
 
 .approval-card-header {
   display: flex;

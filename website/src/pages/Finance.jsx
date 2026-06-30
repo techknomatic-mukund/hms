@@ -1,35 +1,15 @@
 import { useMemo, useState } from 'react'
 import { useStore } from '../context/StoreContext'
 import { useAuth } from '../context/AuthContext'
-import { PageShell, SectionHeader, StatCard, Badge } from '../components/UI'
+import { PageShell, SectionHeader, Badge } from '../components/UI'
 import { CrudTable } from '../components/CrudTable'
 import DateRangeFilter from '../components/DateRangeFilter'
+import FinanceKpiPanels from '../components/FinanceKpiPanels'
 import FinanceTransactionModal, { formatTransactionRow } from '../components/FinanceTransactionModal'
 import DeleteConfirmModal, { ViewDetailModal } from '../components/DeleteConfirmModal'
 import { useCrudModal } from '../hooks/useCrudModal'
-import { currentMonthRange, formatDisplayDate, formatINR, getRangeLabel, nextId, todayISO } from '../utils/helpers'
-import {
-  computeExpenseBreakdown,
-  computeFinanceTotals,
-  computeRevenueBreakdown,
-  filterApprovedFinanceTransactions,
-  filterFinanceTransactions,
-} from '../utils/financeMetrics'
-
-function KpiGrid({ items }) {
-  return (
-    <div className="stats-grid finance-kpi-grid">
-      {items.map((s) => (
-        <StatCard
-          key={s.label}
-          label={s.label}
-          value={s.value}
-          trend={s.type === 'expense' ? 'down' : 'neutral'}
-        />
-      ))}
-    </div>
-  )
-}
+import { currentMonthRange, formatDisplayDate, nextId, todayISO } from '../utils/helpers'
+import { filterFinanceTransactions } from '../utils/financeMetrics'
 
 function gmApprovalBadge(status) {
   if (status === 'Approved') return 'success'
@@ -62,6 +42,7 @@ export default function Finance() {
     { key: 'type', label: 'Type', render: (r) => <Badge variant={r.type === 'Revenue' ? 'success' : 'warning'}>{r.type}</Badge> },
     { key: 'category', label: 'Category' },
     { key: 'description', label: 'Description' },
+    { key: 'vendor', label: 'Vendor', render: (r) => r.vendor || '—' },
     { key: 'amount', label: 'Amount' },
     {
       key: 'gmApprovalStatus',
@@ -90,31 +71,6 @@ export default function Finance() {
   const filteredTransactions = useMemo(
     () => filterFinanceTransactions(store.transactions, startDate, endDate),
     [store.transactions, startDate, endDate],
-  )
-
-  const approvedTransactions = useMemo(
-    () => filterApprovedFinanceTransactions(store.transactions, startDate, endDate),
-    [store.transactions, startDate, endDate],
-  )
-
-  const totals = useMemo(() => {
-    const { revenue, expense, profit } = computeFinanceTotals(approvedTransactions)
-    const rangeLabel = getRangeLabel(startDate, endDate)
-    return [
-      { label: `Total Revenue (${rangeLabel})`, value: formatINR(revenue), type: 'revenue' },
-      { label: `Total Expenses (${rangeLabel})`, value: formatINR(expense), type: 'expense' },
-      { label: `Net P&L (${rangeLabel})`, value: formatINR(profit), type: 'profit' },
-    ]
-  }, [approvedTransactions, startDate, endDate])
-
-  const revenueKpis = useMemo(
-    () => computeRevenueBreakdown(approvedTransactions),
-    [approvedTransactions],
-  )
-
-  const expenseKpis = useMemo(
-    () => computeExpenseBreakdown(approvedTransactions),
-    [approvedTransactions],
   )
 
   const handleApproveTransaction = (txn) => {
@@ -190,6 +146,10 @@ export default function Finance() {
                         <dd>{txn.category}</dd>
                       </div>
                       <div className="approval-card-meta-item">
+                        <dt>Vendor</dt>
+                        <dd>{txn.vendor || '—'}</dd>
+                      </div>
+                      <div className="approval-card-meta-item">
                         <dt>Recorded by</dt>
                         <dd>{txn.recordedBy || '—'}</dd>
                       </div>
@@ -214,26 +174,11 @@ export default function Finance() {
         </section>
       )}
 
-      <div className="stats-grid">
-        {totals.map((s) => (
-          <StatCard
-            key={s.label}
-            label={s.label}
-            value={s.value}
-            trend={s.type === 'profit' ? 'up' : s.type === 'expense' ? 'down' : 'neutral'}
-          />
-        ))}
-      </div>
-
-      <section className="panel">
-        <SectionHeader title="Revenue" />
-        <KpiGrid items={revenueKpis} />
-      </section>
-
-      <section className="panel">
-        <SectionHeader title="Expenses" />
-        <KpiGrid items={expenseKpis} />
-      </section>
+      <FinanceKpiPanels
+        transactions={store.transactions}
+        startDate={startDate}
+        endDate={endDate}
+      />
 
       <section className="panel">
         <SectionHeader

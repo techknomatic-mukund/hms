@@ -13,17 +13,20 @@ function ApprovalMeta({ label, value }) {
 
 function ApprovalCard({ req, onApprove, onReject }) {
   const isIssue = req.requestType === 'Issue'
-  const remarks = isIssue ? req.purposeRemarks : req.remarks
+  const isReturn = req.requestType === 'Return'
+  const isExternal = req.requestType === 'External'
+  const remarks = isIssue ? req.purposeRemarks : (isExternal ? req.remarks : req.remarks)
+  const title = isExternal ? req.name : req.itemName
 
   return (
-    <article className={`approval-card approval-card--${isIssue ? 'issue' : 'return'}`}>
+    <article className={`approval-card approval-card--${isIssue ? 'issue' : isExternal ? 'external' : 'return'}`}>
       <div className="approval-card-header">
         <div className="approval-card-heading">
-          <h3 className="approval-card-title">{req.itemName}</h3>
+          <h3 className="approval-card-title">{title}</h3>
           <span className="approval-card-id">{req.id}</span>
         </div>
         <div className="approval-card-badges">
-          <Badge variant={isIssue ? 'info' : 'warning'}>{req.requestType}</Badge>
+          <Badge variant={isIssue ? 'info' : isExternal ? 'default' : 'warning'}>{req.requestType}</Badge>
           <Badge variant="warning">Pending</Badge>
         </div>
       </div>
@@ -35,6 +38,13 @@ function ApprovalCard({ req, onApprove, onReject }) {
             <ApprovalMeta label="Issued to" value={req.issuedTo} />
             <ApprovalMeta label="Requested by" value={req.requestedBy} />
             <ApprovalMeta label="Issue date" value={formatDisplayDate(req.issueDate)} />
+          </>
+        ) : isExternal ? (
+          <>
+            <ApprovalMeta label="Vendor" value={req.vendor} />
+            <ApprovalMeta label="Quantity" value={`${req.quantity} ${req.unit}`} />
+            <ApprovalMeta label="Purchase amount" value={req.purchaseAmount ? `OMR ${req.purchaseAmount}` : '—'} />
+            <ApprovalMeta label="Requested by" value={req.requestedBy} />
           </>
         ) : (
           <>
@@ -65,6 +75,7 @@ function ApprovalCard({ req, onApprove, onReject }) {
 export default function InventoryApprovalQueue({ requests, onApprove, onReject }) {
   const issueCount = requests.filter((r) => r.requestType === 'Issue').length
   const returnCount = requests.filter((r) => r.requestType === 'Return').length
+  const externalCount = requests.filter((r) => r.requestType === 'External').length
 
   if (requests.length === 0) {
     return (
@@ -91,6 +102,11 @@ export default function InventoryApprovalQueue({ requests, onApprove, onReject }
           {returnCount > 0 && (
             <span className="approval-queue-pill approval-queue-pill--return">
               {returnCount} return{returnCount === 1 ? '' : 's'}
+            </span>
+          )}
+          {externalCount > 0 && (
+            <span className="approval-queue-pill approval-queue-pill--external">
+              {externalCount} external
             </span>
           )}
         </div>

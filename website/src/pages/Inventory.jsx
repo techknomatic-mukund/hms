@@ -5,10 +5,11 @@ import { PageShell, SectionHeader, Badge } from '../components/UI'
 import { CrudTable } from '../components/CrudTable'
 import InventoryItemModal from '../components/InventoryItemModal'
 import ReturnStockModal from '../components/ReturnStockModal'
+import ExternalInventoryItemModal from '../components/ExternalInventoryItemModal'
 import InventoryApprovalQueue from '../components/InventoryApprovalQueue'
 import DeleteConfirmModal, { ViewDetailModal } from '../components/DeleteConfirmModal'
 import { useCrudModal } from '../hooks/useCrudModal'
-import { nextId, todayISO } from '../utils/helpers'
+import { formatOMR, nextId, todayISO } from '../utils/helpers'
 
 const viewFields = [
   { key: 'skuCode', label: 'SKU Code', render: (r) => r.skuCode || r.id || '—' },
@@ -29,6 +30,24 @@ const viewFields = [
   { key: 'lastReturnDate', label: 'Last Return Date', render: (r) => r.lastReturnDate || '—' },
   { key: 'itemDescription', label: 'Description', render: (r) => r.itemDescription || '—' },
   { key: 'status', label: 'Status' },
+]
+
+const externalViewFields = [
+  { key: 'id', label: 'Ref' },
+  { key: 'skuCode', label: 'SKU', render: (r) => r.skuCode || r.id },
+  { key: 'name', label: 'Item Name' },
+  { key: 'vendor', label: 'Vendor' },
+  { key: 'category', label: 'Category' },
+  { key: 'quantity', label: 'Quantity', render: (r) => `${r.quantity ?? r.stock ?? 0} ${r.unit}` },
+  { key: 'purchaseAmount', label: 'Amount', render: (r) => (r.purchaseAmount ? formatOMR(r.purchaseAmount) : '—') },
+  { key: 'purchaseDate', label: 'Purchase Date' },
+  { key: 'invoiceRef', label: 'Invoice Ref', render: (r) => r.invoiceRef || '—' },
+  { key: 'storageLocation', label: 'Location' },
+  { key: 'approvalStatus', label: 'GM Approval' },
+  { key: 'requestedBy', label: 'Requested By', render: (r) => r.requestedBy || '—' },
+  { key: 'approvedBy', label: 'Approved By', render: (r) => r.approvedBy || '—' },
+  { key: 'itemDescription', label: 'Description', render: (r) => r.itemDescription || '—' },
+  { key: 'remarks', label: 'Remarks', render: (r) => r.remarks || '—' },
 ]
 
 function stockStatus(stock) {
@@ -59,13 +78,18 @@ function resolveItemApprovalStatus(item, issueRequests, returnRequests) {
 
 export default function Inventory() {
   const store = useStore()
-  const { canGmApprove } = useAuth()
+  const { user, canGmApprove } = useAuth()
   const crud = useCrudModal()
+  const externalCrud = useCrudModal()
   const key = 'inventoryItems'
+  const externalKey = 'externalInventoryItems'
   const issueKey = 'inventoryIssueRequests'
   const returnKey = 'inventoryReturnRequests'
   const [returnOpen, setReturnOpen] = useState(false)
   const [itemModal, setItemModal] = useState({ open: false, item: null })
+  const [externalModal, setExternalModal] = useState({ open: false, item: null })
+
+  const canAddExternal = user?.role === 'backoffice' || user?.role === 'admin'
 
   const pendingApprovals = useMemo(() => {
     const issues = store.inventoryIssueRequests
@@ -74,8 +98,11 @@ export default function Inventory() {
     const returns = store.inventoryReturnRequests
       .filter((r) => r.approvalStatus === 'Pending')
       .map((r) => ({ ...r, requestType: 'Return' }))
-    return [...issues, ...returns]
-  }, [store.inventoryIssueRequests, store.inventoryReturnRequests])
+    const external = store.externalInventoryItems
+      .filter((i) => i.approvalStatus === 'Pending')
+      .map((i) => ({ ...i, requestType: 'External' }))
+    return [...issues, ...returns, ...external]
+  }, [store.inventoryIssueRequests, store.inventoryReturnRequests, store.externalInventoryItems])
 
   const inventoryRows = useMemo(
     () => store.inventoryItems.map((item) => ({
@@ -187,13 +214,73 @@ export default function Inventory() {
 
   const handleApprove = (req) => {
     if (req.requestType === 'Return') handleApproveReturn(req)
+    else if (req.requestType === 'External') handleApproveExternal(req)
     else handleApproveIssue(req)
   }
 
   const handleReject = (req) => {
     if (req.requestType === 'Return') handleRejectReturn(req)
+    else if (req.requestType === 'External') handleRejectExternal(req)
     else handleRejectIssue(req)
   }
+
+  const handleApproveExternal = (item) => {
+    store.update(externalKey, 'Inventory', item.id, {
+      ...item,
+      approvalStatus: 'Approved',
+      approvedBy: 'General Manager',
+      approvalDate: todayISO(),
+    })
+  }
+
+  const handleRejectExternal = (item) => {
+    store.update(externalKey, 'Inventory', item.id, {
+      ...item,
+      approvalStatus: 'Rejected',
+      approvedBy: 'General Manager',
+      approvalDate: todayISO(),
+    })
+  }
+
+  const handleSubmitExternal = (f) => {
+    const amount = f.purchaseAmount ? formatOMR(f.purchaseAmount) : ''
+    if (externalModal.item) {
+      store.update(externalKey, 'Inventory', externalModal.item.id, {
+        ...externalModal.item,
+        ...f,
+        purchaseAmount: amount || externalModal.item.purchaseAmount,
+      })
+    } else {
+      store.create(externalKey, 'EINV-', 'Inventory', {
+        ...f,
+        purchaseAmount: amount,
+        approvalStatus: canGmApprove ? 'Approved' : 'Pending',
+        requestedBy: user?.name,
+        approvedBy: canGmApprove ? 'General Manager' : '',
+        approvalDate: canGmApprove ? todayISO() : '',
+      }, f.name)
+    }
+    setExternalModal({ open: false, item: null })
+  }
+
+  const externalColumns = [
+    { key: 'skuCode', label: 'SKU', render: (r) => r.skuCode || r.id },
+    { key: 'name', label: 'Item Name' },
+    { key: 'vendor', label: 'Vendor' },
+    { key: 'category', label: 'Category' },
+    { key: 'quantity', label: 'Qty', render: (r) => `${r.quantity ?? r.stock ?? 0} ${r.unit}` },
+    { key: 'purchaseAmount', label: 'Amount', render: (r) => (r.purchaseAmount ? (String(r.purchaseAmount).startsWith('OMR') ? r.purchaseAmount : formatOMR(r.purchaseAmount)) : '—') },
+    {
+      key: 'approvalStatus',
+      label: 'GM Approval',
+      render: (r) => (
+        <Badge variant={approvalBadge(r.approvalStatus)}>
+          {r.approvalStatus || 'Pending'}
+        </Badge>
+      ),
+    },
+    { key: 'storageLocation', label: 'Location', render: (r) => r.storageLocation || '—' },
+  ]
 
   const handleSubmitReturn = (payload) => {
     const item = store.inventoryItems.find((i) => i.id === payload.itemId)
@@ -257,7 +344,7 @@ export default function Inventory() {
           <section className="panel">
             <SectionHeader
               title="GM Approval"
-              subtitle="Review inventory issue and return requests before stock is updated"
+              subtitle="Review inventory issue, return, and external purchase requests before stock is updated"
             />
             <InventoryApprovalQueue
               requests={pendingApprovals}
@@ -289,6 +376,32 @@ export default function Inventory() {
             onDelete={crud.openDelete}
           />
         </section>
+
+        <section className="panel">
+          <SectionHeader
+            title="External Inventory Stock"
+            subtitle="Inventory purchased from external vendors — entries require GM approval"
+            action={canAddExternal ? (
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={() => setExternalModal({ open: true, item: null })}
+              >
+                + Add External Item
+              </button>
+            ) : null}
+          />
+          <CrudTable
+            columns={externalColumns}
+            rows={store.externalInventoryItems}
+            onView={externalCrud.openView}
+            onEdit={canAddExternal ? (item) => setExternalModal({
+              open: true,
+              item: store.externalInventoryItems.find((i) => i.id === item.id) || item,
+            }) : undefined}
+            onDelete={canAddExternal ? externalCrud.openDelete : undefined}
+          />
+        </section>
       </PageShell>
 
       <InventoryItemModal
@@ -314,6 +427,14 @@ export default function Inventory() {
         onSubmit={handleSubmitReturn}
       />
 
+      <ExternalInventoryItemModal
+        open={externalModal.open}
+        editItem={externalModal.item}
+        requiresGmApproval={!canGmApprove}
+        onClose={() => setExternalModal({ open: false, item: null })}
+        onSubmit={handleSubmitExternal}
+      />
+
       <ViewDetailModal
         open={crud.isView}
         onClose={crud.closeModal}
@@ -322,11 +443,26 @@ export default function Inventory() {
         fields={viewFields}
       />
 
+      <ViewDetailModal
+        open={externalCrud.isView}
+        onClose={externalCrud.closeModal}
+        title="External Inventory Details"
+        data={externalCrud.item}
+        fields={externalViewFields}
+      />
+
       <DeleteConfirmModal
         open={!!crud.deleteTarget}
         onClose={crud.closeDelete}
         onConfirm={() => store.remove(key, 'Inventory', crud.deleteTarget.id)}
         itemName={crud.deleteTarget?.name}
+      />
+
+      <DeleteConfirmModal
+        open={!!externalCrud.deleteTarget}
+        onClose={externalCrud.closeDelete}
+        onConfirm={() => store.remove(externalKey, 'Inventory', externalCrud.deleteTarget.id)}
+        itemName={externalCrud.deleteTarget?.name}
       />
     </>
   )

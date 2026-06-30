@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react'
 import { Modal } from './UI'
 import { FormActions, FormField } from './FormFields'
 import FormSection from './FormSection'
+import VendorSelect from './VendorSelect'
+import { todayISO } from '../utils/helpers'
 
 const PO_STATUSES = ['Pending Approval', 'Approved', 'Received', 'Rejected', 'Closed']
 const APPROVAL_STATUSES = ['Pending', 'Level 1 Approved', 'Level 2 Approved', 'Rejected']
@@ -13,7 +15,7 @@ const REPORT_TAGS = ['Cost Saving', 'Urgent', 'Contract Renewal', 'Low Stock Rep
 
 const getEmpty = () => ({
   vendor: '', items: '', amount: '', status: 'Pending Approval',
-  requestRef: '', requestedBy: '', requestDate: '', requestNotes: '',
+  requestRef: '', requestedBy: '', requestDate: todayISO(), requestNotes: '',
   approver: '', approvalLevel: 'Level 1', approvalStatus: 'Pending',
   vendorContact: '', vendorRating: '',
   quote1Vendor: '', quote1Amount: '', quote2Vendor: '', quote2Amount: '', selectedQuote: '1',
@@ -68,7 +70,7 @@ export default function ProcurementOrderModal({ open, onClose, onSubmit, editIte
 
   const validate = () => {
     const next = {}
-    if (!form.vendor.trim()) next.vendor = 'Vendor is required'
+    if (!form.vendor) next.vendor = 'Vendor name is required'
     if (!form.items.trim()) next.items = 'Items are required'
     if (!form.amount || parseFloat(form.amount) <= 0) next.amount = 'Valid amount is required'
     setErrors(next)
@@ -128,8 +130,8 @@ export default function ProcurementOrderModal({ open, onClose, onSubmit, editIte
 
         <FormSection title="Vendor Management" subtitle="Vendor details and performance rating">
           <div className="form-grid">
-            <FormField label="Vendor" required error={errors.vendor} full>
-              <input type="text" value={form.vendor} onChange={(e) => update('vendor', e.target.value)} />
+            <FormField label="Vendor Name" required error={errors.vendor} full>
+              <VendorSelect value={form.vendor} onChange={(e) => update('vendor', e.target.value)} />
             </FormField>
             <FormField label="Vendor Contact">
               <input type="text" value={form.vendorContact} placeholder="Phone / email" onChange={(e) => update('vendorContact', e.target.value)} />

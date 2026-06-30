@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Modal } from './UI'
 import { FormActions, FormField } from './FormFields'
 import FormSection from './FormSection'
+import VendorSelect from './VendorSelect'
 import { formatDisplayDate, formatINR } from '../utils/helpers'
 
 const CATEGORIES = ['Room', 'F&B', 'Add-on', 'Operations', 'Payroll', 'Utilities', 'VAT', 'Maintenance']
@@ -77,6 +78,7 @@ export default function FinanceTransactionModal({ open, onClose, onSubmit, editI
   const validate = () => {
     const next = {}
     if (!form.description.trim()) next.description = 'Description is required'
+    if (!form.vendor) next.vendor = 'Vendor name is required'
     if (!form.amount || parseFloat(form.amount) <= 0) next.amount = 'Valid amount is required'
     setErrors(next)
     return Object.keys(next).length === 0
@@ -149,8 +151,13 @@ export default function FinanceTransactionModal({ open, onClose, onSubmit, editI
             <FormField label="Expense Type">
               <input type="text" value={form.expenseType} placeholder="Utilities, Supplies, Payroll..." onChange={(e) => update('expenseType', e.target.value)} />
             </FormField>
-            <FormField label="Vendor / Payee">
-              <input type="text" value={form.vendor} onChange={(e) => update('vendor', e.target.value)} />
+          </div>
+        </FormSection>
+
+        <FormSection title="Vendor" subtitle="Supplier or payee for this transaction">
+          <div className="form-grid">
+            <FormField label="Vendor Name" required error={errors.vendor} full>
+              <VendorSelect value={form.vendor} onChange={(e) => update('vendor', e.target.value)} />
             </FormField>
           </div>
         </FormSection>
